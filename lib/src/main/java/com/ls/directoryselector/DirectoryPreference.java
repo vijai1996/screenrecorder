@@ -20,6 +20,12 @@ import android.widget.EditText;
 import java.io.File;
 
 public class DirectoryPreference extends DialogPreference {
+    private final DirectorySelector.Callback dirSelectorCallback = new DirectorySelector.Callback() {
+        @Override
+        public void onNewDirButtonClicked() {
+            createNewFolderDialog(null);
+        }
+    };
 
     private final DirectorySelector dirChooser = new DirectorySelector(dirSelectorCallback) {
         @Override
@@ -40,12 +46,6 @@ public class DirectoryPreference extends DialogPreference {
         }
     };
     private AlertDialog dialog;
-    private final DirectorySelector.Callback dirSelectorCallback = new DirectorySelector.Callback() {
-        @Override
-        public void onNewDirButtonClicked() {
-            createNewFolderDialog(null);
-        }
-    };
 
     public DirectoryPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
