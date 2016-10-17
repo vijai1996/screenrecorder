@@ -65,7 +65,7 @@ public class RecorderService extends Service {
     private static int BITRATE;
     private static boolean mustRecAudio;
     private static String SAVEPATH;
-    private static int result;
+    private boolean isRecording;
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -76,9 +76,7 @@ public class RecorderService extends Service {
 
     private long startTime, elapsedTime = 0;
     private SharedPreferences prefs;
-    private Intent data;
     private WindowManager window;
-    private MediaProjectionManager mProjectionManager;
     private MediaProjection mMediaProjection;
     private VirtualDisplay mVirtualDisplay;
     private MediaProjectionCallback mMediaProjectionCallback;
@@ -90,44 +88,58 @@ public class RecorderService extends Service {
         //Find the action to perform from intent
         switch (intent.getAction()) {
             case Const.SCREEN_RECORDING_START:
-                //Get values from Default SharedPreferences
-                getValues();
-                data = intent.getParcelableExtra(Const.RECORDER_INTENT_DATA);
-                result = intent.getIntExtra(Const.RECORDER_INTENT_RESULT, Activity.RESULT_OK);
+                /* Wish MediaRecorder had a method isRecording() or similar. But, we are forced to
+                 * manage the state ourself. Let's hope the request is honored.
+                  * Request: https://code.google.com/p/android/issues/detail?id=800 */
+                if (!isRecording) {
+                    //Get values from Default SharedPreferences
+                    getValues();
+                    Intent data = intent.getParcelableExtra(Const.RECORDER_INTENT_DATA);
+                    int result = intent.getIntExtra(Const.RECORDER_INTENT_RESULT, Activity.RESULT_OK);
 
-                //Initialize MediaRecorder class and initialize it with preferred configuration
-                mMediaRecorder = new MediaRecorder();
-                initRecorder();
+                    //Initialize MediaRecorder class and initialize it with preferred configuration
+                    mMediaRecorder = new MediaRecorder();
+                    initRecorder();
 
-                //Set Callback for MediaProjection
-                mMediaProjectionCallback = new MediaProjectionCallback();
-                mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+                    //Set Callback for MediaProjection
+                    mMediaProjectionCallback = new MediaProjectionCallback();
+                    MediaProjectionManager mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
-                //Initialize MediaProjection using data received from Intent
-                mMediaProjection = mProjectionManager.getMediaProjection(result, data);
-                mMediaProjection.registerCallback(mMediaProjectionCallback, null);
+                    //Initialize MediaProjection using data received from Intent
+                    mMediaProjection = mProjectionManager.getMediaProjection(result, data);
+                    mMediaProjection.registerCallback(mMediaProjectionCallback, null);
 
                 /* Create a new virtual display with the actual default display
                  * and pass it on to MediaRecorder to start recording */
-                mVirtualDisplay = createVirtualDisplay();
-                mMediaRecorder.start();
+                    mVirtualDisplay = createVirtualDisplay();
+                    try {
+                        mMediaRecorder.start();
+                        isRecording = true;
+                    } catch (IllegalStateException e){
+                        Log.d(Const.TAG, "Mediarecorder reached Illegal state exception. Did you start the recording twice?");
+                        Toast.makeText(this, "Screen recording failed.", Toast.LENGTH_SHORT).show();
+                        isRecording = false;
+                    }
 
                 /* Add Pause action to Notification to pause screen recording if the user's android version
                  * is >= Nougat(API 24) since pause() isnt available previous to API24 else build
                  * Notification with only default stop() action */
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    //startTime is to calculate elapsed recording time to update notification during pause/resume
-                    startTime = System.currentTimeMillis();
-                    Intent recordPauseIntent = new Intent(this, RecorderService.class);
-                    recordPauseIntent.setAction(Const.SCREEN_RECORDING_PAUSE);
-                    PendingIntent precordPauseIntent = PendingIntent.getService(this, 0, recordPauseIntent, 0);
-                    NotificationCompat.Action action = new NotificationCompat.Action(android.R.drawable.ic_media_pause,
-                            getString(R.string.screen_recording_notification_action_pause), precordPauseIntent);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        //startTime is to calculate elapsed recording time to update notification during pause/resume
+                        startTime = System.currentTimeMillis();
+                        Intent recordPauseIntent = new Intent(this, RecorderService.class);
+                        recordPauseIntent.setAction(Const.SCREEN_RECORDING_PAUSE);
+                        PendingIntent precordPauseIntent = PendingIntent.getService(this, 0, recordPauseIntent, 0);
+                        NotificationCompat.Action action = new NotificationCompat.Action(android.R.drawable.ic_media_pause,
+                                getString(R.string.screen_recording_notification_action_pause), precordPauseIntent);
 
-                    //Start Notification as foreground
-                    startNotificationForeGround(createNotification(action).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
-                } else
-                    startNotificationForeGround(createNotification(null).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
+                        //Start Notification as foreground
+                        startNotificationForeGround(createNotification(action).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
+                    } else
+                        startNotificationForeGround(createNotification(null).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
+                } else {
+                    Toast.makeText(this, "Screen recording session already active", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case Const.SCREEN_RECORDING_PAUSE:
                 pauseScreenRecording();
@@ -317,6 +329,7 @@ public class RecorderService extends Service {
             Log.e(Const.TAG, "Fatal exception! Destroying media projection failed." + "\n" + e.getMessage());
             Toast.makeText(this, getString(R.string.fatal_exception_message), Toast.LENGTH_SHORT).show();
         }
+        isRecording = false;
     }
 
     /* Its weird that android does not index the files immediately once its created and that causes
