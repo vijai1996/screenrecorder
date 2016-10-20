@@ -72,6 +72,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(MainActivity.this, R.string.fab_record_hint, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
 
         //Let's add SettingsPreferenceFragment to the activity
         FragmentManager mFragmentManager = getFragmentManager();
