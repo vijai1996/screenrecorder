@@ -278,6 +278,10 @@ public class RecorderService extends Service {
         mustRecAudio = prefs.getBoolean(getString(R.string.audiorec_key), false);
         String saveLocation = prefs.getString(getString(R.string.savelocation_key),
                 Environment.getExternalStorageDirectory() + File.separator + MainActivity.APPDIR);
+        File saveDir = new File(saveLocation);
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && !saveDir.isDirectory()) {
+            saveDir.mkdirs();
+        }
         String saveFileName = getFileSaveName();
         SAVEPATH = saveLocation + File.separator + saveFileName + ".mp4";
     }
