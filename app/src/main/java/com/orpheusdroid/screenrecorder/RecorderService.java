@@ -314,6 +314,13 @@ public class RecorderService extends Service {
     private void destroyMediaProjection() {
         try {
             mMediaRecorder.stop();
+            indexFile();
+            Log.i(Const.TAG, "MediaProjection Stopped");
+        } catch (RuntimeException e) {
+            //TODO: Delete the created file as it would be corrupted
+            Log.e(Const.TAG, "Fatal exception! Destroying media projection failed." + "\n" + e.getMessage());
+            Toast.makeText(this, getString(R.string.fatal_exception_message), Toast.LENGTH_SHORT).show();
+        } finally {
             mMediaRecorder.reset();
             mVirtualDisplay.release();
             mMediaRecorder.release();
@@ -322,12 +329,6 @@ public class RecorderService extends Service {
                 mMediaProjection.stop();
                 mMediaProjection = null;
             }
-            indexFile();
-            Log.i(Const.TAG, "MediaProjection Stopped");
-        } catch (RuntimeException e) {
-            //TODO: Delete the created file as it would be corrupted
-            Log.e(Const.TAG, "Fatal exception! Destroying media projection failed." + "\n" + e.getMessage());
-            Toast.makeText(this, getString(R.string.fatal_exception_message), Toast.LENGTH_SHORT).show();
         }
         isRecording = false;
     }
@@ -364,10 +365,7 @@ public class RecorderService extends Service {
     private class MediaProjectionCallback extends MediaProjection.Callback {
         @Override
         public void onStop() {
-            mMediaRecorder.stop();
-            mMediaRecorder.reset();
             Log.v(Const.TAG, "Recording Stopped");
-            mMediaProjection = null;
             stopScreenSharing();
         }
     }
