@@ -17,6 +17,7 @@
 
 package com.orpheusdroid.screenrecorder;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -31,10 +32,15 @@ import android.preference.PreferenceFragment;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by vijai on 11-10-2016.
@@ -71,7 +77,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         EditTextPreference filenamePrefix = (EditTextPreference) findPreference(getString(R.string.fileprefix_key));
 
         //Set the summary of preferences dynamically with user choice or default if no user choice is made
-        res.setSummary(getValue(getString(R.string.res_key), "1440x2560"));
+        updateResolution(res);
         fps.setSummary(getValue(getString(R.string.fps_key), "30"));
         float bps = bitsToMb(Integer.parseInt(getValue(getString(R.string.bitrate_key), "7130317")));
         bitrate.setSummary(bps + " Mbps");
@@ -84,6 +90,31 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         //If record audio checkbox is checked, check for record audio permission
         if (recaudio.isChecked())
             requestAudioPermission();
+    }
+
+    private void updateResolution(ListPreference res) {
+        String resolution = getResolution(getValue(getString(R.string.res_key), "1440x2560"));
+        res.setValue(resolution);
+        res.setSummary(resolution);
+    }
+
+    //Prevent upscaling of resolution which mediarecorder could not handle
+    private String getResolution(String res) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager window = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+        window.getDefaultDisplay().getMetrics(metrics);
+        String[] widthHeight = res.split("x");
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        if (width < Integer.parseInt(widthHeight[0]) || height < Integer.parseInt(widthHeight[1])) {
+            ArrayList<String> resolutions = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.resolutionValues)));
+            for (String resolution : resolutions) {
+                if (resolution.contains(String.valueOf(width)))
+                    return resolution;
+            }
+            return resolutions.get(0);
+        } else
+            return res;
     }
 
     //Set permissionListener in MainActivity
@@ -130,6 +161,12 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         Preference pref = findPreference(s);
         switch (pref.getTitleRes()) {
+            case R.string.preference_resolution_title:
+                updateResolution((ListPreference)pref);
+                String resolution = getResolution(getValue(getString(R.string.res_key), "1440x2560"));
+                Toast.makeText(getActivity(), getString(R.string.large_resolution_selected_toast, resolution)
+                        , Toast.LENGTH_SHORT).show();
+                break;
             case R.string.preference_bit_title:
                 float bps = bitsToMb(Integer.parseInt(getValue(getString(R.string.bitrate_key), "7130317")));
                 pref.setSummary(bps + " Mbps");

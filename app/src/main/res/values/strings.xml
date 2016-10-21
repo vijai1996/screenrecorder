@@ -39,4 +39,5 @@
     <string name="fab_record_hint">Start recording</string>
     <string name="recording_failed_toast">Screen recording failed.</string>
     <string name="screenrecording_already_active_toast">Screen recording session already active</string>
+    <string name="large_resolution_selected_toast">The selected resolution is larger than display resolution. Using %1$s resolution instead</string>
 </resources>
