@@ -117,7 +117,7 @@ public class RecorderService extends Service {
                         isRecording = true;
                     } catch (IllegalStateException e){
                         Log.d(Const.TAG, "Mediarecorder reached Illegal state exception. Did you start the recording twice?");
-                        Toast.makeText(this, "Screen recording failed.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, R.string.recording_failed_toast, Toast.LENGTH_SHORT).show();
                         isRecording = false;
                     }
 
@@ -138,7 +138,7 @@ public class RecorderService extends Service {
                     } else
                         startNotificationForeGround(createNotification(null).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
                 } else {
-                    Toast.makeText(this, "Screen recording session already active", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.screenrecording_already_active_toast, Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Const.SCREEN_RECORDING_PAUSE:
