@@ -109,8 +109,11 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         if (width < Integer.parseInt(widthHeight[0]) || height < Integer.parseInt(widthHeight[1])) {
             ArrayList<String> resolutions = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.resolutionValues)));
             for (String resolution : resolutions) {
-                if (resolution.contains(String.valueOf(width)))
+                if (resolution.contains(String.valueOf(width))) {
+                    Toast.makeText(getActivity(), getString(R.string.large_resolution_selected_toast, resolution)
+                            , Toast.LENGTH_SHORT).show();
                     return resolution;
+                }
             }
             return resolutions.get(0);
         } else
@@ -163,9 +166,6 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         switch (pref.getTitleRes()) {
             case R.string.preference_resolution_title:
                 updateResolution((ListPreference)pref);
-                String resolution = getResolution(getValue(getString(R.string.res_key), "1440x2560"));
-                Toast.makeText(getActivity(), getString(R.string.large_resolution_selected_toast, resolution)
-                        , Toast.LENGTH_SHORT).show();
                 break;
             case R.string.preference_bit_title:
                 float bps = bitsToMb(Integer.parseInt(getValue(getString(R.string.bitrate_key), "7130317")));
