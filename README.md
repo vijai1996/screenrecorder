@@ -1,7 +1,9 @@
 # ScreenRecorder
+![App Icon](ic_launcher-web.png?raw=true "App Icon")
 
 Requires Lollipop and above (SDK 21+)
-[![Google Play](https://orpheusdroid.com/google-play-badge.png)](https://play.google.com/store/apps/details?id=com.orpheusdroid.screenrecorder)
+
+[![Google Play](https://orpheusdroid.com/google-play-badge.png "Google play badge")](https://play.google.com/store/apps/details?id=com.orpheusdroid.screenrecorder)
 
 ## Building the app
 
