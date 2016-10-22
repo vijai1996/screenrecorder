@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">screenrecorder</string>
+    <string name="app_name" translatable="false">ScreenCam</string>
     <string name="preference_resolution_title">Resolution</string>
     <string name="preference_resolution_summary">Select the resolution to record at</string>
     <string name="preference_fps_title">Frames per second</string>
