@@ -59,8 +59,25 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Arbitrary "Write to external storage" permission since this permission is most important for the app
+        requestPermissionStorage();
+
+        //Let's add SettingsPreferenceFragment to the activity
+        FragmentManager mFragmentManager = getFragmentManager();
+        FragmentTransaction mFragmentTransaction = mFragmentManager
+                .beginTransaction();
+        SettingsPreferenceFragment mPrefsFragment = new SettingsPreferenceFragment();
+        mFragmentTransaction.replace(R.id.settingsFragment, mPrefsFragment);
+        mFragmentTransaction.commit();
+
         //Acquiring media projection service to start screen mirroring
         mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+
+        //Respond to app shortcut
+        if(getIntent().getAction().equals(getString(R.string.app_shortcut_action))){
+            startActivityForResult(mProjectionManager.createScreenCaptureIntent(), SCREEN_RECORD_REQUEST_CODE);
+            return;
+        }
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -80,16 +97,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Let's add SettingsPreferenceFragment to the activity
-        FragmentManager mFragmentManager = getFragmentManager();
-        FragmentTransaction mFragmentTransaction = mFragmentManager
-                .beginTransaction();
-        SettingsPreferenceFragment mPrefsFragment = new SettingsPreferenceFragment();
-        mFragmentTransaction.replace(R.id.settingsFragment, mPrefsFragment);
-        mFragmentTransaction.commit();
-
-        //Arbitrary "Write to external storage" permission since this permission is most important for the app
-        requestPermissionStorage();
     }
 
     //Overriding onActivityResult to capture screen mirroring permission request result
@@ -104,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_CANCELED) {
             Toast.makeText(this,
                     getString(R.string.screen_recording_permission_denied), Toast.LENGTH_SHORT).show();
+            //Return to home screen if the app was started from app shortcut
+            if (getIntent().getAction().equals(getString(R.string.app_shortcut_action)))
+                this.finish();
             return;
         }
 
@@ -114,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         recorderService.putExtra(Const.RECORDER_INTENT_DATA, data);
         recorderService.putExtra(Const.RECORDER_INTENT_RESULT, resultCode);
         startService(recorderService);
+        this.finish();
     }
 
     //Method to create app directory which is default directory for storing recorded videos

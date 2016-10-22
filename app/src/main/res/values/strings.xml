@@ -40,4 +40,8 @@
     <string name="recording_failed_toast">Screen recording failed.</string>
     <string name="screenrecording_already_active_toast">Screen recording session already active</string>
     <string name="large_resolution_selected_toast">The selected resolution is larger than display resolution. Using %1$s resolution instead</string>
+    <string name="shortcut_short_label">Record</string>
+    <string name="shortcut_long_label">Quick Record</string>
+    <string name="shortcut_disabled_message">Recording disabled</string>
+    <string name="app_shortcut_action">com.orpheusdroid.screenrecorder.RECORD</string>
 </resources>
