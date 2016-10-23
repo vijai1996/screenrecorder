@@ -239,6 +239,7 @@ public class RecorderService extends Service {
                         Bitmap.createScaledBitmap(icon, 128, 128, false))
                 .setUsesChronometer(true)
                 .setOngoing(true)
+                .setPriority(Notification.PRIORITY_MAX)
                 .addAction(R.drawable.ic_notification_stop, getResources().getString(R.string.screen_recording_notification_action_stop),
                         precordStopIntent);
         if (action != null)
