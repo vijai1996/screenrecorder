@@ -213,7 +213,7 @@ public class RecorderService extends Service {
             mMediaRecorder.setVideoSize(WIDTH, HEIGHT);
             mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
             if (mustRecAudio)
-                mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             mMediaRecorder.setVideoEncodingBitRate(BITRATE);
             mMediaRecorder.setVideoFrameRate(FPS);
             int rotation = window.getDefaultDisplay().getRotation();
