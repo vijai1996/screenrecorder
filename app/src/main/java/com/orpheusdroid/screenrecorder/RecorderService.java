@@ -37,7 +37,10 @@ import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -359,12 +362,20 @@ public class RecorderService extends Service {
             @Override
             public void onScanCompleted(String path, Uri uri) {
                 Log.i(Const.TAG, "SCAN COMPLETED: " + path);
-                Toast.makeText(RecorderService.this, R.string.screen_recording_stopped_toast, Toast.LENGTH_SHORT).show();
-                //Stop service after notifying MediaScannerConnection to scan the path
+                //Show toast on main thread
+                Message message = mHandler.obtainMessage();
+                message.sendToTarget();
                 stopSelf();
             }
         });
     }
+
+    Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message message) {
+            Toast.makeText(RecorderService.this, R.string.screen_recording_stopped_toast, Toast.LENGTH_SHORT).show();
+        }
+    };
 
     private void stopScreenSharing() {
         if (mVirtualDisplay == null) {
