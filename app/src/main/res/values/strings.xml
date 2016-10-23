@@ -46,4 +46,5 @@
     <string name="app_shortcut_action">com.orpheusdroid.screenrecorder.RECORD</string>
     <string name="screen_recording_started_toast">Screen recording started</string>
     <string name="screen_recording_stopped_toast">Screen Recording stopped successfully</string>
+    <string name="fab_stop_hint">Stop recording</string>
 </resources>

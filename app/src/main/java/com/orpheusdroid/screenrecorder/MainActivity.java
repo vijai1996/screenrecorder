@@ -18,6 +18,7 @@
 package com.orpheusdroid.screenrecorder;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -50,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private MediaProjection mMediaProjection;
     private MediaProjectionManager mProjectionManager;
     private FloatingActionButton fab;
+    private enum Status{
+      RECORDING, STOPPED
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         //Arbitrary "Write to external storage" permission since this permission is most important for the app
         requestPermissionStorage();
 
+        //final boolean isServiceRunning = isServiceRunning(RecorderService.class);
         //Let's add SettingsPreferenceFragment to the activity
         FragmentManager mFragmentManager = getFragmentManager();
         FragmentTransaction mFragmentTransaction = mFragmentManager
@@ -74,29 +79,64 @@ public class MainActivity extends AppCompatActivity {
         mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
         //Respond to app shortcut
-        if(getIntent().getAction().equals(getString(R.string.app_shortcut_action))){
+        if(getIntent().getAction() != null && getIntent().getAction().equals(getString(R.string.app_shortcut_action))){
             startActivityForResult(mProjectionManager.createScreenCaptureIntent(), SCREEN_RECORD_REQUEST_CODE);
             return;
         }
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        if (isServiceRunning(RecorderService.class)){
+            Log.d(Const.TAG, "service is running" );
+            changeFabIcon(Status.RECORDING);
+        }
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mMediaProjection == null) {
+                if (mMediaProjection == null && !isServiceRunning(RecorderService.class)) {
                     //Request Screen recording permission
                     startActivityForResult(mProjectionManager.createScreenCaptureIntent(), SCREEN_RECORD_REQUEST_CODE);
+                } else if(isServiceRunning(RecorderService.class)){
+                    //stop recording if the service is already active and recording
+                    Intent stopRecording = new Intent(MainActivity.this, RecorderService.class);
+                    stopRecording.setAction(Const.SCREEN_RECORDING_STOP);
+                    startService(stopRecording);
+                    changeFabIcon(Status.STOPPED);
                 }
             }
         });
         fab.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Toast.makeText(MainActivity.this, R.string.fab_record_hint, Toast.LENGTH_SHORT).show();
+                //Show hint toast based on recording status
+                if (isServiceRunning(RecorderService.class))
+                    Toast.makeText(MainActivity.this, R.string.fab_record_hint, Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(MainActivity.this, R.string.fab_stop_hint, Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
 
+    }
+
+    //Method to change FAB icon based on recording status
+    private void changeFabIcon(Status status){
+        if (status.equals(Status.RECORDING)){
+            fab.setImageResource(R.drawable.ic_notification_stop);
+        } else {
+            fab.setImageResource(R.drawable.fab_record);
+        }
+    }
+
+    //Method to check if the service is running
+    private boolean isServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     //Overriding onActivityResult to capture screen mirroring permission request result
@@ -119,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
         /*If code reaches this point, congratulations! The user has granted screen mirroring permission
         * Let us set the recorderservice intent with relevant data and start service*/
+        changeFabIcon(Status.RECORDING);
         Intent recorderService = new Intent(this, RecorderService.class);
         recorderService.setAction(Const.SCREEN_RECORDING_START);
         recorderService.putExtra(Const.RECORDER_INTENT_DATA, data);
