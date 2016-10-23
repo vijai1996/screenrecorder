@@ -20,6 +20,7 @@ import android.widget.EditText;
 import java.io.File;
 
 public class DirectoryPreference extends DialogPreference {
+    private File ret = null;
     private final DirectorySelector.Callback dirSelectorCallback = new DirectorySelector.Callback() {
         @Override
         public void onNewDirButtonClicked() {
@@ -35,7 +36,7 @@ public class DirectoryPreference extends DialogPreference {
 
         @Override
         protected File getInitialDirectory() {
-            File ret = null;
+
             String value = getPersistedString(null);
             if (value != null) {
                 File file = new File(value);
@@ -46,6 +47,10 @@ public class DirectoryPreference extends DialogPreference {
         }
     };
     private AlertDialog dialog;
+
+    public void setRet(String dir){
+        ret = new File(dir);
+    }
 
     public DirectoryPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);

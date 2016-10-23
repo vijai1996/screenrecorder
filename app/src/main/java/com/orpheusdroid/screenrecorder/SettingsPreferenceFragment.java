@@ -38,6 +38,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.ls.directoryselector.DirectoryPreference;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +68,10 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         //init permission listener callback
         setPermissionListener();
 
+        //Get Default save location from shared preference
+        String defaultSaveLoc = (new File(Environment
+                .getExternalStorageDirectory() + File.separator + MainActivity.APPDIR)).getPath();
+
         //Get instances of all preferences
         prefs = getPreferenceScreen().getSharedPreferences();
         ListPreference res = (ListPreference) findPreference(getString(R.string.res_key));
@@ -75,14 +81,15 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         Preference saveloc = findPreference(getString(R.string.savelocation_key));
         ListPreference filenameFormat = (ListPreference) findPreference(getString(R.string.filename_key));
         EditTextPreference filenamePrefix = (EditTextPreference) findPreference(getString(R.string.fileprefix_key));
+        DirectoryPreference dirChooser = (DirectoryPreference) findPreference(getString(R.string.savelocation_key));
+        //Set previously chosen directory as initial directory
+        dirChooser.setRet(getValue(getString(R.string.savelocation_key), defaultSaveLoc));
 
         //Set the summary of preferences dynamically with user choice or default if no user choice is made
         updateResolution(res);
         fps.setSummary(getValue(getString(R.string.fps_key), "30"));
         float bps = bitsToMb(Integer.parseInt(getValue(getString(R.string.bitrate_key), "7130317")));
         bitrate.setSummary(bps + " Mbps");
-        String defaultSaveLoc = (new File(Environment
-                .getExternalStorageDirectory() + File.separator + MainActivity.APPDIR)).getPath();
         saveloc.setSummary(getValue(getString(R.string.savelocation_key), defaultSaveLoc));
         filenameFormat.setSummary(getFileSaveFormat());
         filenamePrefix.setSummary(getValue(getString(R.string.fileprefix_key), "recording"));
@@ -106,7 +113,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         String[] widthHeight = res.split("x");
         int width = metrics.widthPixels;
         int height = metrics.heightPixels;
-        if (width < Integer.parseInt(widthHeight[0]) || height < Integer.parseInt(widthHeight[1])) {
+        if (width < Integer.parseInt(widthHeight[0]) && height < Integer.parseInt(widthHeight[1])) {
             ArrayList<String> resolutions = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.resolutionValues)));
             for (String resolution : resolutions) {
                 if (resolution.contains(String.valueOf(width))) {
