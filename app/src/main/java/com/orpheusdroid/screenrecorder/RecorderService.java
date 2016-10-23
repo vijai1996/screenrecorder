@@ -115,6 +115,7 @@ public class RecorderService extends Service {
                     try {
                         mMediaRecorder.start();
                         isRecording = true;
+                        Toast.makeText(this, R.string.screen_recording_started_toast, Toast.LENGTH_SHORT).show();
                     } catch (IllegalStateException e){
                         Log.d(Const.TAG, "Mediarecorder reached Illegal state exception. Did you start the recording twice?");
                         Toast.makeText(this, R.string.recording_failed_toast, Toast.LENGTH_SHORT).show();
@@ -231,6 +232,9 @@ public class RecorderService extends Service {
         recordStopIntent.setAction(Const.SCREEN_RECORDING_STOP);
         PendingIntent precordStopIntent = PendingIntent.getService(this, 0, recordStopIntent, 0);
 
+        Intent UIIntent = new Intent(this, MainActivity.class);
+        PendingIntent notificationContentIntent = PendingIntent.getActivity(this, 0, UIIntent, 0);
+
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
                 .setContentTitle(getResources().getString(R.string.screen_recording_notification_title))
                 .setTicker(getResources().getString(R.string.screen_recording_notification_title))
@@ -239,6 +243,7 @@ public class RecorderService extends Service {
                         Bitmap.createScaledBitmap(icon, 128, 128, false))
                 .setUsesChronometer(true)
                 .setOngoing(true)
+                .setContentIntent(notificationContentIntent)
                 .setPriority(Notification.PRIORITY_MAX)
                 .addAction(R.drawable.ic_notification_stop, getResources().getString(R.string.screen_recording_notification_action_stop),
                         precordStopIntent);
@@ -354,6 +359,7 @@ public class RecorderService extends Service {
             @Override
             public void onScanCompleted(String path, Uri uri) {
                 Log.i(Const.TAG, "SCAN COMPLETED: " + path);
+                Toast.makeText(RecorderService.this, "Screen Recording stopped successfully", Toast.LENGTH_SHORT).show();
                 //Stop service after notifying MediaScannerConnection to scan the path
                 stopSelf();
             }
