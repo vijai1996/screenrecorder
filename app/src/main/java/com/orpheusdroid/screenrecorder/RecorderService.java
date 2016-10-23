@@ -359,7 +359,7 @@ public class RecorderService extends Service {
             @Override
             public void onScanCompleted(String path, Uri uri) {
                 Log.i(Const.TAG, "SCAN COMPLETED: " + path);
-                Toast.makeText(RecorderService.this, "Screen Recording stopped successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RecorderService.this, R.string.screen_recording_stopped_toast, Toast.LENGTH_SHORT).show();
                 //Stop service after notifying MediaScannerConnection to scan the path
                 stopSelf();
             }
