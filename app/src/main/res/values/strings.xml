@@ -47,4 +47,8 @@
     <string name="screen_recording_started_toast">Screen recording started</string>
     <string name="screen_recording_stopped_toast">Screen Recording stopped successfully</string>
     <string name="fab_stop_hint">Stop recording</string>
+    <string name="share_intent_title">Share recorded</string>
+    <string name="share_intent_notification_title">Share recorded video</string>
+    <string name="share_intent_notification_content">click to share the recorded video</string>
+    <string name="share_intent_notification_action_text">Share</string>
 </resources>

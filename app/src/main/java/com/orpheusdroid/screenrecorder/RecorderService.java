@@ -255,6 +255,27 @@ public class RecorderService extends Service {
         return notification;
     }
 
+    private void showShareNotification(){
+        Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                R.mipmap.ic_launcher);
+        Intent Shareintent = new Intent()
+                .setAction(Intent.ACTION_SEND)
+                .putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(SAVEPATH)))
+                .setType("video/mp4");
+        PendingIntent sharePendingIntent = PendingIntent.getActivity(this, 0, Intent.createChooser(
+                Shareintent, getString(R.string.share_intent_title)), 0);
+        NotificationCompat.Builder shareNotification = new NotificationCompat.Builder(this)
+                .setContentTitle(getString(R.string.share_intent_notification_title))
+                .setContentText(getString(R.string.share_intent_notification_content))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setLargeIcon(Bitmap.createScaledBitmap(icon, 128, 128, false))
+                .setAutoCancel(true)
+                .setContentIntent(sharePendingIntent)
+                .addAction(android.R.drawable.ic_menu_share, getString(R.string.share_intent_notification_action_text)
+                        , sharePendingIntent);
+        updateNotification(shareNotification.build(), Const.SCREEN_RECORDER_SHARE_NOTIFICATION_ID);
+    }
+
     //Start service as a foreground service. We dont want the service to be killed in case of low memory
     private void startNotificationForeGround(Notification notification, int ID) {
         startForeground(ID, notification);
@@ -374,6 +395,7 @@ public class RecorderService extends Service {
         @Override
         public void handleMessage(Message message) {
             Toast.makeText(RecorderService.this, R.string.screen_recording_stopped_toast, Toast.LENGTH_SHORT).show();
+            showShareNotification();
         }
     };
 

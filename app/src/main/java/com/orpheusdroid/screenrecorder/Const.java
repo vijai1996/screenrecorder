@@ -30,6 +30,7 @@ class Const {
     static final String SCREEN_RECORDING_RESUME = "com.orpheusdroid.screenrecorder.services.action.resumerecording";
     static final String SCREEN_RECORDING_STOP = "com.orpheusdroid.screenrecorder.services.action.stoprecording";
     static final int SCREEN_RECORDER_NOTIFICATION_ID = 5001;
+    static final int SCREEN_RECORDER_SHARE_NOTIFICATION_ID = 5002;
     static final String RECORDER_INTENT_DATA = "recorder_intent_data";
     static final String RECORDER_INTENT_RESULT = "recorder_intent_result";
     static final String TAG = "SCREENRECORDER";
