@@ -1,4 +1,4 @@
-# ScreenRecorder
+# ScreenRecorder   [![Build Status](https://travis-ci.org/vijai1996/screenrecorder.svg?branch=master)](https://travis-ci.org/vijai1996/screenrecorder)
 ![App Icon](ic_launcher-web.png?raw=true "App Icon")
 
 Requires Lollipop and above (SDK 21+)
