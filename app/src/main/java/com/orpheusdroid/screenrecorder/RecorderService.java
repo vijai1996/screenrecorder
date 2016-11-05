@@ -23,8 +23,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -69,6 +71,26 @@ public class RecorderService extends Service{
     private static boolean mustRecAudio;
     private static String SAVEPATH;
     private boolean isRecording;
+    private boolean useFloatingControls;
+    private FloatingControlService floatingControlService;
+    private boolean isBound = false;
+
+    //Service connection to manage the connection state between this service and the bounded service
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            //Get the service instance
+            FloatingControlService.ServiceBinder binder = (FloatingControlService.ServiceBinder) service;
+            floatingControlService = binder.getService();
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            floatingControlService = null;
+            isBound = false;
+        }
+    };
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -117,6 +139,18 @@ public class RecorderService extends Service{
                     mVirtualDisplay = createVirtualDisplay();
                     try {
                         mMediaRecorder.start();
+
+                        //If floating controls is enabled, start the floating control service and bind it here
+                        if (useFloatingControls) {
+                            Intent floatinControlsIntent = new Intent(this, FloatingControlService.class);
+                            startService(floatinControlsIntent);
+                            bindService(floatinControlsIntent,
+                                    serviceConnection, BIND_AUTO_CREATE);
+                        }
+
+                        //Set the state of the recording
+                        if (isBound)
+                            floatingControlService.setRecordingState(Const.RecordingState.RECORDING);
                         isRecording = true;
                         Toast.makeText(this, R.string.screen_recording_started_toast, Toast.LENGTH_SHORT).show();
                     } catch (IllegalStateException e){
@@ -152,6 +186,9 @@ public class RecorderService extends Service{
                 resumeScreenRecording();
                 break;
             case Const.SCREEN_RECORDING_STOP:
+                //Unbind the floating control service if its bound (naturally unbound if floating controls is disabled)
+                if (isBound)
+                    unbindService(serviceConnection);
                 stopScreenSharing();
                 //The service is started as foreground service and hence has to be stopped
                 stopForeground(true);
@@ -174,6 +211,9 @@ public class RecorderService extends Service{
                 getString(R.string.screen_recording_notification_action_resume), precordResumeIntent);
         updateNotification(createNotification(action).setUsesChronometer(false).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
         Toast.makeText(this, R.string.screen_recording_paused_toast, Toast.LENGTH_SHORT).show();
+
+        if (isBound)
+            floatingControlService.setRecordingState(Const.RecordingState.PAUSED);
     }
 
     @TargetApi(24)
@@ -192,6 +232,9 @@ public class RecorderService extends Service{
         updateNotification(createNotification(action).setUsesChronometer(true)
                 .setWhen((System.currentTimeMillis() - elapsedTime)).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
         Toast.makeText(this, R.string.screen_recording_resumed_toast, Toast.LENGTH_SHORT).show();
+
+        if (isBound)
+            floatingControlService.setRecordingState(Const.RecordingState.RECORDING);
     }
 
     //Virtual display created by mirroring the actual physical display
@@ -314,6 +357,7 @@ public class RecorderService extends Service{
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && !saveDir.isDirectory()) {
             saveDir.mkdirs();
         }
+        useFloatingControls = prefs.getBoolean(getString(R.string.preference_floating_control_key), false);
         String saveFileName = getFileSaveName();
         SAVEPATH = saveLocation + File.separator + saveFileName + ".mp4";
     }

@@ -53,4 +53,7 @@
     <string name="share_intent_notification_title">Share recorded video</string>
     <string name="share_intent_notification_content">click to share the recorded video</string>
     <string name="share_intent_notification_action_text">Share</string>
+    <string name="preference_floating_control_title">Use Floating Controls</string>
+    <string name="preference_floating_control_summary">Enable/Disable floating controls which draws over every screen</string>
+    <string name="preference_floating_control_key">floating_controls</string>
 </resources>

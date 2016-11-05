@@ -18,6 +18,7 @@
 package com.orpheusdroid.screenrecorder;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -28,8 +29,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -42,6 +45,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.orpheusdroid.screenrecorder.Const.RecordingState;
+
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
@@ -51,9 +56,6 @@ public class MainActivity extends AppCompatActivity {
     private MediaProjection mMediaProjection;
     private MediaProjectionManager mProjectionManager;
     private FloatingActionButton fab;
-    private enum Status{
-      RECORDING, STOPPED
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (isServiceRunning(RecorderService.class)){
             Log.d(Const.TAG, "service is running" );
-            changeFabIcon(Status.RECORDING);
+            changeFabIcon(RecordingState.RECORDING);
         }
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent stopRecording = new Intent(MainActivity.this, RecorderService.class);
                     stopRecording.setAction(Const.SCREEN_RECORDING_STOP);
                     startService(stopRecording);
-                    changeFabIcon(Status.STOPPED);
+                    changeFabIcon(RecordingState.STOPPED);
                 }
             }
         });
@@ -120,8 +122,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Method to change FAB icon based on recording status
-    private void changeFabIcon(Status status){
-        if (status.equals(Status.RECORDING)){
+    private void changeFabIcon(RecordingState status){
+        if (status.equals(RecordingState.RECORDING)){
             fab.setImageResource(R.drawable.ic_notification_stop);
         } else {
             fab.setImageResource(R.drawable.fab_record);
@@ -147,6 +149,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        //Result for system windows permission required to show floating controls
+        if(resultCode == Const.SYSTEM_WINDOWS_CODE) {
+            setSystemWindowsPermissionResult();
+            return;
+        }
+
         //The user has denied permission for screen mirroring. Let's notify the user
         if (resultCode == RESULT_CANCELED) {
             Toast.makeText(this,
@@ -159,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
         /*If code reaches this point, congratulations! The user has granted screen mirroring permission
         * Let us set the recorderservice intent with relevant data and start service*/
-        changeFabIcon(Status.RECORDING);
+        changeFabIcon(RecordingState.RECORDING);
         Intent recorderService = new Intent(this, RecorderService.class);
         recorderService.setAction(Const.SCREEN_RECORDING_START);
         recorderService.putExtra(Const.RECORDER_INTENT_DATA, data);
@@ -197,7 +205,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Marshmallor style permission request for audio recording
+    //Permission on api below 23 are granted by deafult
+    @TargetApi(23)
+    public void requestSystemWindowsPermission(){
+        if (!Settings.canDrawOverlays(this)) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, Const.SYSTEM_WINDOWS_CODE);
+        }
+    }
+
+    //Pass the system windows permission result to settings fragment
+    @TargetApi(23)
+    private void setSystemWindowsPermissionResult(){
+        if (Settings.canDrawOverlays(this)) {
+            mPermissionResultListener.onPermissionResult(Const.SYSTEM_WINDOWS_CODE,
+                    new String[]{"System Windows Permission"},
+                    new int[]{PackageManager.PERMISSION_GRANTED});
+        } else {
+            mPermissionResultListener.onPermissionResult(Const.SYSTEM_WINDOWS_CODE,
+                    new String[]{"System Windows Permission"},
+                    new int[]{PackageManager.PERMISSION_DENIED});
+        }
+    }
+
+    // Marshmallow style permission request for audio recording
     public void requestPermissionAudio() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {

@@ -25,6 +25,7 @@ package com.orpheusdroid.screenrecorder;
 class Const {
     static final int EXTDIR_REQUEST_CODE = 1000;
     static final int AUDIO_REQUEST_CODE = 1001;
+    static final int SYSTEM_WINDOWS_CODE = 1002;
     static final String SCREEN_RECORDING_START = "com.orpheusdroid.screenrecorder.services.action.startrecording";
     static final String SCREEN_RECORDING_PAUSE = "com.orpheusdroid.screenrecorder.services.action.pauserecording";
     static final String SCREEN_RECORDING_RESUME = "com.orpheusdroid.screenrecorder.services.action.resumerecording";
@@ -34,4 +35,8 @@ class Const {
     static final String RECORDER_INTENT_DATA = "recorder_intent_data";
     static final String RECORDER_INTENT_RESULT = "recorder_intent_result";
     static final String TAG = "SCREENRECORDER";
+
+    public enum RecordingState {
+        RECORDING, PAUSED, STOPPED
+    }
 }

@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.CheckBoxPreference;
@@ -53,6 +54,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
 
     SharedPreferences prefs;
     private CheckBoxPreference recaudio;
+    private CheckBoxPreference floatingControl;
     private MainActivity activity;
 
     @Override
@@ -82,6 +84,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         ListPreference filenameFormat = (ListPreference) findPreference(getString(R.string.filename_key));
         EditTextPreference filenamePrefix = (EditTextPreference) findPreference(getString(R.string.fileprefix_key));
         DirectoryPreference dirChooser = (DirectoryPreference) findPreference(getString(R.string.savelocation_key));
+        floatingControl = (CheckBoxPreference) findPreference(getString(R.string.preference_floating_control_key));
         //Set previously chosen directory as initial directory
         dirChooser.setRet(getValue(getString(R.string.savelocation_key), defaultSaveLoc));
 
@@ -97,6 +100,10 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         //If record audio checkbox is checked, check for record audio permission
         if (recaudio.isChecked())
             requestAudioPermission();
+
+        //If floating controls is checked, check for system windows permission
+        if (floatingControl.isChecked())
+            requestSystemWindowsPermission();
     }
 
     private void updateResolution(ListPreference res) {
@@ -190,6 +197,9 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
                 ListPreference filename = (ListPreference) findPreference(getString(R.string.filename_key));
                 filename.setSummary(getFileSaveFormat());
                 break;
+            case R.string.preference_floating_control_title:
+                requestSystemWindowsPermission();
+                break;
             default:
                 pref.setSummary(sharedPreferences.getString(s, ""));
         }
@@ -205,6 +215,12 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
     public void requestAudioPermission() {
         if (activity != null) {
             activity.requestPermissionAudio();
+        }
+    }
+
+    private void requestSystemWindowsPermission(){
+        if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity.requestSystemWindowsPermission();
         }
     }
 
@@ -246,6 +262,14 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
                     recaudio.setChecked(false);
                 }
                 return;
+            case Const.SYSTEM_WINDOWS_CODE:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Log.d(Const.TAG, "System Windows permission granted");
+                    floatingControl.setChecked(true);
+                } else {
+                    Log.d(Const.TAG, "System Windows permission denied");
+                    floatingControl.setChecked(false);
+                }
             default:
                 Log.d(Const.TAG, "Unknown permission request with request code: " + requestCode);
         }
