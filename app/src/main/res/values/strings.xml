@@ -34,8 +34,10 @@
     <string name="menu_about_title">About</string>
     <string name="about_credits">Credits</string>
     <string name="about_libraries">Libraries</string>
+    <string name="about_opensource">Open Source</string>
     <string name="app_icon_credit_Niko">App Icons by %1$s\n\nwebsite: %2$s</string>
     <string name="directory_chooser_library_credit">Folder Picker by %1$s\n\n Github url: %2$s\n\nLicense: %3$s</string>
+    <string name="opensource_info">This app is opensourced and the source could be obained at \n\nGithub url: %1$s\n\nLicense: %2$s</string>
     <string name="fab_record_hint">Start recording</string>
     <string name="recording_failed_toast">Screen recording failed.</string>
     <string name="screenrecording_already_active_toast">Screen recording session already active</string>

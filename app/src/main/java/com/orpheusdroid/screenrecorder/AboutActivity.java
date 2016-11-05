@@ -24,11 +24,13 @@ public class AboutActivity extends AppCompatActivity {
         TextView appVersion = (TextView) findViewById(R.id.versionTxt);
         TextView iconCredit = (TextView) findViewById(R.id.icon_credit_tv);
         TextView dirChooserCredit = (TextView) findViewById(R.id.dir_chooser_lib_credit_tv);
+        TextView openSourceInfo = (TextView) findViewById(R.id.opensource_info_tv);
 
         iconCredit.setText(getString(R.string.app_icon_credit_Niko, "Niko Hörkkö", "http://nikosite.net"));
         dirChooserCredit.setText(getString(R.string.directory_chooser_library_credit, "Lemberg",
                 "https://github.com/lemberg/directory-selector-dialog-preference",
                 "MIT Opensource License"));
+        openSourceInfo.setText(getString(R.string.opensource_info, "https://github.com/vijai1996/screenrecorder", "GNU AGPLv3"));
 
         //Let's build the copyright text using String builder
         StringBuilder copyRight = new StringBuilder();
