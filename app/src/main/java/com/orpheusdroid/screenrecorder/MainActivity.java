@@ -150,10 +150,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Result for system windows permission required to show floating controls
-        if(requestCode == Const.SYSTEM_WINDOWS_CODE) {
-            setSystemWindowsPermissionResult();
-            return;
-        }
+        setSystemWindowsPermissionResult();
 
         //The user has denied permission for screen mirroring. Let's notify the user
         if (resultCode == RESULT_CANCELED) {
