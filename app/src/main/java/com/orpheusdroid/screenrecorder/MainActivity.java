@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Result for system windows permission required to show floating controls
-        if(resultCode == Const.SYSTEM_WINDOWS_CODE) {
+        if(requestCode == Const.SYSTEM_WINDOWS_CODE) {
             setSystemWindowsPermissionResult();
             return;
         }
