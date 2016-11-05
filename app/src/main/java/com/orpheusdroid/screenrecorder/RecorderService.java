@@ -62,7 +62,7 @@ import java.util.Date;
  * Created by vijai on 12-10-2016.
  */
 //TODO: Update icons for notifcation
-public class RecorderService extends Service {
+public class RecorderService extends Service{
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static int WIDTH, HEIGHT, FPS, DENSITY_DPI;
     private static int BITRATE;
@@ -173,6 +173,7 @@ public class RecorderService extends Service {
         NotificationCompat.Action action = new NotificationCompat.Action(android.R.drawable.ic_media_play,
                 getString(R.string.screen_recording_notification_action_resume), precordResumeIntent);
         updateNotification(createNotification(action).setUsesChronometer(false).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
+        Toast.makeText(this, R.string.screen_recording_paused_toast, Toast.LENGTH_SHORT).show();
     }
 
     @TargetApi(24)
@@ -190,6 +191,7 @@ public class RecorderService extends Service {
                 getString(R.string.screen_recording_notification_action_pause), precordPauseIntent);
         updateNotification(createNotification(action).setUsesChronometer(true)
                 .setWhen((System.currentTimeMillis() - elapsedTime)).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
+        Toast.makeText(this, R.string.screen_recording_resumed_toast, Toast.LENGTH_SHORT).show();
     }
 
     //Virtual display created by mirroring the actual physical display
@@ -263,7 +265,7 @@ public class RecorderService extends Service {
                 .putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(SAVEPATH)))
                 .setType("video/mp4");
         PendingIntent sharePendingIntent = PendingIntent.getActivity(this, 0, Intent.createChooser(
-                Shareintent, getString(R.string.share_intent_title)), 0);
+                Shareintent, getString(R.string.share_intent_title)), PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder shareNotification = new NotificationCompat.Builder(this)
                 .setContentTitle(getString(R.string.share_intent_notification_title))
                 .setContentText(getString(R.string.share_intent_notification_content))
