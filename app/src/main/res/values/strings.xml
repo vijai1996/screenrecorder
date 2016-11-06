@@ -9,14 +9,14 @@
     <string name="preference_audio_record_title">Record audio</string>
     <string name="preference_audio_record_summary">Records audio from mic along with screen video</string>
     <string name="preference_save_location_title">Save location</string>
-    <string name="res_key">resolution</string>
-    <string name="fps_key">fps</string>
-    <string name="bitrate_key">bitrate</string>
-    <string name="audiorec_key">audiorec</string>
-    <string name="savelocation_key">savelocation</string>
-    <string name="filename_key">filename</string>
+    <string name="res_key" translatable="false">resolution</string>
+    <string name="fps_key" translatable="false">fps</string>
+    <string name="bitrate_key" translatable="false">bitrate</string>
+    <string name="audiorec_key" translatable="false">audiorec</string>
+    <string name="savelocation_key" translatable="false">savelocation</string>
+    <string name="filename_key" translatable="false">filename</string>
     <string name="preference_filename_format_title">File name format</string>
-    <string name="fileprefix_key">fileprefix</string>
+    <string name="fileprefix_key" translatable="false">fileprefix</string>
     <string name="preference_filename_prefix_title">File name prefix</string>
     <string name="storage_permission_request_title">Allow Storage Permission</string>
     <string name="storage_permission_request_summary">Write permission to storage is required to save the recorded video.</string>
@@ -45,7 +45,7 @@
     <string name="shortcut_short_label">Record</string>
     <string name="shortcut_long_label">Quick Record</string>
     <string name="shortcut_disabled_message">Recording disabled</string>
-    <string name="app_shortcut_action">com.orpheusdroid.screenrecorder.RECORD</string>
+    <string name="app_shortcut_action" translatable="false">com.orpheusdroid.screenrecorder.RECORD</string>
     <string name="screen_recording_started_toast">Screen recording started</string>
     <string name="screen_recording_stopped_toast">Screen Recording stopped</string>
     <string name="screen_recording_resumed_toast">Screen Recording resumed</string>
@@ -57,5 +57,5 @@
     <string name="share_intent_notification_action_text">Share</string>
     <string name="preference_floating_control_title">Use Floating Controls</string>
     <string name="preference_floating_control_summary">Enable/Disable floating controls which draws over every screen</string>
-    <string name="preference_floating_control_key">floating_controls</string>
+    <string name="preference_floating_control_key" translatable="false">floating_controls</string>
 </resources>
