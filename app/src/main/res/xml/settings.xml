@@ -74,7 +74,7 @@
             android:summary="@string/preference_floating_control_summary"
             android:key="@string/preference_floating_control_key"
             android:defaultValue="false" />
-        <ListPreference
+        <Preference
             android:title=""
             android:summary=""
             android:visibility="invisible" />
