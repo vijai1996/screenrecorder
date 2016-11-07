@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2016. Vijai Chandra Prasad R.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see http://www.gnu.org/licenses
+  -->
+
+<resources>
+    <string name="app_name" translatable="false">ScreenCam</string>
+    <string name="preference_resolution_title">Разрешение</string>
+    <string name="preference_resolution_summary">Выберите разрешение записи</string>
+    <string name="preference_fps_title">Частота кадров</string>
+    <string name="preference_fps_summary">Выберите частоту записи кадров</string>
+    <string name="preference_bit_title">Битрейт</string>
+    <string name="preference_bit_summary">Настройте битрейт</string>
+    <string name="preference_audio_record_title">Запись звука</string>
+    <string name="preference_audio_record_summary">Записывать звук с микрофона помимо видео с экрана</string>
+    <string name="preference_save_location_title">Место сохранения</string>
+    <string name="res_key" translatable="false">resolution</string>
+    <string name="fps_key" translatable="false">fps</string>
+    <string name="bitrate_key" translatable="false">bitrate</string>
+    <string name="audiorec_key" translatable="false">audiorec</string>
+    <string name="savelocation_key" translatable="false">savelocation</string>
+    <string name="filename_key" translatable="false">filename</string>
+    <string name="preference_filename_format_title">Формат наименования файлов</string>
+    <string name="fileprefix_key" translatable="false">fileprefix</string>
+    <string name="preference_filename_prefix_title">Приставка в названии</string>
+    <string name="storage_permission_request_title">Разрешите запись в хранилище</string>
+    <string name="storage_permission_request_summary">Для сохранения записанных видео необходимо соответствующее разрешение.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Отмена</string>
+    <string name="screen_recording_permission_denied">Разрешение на запись экрана не предоставлено</string>
+    <string name="screen_recording_notification_title">Запись экрана</string>
+    <string name="screen_recording_notification_action_stop">Стоп</string>
+    <string name="screen_recording_notification_action_pause">Пауза</string>
+    <string name="screen_recording_notification_action_resume">Продолжить</string>
+    <string name="fatal_exception_message">ScreenRecorder: Критическая ошибка. Был отправлен отчет</string>
+    <string name="about_activity_label">О приложении</string>
+    <string name="snackbar_storage_permission_message">Предоставьте разрешение на запись</string>
+    <string name="snackbar_storage_permission_action_enable">РАЗРЕШИТЬ</string>
+    <string name="menu_about_title">О приложении</string>
+    <string name="about_credits">Авторство</string>
+    <string name="about_libraries">Библиотеки</string>
+    <string name="about_opensource">Открытый исходный код</string>
+    <string name="app_icon_credit_Niko">Значки в приложении от %1$s\n\nСайт: %2$s</string>
+    <string name="directory_chooser_library_credit">Выбор папок от %1$s\n\n Ссылка на Github: %2$s\n\nLicense: %3$s</string>
+    <string name="opensource_info">Приложение имеет открытый исходный код, доступный по ссылке: \n\nGithub: %1$s\n\nЛицензия: %2$s</string>
+    <string name="fab_record_hint">Начать запись</string>
+    <string name="recording_failed_toast">Запись экрана не удалась</string>
+    <string name="screenrecording_already_active_toast">Запись экрана уже ведется</string>
+    <string name="large_resolution_selected_toast">Выбранное разрешение больше, чем у экрана устройства. Применено разрешение %1$s</string>
+    <string name="shortcut_short_label">Запись</string>
+    <string name="shortcut_long_label">Быстрая запись</string>
+    <string name="shortcut_disabled_message">Запись отключена</string>
+    <string name="app_shortcut_action" translatable="false">com.orpheusdroid.screenrecorder.RECORD</string>
+    <string name="screen_recording_started_toast">Запись экрана началась</string>
+    <string name="screen_recording_stopped_toast">Запись экрана прекращена</string>
+    <string name="screen_recording_resumed_toast">Запись экрана продолжается</string>
+    <string name="screen_recording_paused_toast">Запись экрана приостановлена</string>
+    <string name="fab_stop_hint">Прекратить запись</string>
+    <string name="share_intent_title">Поделиться записью</string>
+    <string name="share_intent_notification_title">Поделитесь записанным видео</string>
+    <string name="share_intent_notification_content">коснитесь, чтоб поделиться записанным видео</string>
+    <string name="share_intent_notification_action_text">Поделиться</string>
+    <string name="preference_floating_control_title">панель управление</string>
+    <string name="preference_floating_control_summary">Отображение панели управления поверх происходящего на экране</string>
+    <string name="preference_floating_control_key" translatable="false">floating_controls</string>
+</resources>
