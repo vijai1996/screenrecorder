@@ -46,5 +46,6 @@
     <string name="share_intent_notification_title">Partager la vidéo enregistrée</string>
     <string name="share_intent_notification_content">Appuyez pour partager la vidéo enregistrée</string>
     <string name="share_intent_notification_action_text">Partager</string>
+    <string name="preference_floating_control_title">Utiliser les Contrôles Flottants</string>
     <string name="preference_floating_control_summary">Activer/Désactiver les contrôles flottants qui survolent tous les écrans</string>
 </resources>
