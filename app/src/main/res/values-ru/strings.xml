@@ -17,7 +17,6 @@
   -->
 
 <resources>
-    <string name="app_name" translatable="false">ScreenCam</string>
     <string name="preference_resolution_title">Разрешение</string>
     <string name="preference_resolution_summary">Выберите разрешение записи</string>
     <string name="preference_fps_title">Частота кадров</string>
@@ -27,14 +26,7 @@
     <string name="preference_audio_record_title">Запись звука</string>
     <string name="preference_audio_record_summary">Записывать звук с микрофона помимо видео с экрана</string>
     <string name="preference_save_location_title">Место сохранения</string>
-    <string name="res_key" translatable="false">resolution</string>
-    <string name="fps_key" translatable="false">fps</string>
-    <string name="bitrate_key" translatable="false">bitrate</string>
-    <string name="audiorec_key" translatable="false">audiorec</string>
-    <string name="savelocation_key" translatable="false">savelocation</string>
-    <string name="filename_key" translatable="false">filename</string>
     <string name="preference_filename_format_title">Формат наименования файлов</string>
-    <string name="fileprefix_key" translatable="false">fileprefix</string>
     <string name="preference_filename_prefix_title">Приставка в названии</string>
     <string name="storage_permission_request_title">Разрешите запись в хранилище</string>
     <string name="storage_permission_request_summary">Для сохранения записанных видео необходимо соответствующее разрешение.</string>
@@ -63,7 +55,6 @@
     <string name="shortcut_short_label">Запись</string>
     <string name="shortcut_long_label">Быстрая запись</string>
     <string name="shortcut_disabled_message">Запись отключена</string>
-    <string name="app_shortcut_action" translatable="false">com.orpheusdroid.screenrecorder.RECORD</string>
     <string name="screen_recording_started_toast">Запись экрана началась</string>
     <string name="screen_recording_stopped_toast">Запись экрана прекращена</string>
     <string name="screen_recording_resumed_toast">Запись экрана продолжается</string>
@@ -75,5 +66,8 @@
     <string name="share_intent_notification_action_text">Поделиться</string>
     <string name="preference_floating_control_title">панель управление</string>
     <string name="preference_floating_control_summary">Отображение панели управления поверх происходящего на экране</string>
-    <string name="preference_floating_control_key" translatable="false">floating_controls</string>
+    <string name="tab_settings_title">Settings</string>
+    <string name="tab_videos_title">Videos</string>
+    <string name="video_list_permission_denied_message">Storage permission denied</string>
+    <string name="video_list_no_video_message">No videos available</string>
 </resources>

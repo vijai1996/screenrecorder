@@ -58,4 +58,8 @@
     <string name="preference_floating_control_title">Use Floating Controls</string>
     <string name="preference_floating_control_summary">Enable/Disable floating controls which draws over every screen</string>
     <string name="preference_floating_control_key" translatable="false">floating_controls</string>
+    <string name="tab_settings_title">Settings</string>
+    <string name="tab_videos_title">Videos</string>
+    <string name="video_list_permission_denied_message">Storage permission denied</string>
+    <string name="video_list_no_video_message">No videos available</string>
 </resources>

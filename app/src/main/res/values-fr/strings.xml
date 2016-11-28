@@ -48,4 +48,8 @@
     <string name="share_intent_notification_action_text">Partager</string>
     <string name="preference_floating_control_title">Utiliser les Contrôles Flottants</string>
     <string name="preference_floating_control_summary">Activer/Désactiver les contrôles flottants qui survolent tous les écrans</string>
+    <string name="tab_settings_title">Settings</string>
+    <string name="tab_videos_title">Videos</string>
+    <string name="video_list_permission_denied_message">Storage permission denied</string>
+    <string name="video_list_no_video_message">No videos available</string>
 </resources>
