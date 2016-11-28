@@ -40,6 +40,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.ls.directoryselector.DirectoryPreference;
+import com.ls.directoryselector.OnDirectoryChangeListerner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ import java.util.Arrays;
  */
 
 public class SettingsPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener
-        , PermissionResultListener {
+        , PermissionResultListener, OnDirectoryChangeListerner {
 
     SharedPreferences prefs;
     private CheckBoxPreference recaudio;
@@ -104,6 +105,9 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         //If floating controls is checked, check for system windows permission
         if (floatingControl.isChecked())
             requestSystemWindowsPermission();
+
+        //set callback for directory change
+        dirChooser.setOnDirectoryChangeListerner(this);
     }
 
     private void updateResolution(ListPreference res) {
@@ -221,6 +225,8 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
     private void requestSystemWindowsPermission(){
         if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             activity.requestSystemWindowsPermission();
+        } else {
+            Log.d(Const.TAG, "API is < 23");
         }
     }
 
@@ -273,5 +279,12 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
             default:
                 Log.d(Const.TAG, "Unknown permission request with request code: " + requestCode);
         }
+    }
+
+    @Override
+    public void onDirectoryChanged(String directory) {
+        //Communicate to mainactivity that save directory has changed
+        ((MainActivity)getActivity()).onDirectoryChanged();
+        Log.d(Const.TAG, "In settings fragment");
     }
 }

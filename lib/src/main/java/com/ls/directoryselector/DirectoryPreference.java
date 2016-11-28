@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +22,7 @@ import java.io.File;
 
 public class DirectoryPreference extends DialogPreference {
     private File ret = null;
+    private static OnDirectoryChangeListerner onDirectoryChangeListerner;
     private final DirectorySelector.Callback dirSelectorCallback = new DirectorySelector.Callback() {
         @Override
         public void onNewDirButtonClicked() {
@@ -50,6 +52,10 @@ public class DirectoryPreference extends DialogPreference {
 
     public void setRet(String dir){
         ret = new File(dir);
+    }
+
+    public void setOnDirectoryChangeListerner(OnDirectoryChangeListerner onDirectoryChangeListerner) {
+        DirectoryPreference.onDirectoryChangeListerner = onDirectoryChangeListerner;
     }
 
     public DirectoryPreference(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -212,6 +218,8 @@ public class DirectoryPreference extends DialogPreference {
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
             dest.writeString(selectedDir);
+            Log.d("Directory selected OK: ", selectedDir);
+            onDirectoryChangeListerner.onDirectoryChanged(selectedDir);
             dest.writeBundle(dialogState);
         }
     }
