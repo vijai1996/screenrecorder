@@ -49,8 +49,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.orpheusdroid.screenrecorder.Const.RecordingState;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (isServiceRunning(RecorderService.class)) {
             Log.d(Const.TAG, "service is running");
-            changeFabIcon(RecordingState.RECORDING);
         }
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,21 +111,14 @@ public class MainActivity extends AppCompatActivity {
                     startActivityForResult(mProjectionManager.createScreenCaptureIntent(), SCREEN_RECORD_REQUEST_CODE);
                 } else if (isServiceRunning(RecorderService.class)) {
                     //stop recording if the service is already active and recording
-                    Intent stopRecording = new Intent(MainActivity.this, RecorderService.class);
-                    stopRecording.setAction(Const.SCREEN_RECORDING_STOP);
-                    startService(stopRecording);
-                    changeFabIcon(RecordingState.STOPPED);
+                    Toast.makeText(MainActivity.this, "Screen already recording", Toast.LENGTH_SHORT).show();
                 }
             }
         });
         fab.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                //Show hint toast based on recording status
-                if (isServiceRunning(RecorderService.class))
-                    Toast.makeText(MainActivity.this, R.string.fab_record_hint, Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(MainActivity.this, R.string.fab_stop_hint, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.fab_record_hint, Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
@@ -165,15 +155,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //Method to change FAB icon based on recording status
-    private void changeFabIcon(RecordingState status) {
-        if (status.equals(RecordingState.RECORDING)) {
-            fab.setImageResource(R.drawable.ic_notification_stop);
-        } else {
-            fab.setImageResource(R.drawable.fab_record);
-        }
-    }
-
     //Method to check if the service is running
     private boolean isServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -208,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
 
         /*If code reaches this point, congratulations! The user has granted screen mirroring permission
         * Let us set the recorderservice intent with relevant data and start service*/
-        changeFabIcon(RecordingState.RECORDING);
         Intent recorderService = new Intent(this, RecorderService.class);
         recorderService.setAction(Const.SCREEN_RECORDING_START);
         recorderService.putExtra(Const.RECORDER_INTENT_DATA, data);
