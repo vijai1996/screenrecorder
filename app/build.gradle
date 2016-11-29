@@ -24,8 +24,8 @@ android {
         applicationId "com.orpheusdroid.screenrecorder"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 7
-        versionName "1.2.1 BETA"
+        versionCode 8
+        versionName "1.5.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
@@ -35,7 +35,7 @@ android {
         release {
             minifyEnabled true
             useProguard true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
