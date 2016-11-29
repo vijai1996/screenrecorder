@@ -78,16 +78,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
         //Arbitrary "Write to external storage" permission since this permission is most important for the app
-        //requestPermissionStorage();
-
-        //final boolean isServiceRunning = isServiceRunning(RecorderService.class);
-        //Let's add SettingsPreferenceFragment to the activity
-        /*FragmentManager mFragmentManager = getFragmentManager();
-        FragmentTransaction mFragmentTransaction = mFragmentManager
-                .beginTransaction();
-        SettingsPreferenceFragment mPrefsFragment = new SettingsPreferenceFragment();
-        mFragmentTransaction.replace(R.id.settingsFragment, mPrefsFragment);
-        mFragmentTransaction.commit();*/
+        requestPermissionStorage();
 
         //Acquiring media projection service to start screen mirroring
         mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
