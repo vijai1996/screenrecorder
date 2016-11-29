@@ -170,12 +170,14 @@ public class MainActivity extends AppCompatActivity {
 
         //The user has denied permission for screen mirroring. Let's notify the user
         if (resultCode == RESULT_CANCELED) {
-            Toast.makeText(this,
-                    getString(R.string.screen_recording_permission_denied), Toast.LENGTH_SHORT).show();
+            if (requestCode != Const.SYSTEM_WINDOWS_CODE)
+                Toast.makeText(this,
+                        getString(R.string.screen_recording_permission_denied), Toast.LENGTH_SHORT).show();
             //Return to home screen if the app was started from app shortcut
             if (getIntent().getAction().equals(getString(R.string.app_shortcut_action)))
                 this.finish();
             return;
+
         }
 
         /*If code reaches this point, congratulations! The user has granted screen mirroring permission
