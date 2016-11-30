@@ -213,36 +213,34 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         //Add sections depending on the date the video is recorded to array list
         private ArrayList<Video> addSections(ArrayList<Video> videos) {
             ArrayList<Video>videosWithSections = new ArrayList<>();
+            Date currentSection = new Date();
             Log.d(Const.TAG, "Original Length: " + videos.size());
-            for (int i = 1; i < videos.size(); i++) {
-                Date currentDate = videos.get(i).getLastModified();
-                Date prevDate = videos.get(i-1).getLastModified();
-                int diff = getDayDifference(prevDate, currentDate);
-                if (diff > 0){
-                    videosWithSections.add(new Video(true, videos.get(i-1).getLastModified()));
-                    videosWithSections.add(videos.get(i-1));
-                } else {
-                    videosWithSections.add(videos.get(i-1));
+            for (int i = 0; i < videos.size(); i++) {
+                Video video = videos.get(i);
+                //Add the first section arbitrarily
+                if (i==0){
+                    videosWithSections.add(new Video(true, video.getLastModified()));
+                    videosWithSections.add(video);
+                    currentSection = video.getLastModified();
+                    continue;
                 }
+                if (addNewSection(currentSection, video.getLastModified())){
+                    videosWithSections.add(new Video(true, video.getLastModified()));
+                    currentSection = video.getLastModified();
+                }
+                videosWithSections.add(video);
             }
             Log.d(Const.TAG, "Length with sections: " + videosWithSections.size());
             return videosWithSections;
         }
 
-        //Get difference between 2 days
-        private int getDayDifference(Date current, Date next)
+        //Check if a new Section is to be added by comparing the difference of the section date
+        // and the video's last modified date
+        private boolean addNewSection(Date current, Date next)
         {
-            Calendar sDate = toCalendar(current.getTime());
-            Calendar eDate = toCalendar(next.getTime());
-
-            // Get the represented date in milliseconds
-            long milis1 = sDate.getTimeInMillis();
-            long milis2 = eDate.getTimeInMillis();
-
-            // Calculate difference in milliseconds
-            long diff = Math.abs(milis2 - milis1);
-
-            return (int)Math.abs(diff / (24 * 60 * 60 * 1000));
+            Calendar currentSectionDate = toCalendar(current.getTime());
+            Calendar nextVideoDate = toCalendar(next.getTime());
+            return currentSectionDate.get(Calendar.DATE) - nextVideoDate.get(Calendar.DATE) > 0;
         }
 
         //Generate and return new Calendar object
