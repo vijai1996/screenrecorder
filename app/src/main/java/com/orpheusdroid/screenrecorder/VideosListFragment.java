@@ -46,6 +46,9 @@ import com.orpheusdroid.screenrecorder.adapter.VideoRecyclerAdapter;
 import java.io.File;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -130,10 +133,17 @@ public class VideosListFragment extends Fragment implements PermissionResultList
     //Init recyclerview once the videos list is ready
     private void setRecyclerView(ArrayList<Video> videos) {
         videoRV.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+        final GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
         videoRV.setLayoutManager(layoutManager);
-        VideoRecyclerAdapter adapter = new VideoRecyclerAdapter(getActivity(), videos);
+        final VideoRecyclerAdapter adapter = new VideoRecyclerAdapter(getActivity(), videos);
         videoRV.setAdapter(adapter);
+        //Set the span to 1 (width to match the screen) if the view type is section
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return adapter.isSection(position) ? layoutManager.getSpanCount() : 1;
+            }
+        });
     }
 
     //Permission result callback method
@@ -154,7 +164,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
     }
 
     //Clear the videos ArrayList once the save directory is changed which forces reloading of videos from new directory
-    public void removeVideosList(){
+    public void removeVideosList() {
         videosList.clear();
         Log.d(Const.TAG, "Reached video fragment");
     }
@@ -186,16 +196,65 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         protected void onPostExecute(ArrayList<Video> videos) {
             //If the directory has no videos, remove recyclerview from rootview and show empty message.
             // Else set recyclerview and remove message textview
-            if (videos.isEmpty()){
+            if (videos.isEmpty()) {
                 videoRV.setVisibility(View.GONE);
                 message.setVisibility(View.VISIBLE);
             } else {
-                setRecyclerView(videos);
+                //Sort the videos in a descending order
+                Collections.sort(videos, Collections.<Video>reverseOrder());
+                setRecyclerView(addSections(videos));
                 videoRV.setVisibility(View.VISIBLE);
                 message.setVisibility(View.GONE);
             }
             //Cancel the progress dialog
             progress.cancel();
+        }
+
+        //Add sections depending on the date the video is recorded to array list
+        private ArrayList<Video> addSections(ArrayList<Video> videos) {
+            ArrayList<Video>videosWithSections = new ArrayList<>();
+            Log.d(Const.TAG, "Original Length: " + videos.size());
+            for (int i = 1; i < videos.size(); i++) {
+                Date currentDate = videos.get(i).getLastModified();
+                Date prevDate = videos.get(i-1).getLastModified();
+                int diff = getDayDifference(prevDate, currentDate);
+                if (diff > 0){
+                    videosWithSections.add(new Video(true, videos.get(i-1).getLastModified()));
+                    videosWithSections.add(videos.get(i-1));
+                } else {
+                    videosWithSections.add(videos.get(i-1));
+                }
+            }
+            Log.d(Const.TAG, "Length with sections: " + videosWithSections.size());
+            return videosWithSections;
+        }
+
+        //Get difference between 2 days
+        private int getDayDifference(Date current, Date next)
+        {
+            Calendar sDate = toCalendar(current.getTime());
+            Calendar eDate = toCalendar(next.getTime());
+
+            // Get the represented date in milliseconds
+            long milis1 = sDate.getTimeInMillis();
+            long milis2 = eDate.getTimeInMillis();
+
+            // Calculate difference in milliseconds
+            long diff = Math.abs(milis2 - milis1);
+
+            return (int)Math.abs(diff / (24 * 60 * 60 * 1000));
+        }
+
+        //Generate and return new Calendar object
+        private Calendar toCalendar(long timestamp)
+        {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(timestamp);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            return calendar;
         }
 
         @Override
@@ -216,7 +275,8 @@ public class VideosListFragment extends Fragment implements PermissionResultList
                 if (!file.isDirectory() && isVideoFile(file.getPath())) {
                     videosList.add(new Video(file.getName(),
                             Uri.fromFile(file),
-                            getBitmap(file)));
+                            getBitmap(file),
+                            new Date(file.lastModified())));
                     //Update progress dialog
                     publishProgress(i);
                 }

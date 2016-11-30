@@ -20,23 +20,29 @@ package com.orpheusdroid.screenrecorder.adapter;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import java.util.Date;
+
 /**
  * Created by vijai on 07-11-2016.
  */
 
-public class Video {
+public class Video implements Comparable<Video> {
     private String FileName;
     private Uri file;
     private Bitmap thumbnail;
+    private Date lastModified;
+    private boolean isSection = false;
 
-    public Video(String fileName, Uri file, Bitmap thumbnail) {
+    public Video(boolean isSection, Date lastModified) {
+        this.isSection = isSection;
+        this.lastModified = lastModified;
+    }
+
+    public Video(String fileName, Uri file, Bitmap thumbnail, Date lastModified) {
         FileName = fileName;
         this.file = file;
         this.thumbnail = thumbnail;
-    }
-
-    public void setThumbnail(Bitmap thumbnail) {
-        this.thumbnail = thumbnail;
+        this.lastModified = lastModified;
     }
 
     public String getFileName() {
@@ -49,5 +55,18 @@ public class Video {
 
     public Bitmap getThumbnail() {
         return thumbnail;
+    }
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public boolean isSection() {
+        return isSection;
+    }
+
+    @Override
+    public int compareTo(Video video) {
+        return getLastModified().compareTo(video.getLastModified());
     }
 }
