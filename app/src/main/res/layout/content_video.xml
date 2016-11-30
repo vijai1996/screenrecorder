@@ -58,15 +58,17 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/detail_rv"
             android:background="#eaeaea">
 
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/share"
-                android:src="@android:drawable/ic_menu_share"
-                android:background="@android:color/transparent"
+                android:id="@+id/ic_overflow"
+                android:src="@drawable/ic_more_vert_black_48dp"
+                android:background="@drawable/ic_overflow_shadow"
                 android:gravity="end"
+                android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true" />
             <TextView
                 android:id="@+id/fileName"
@@ -74,11 +76,12 @@
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
                 android:textColor="@color/colorAccent"
-                android:layout_toStartOf="@id/share"
+                android:layout_toStartOf="@id/ic_overflow"
                 android:text="TEST"
                 android:gravity="start"
                 android:layout_alignParentStart="true"
                 android:paddingBottom="8dp"
+                android:paddingStart="8dp"
                 android:paddingTop="8dp" />
         </RelativeLayout>
     </LinearLayout>

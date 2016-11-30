@@ -20,15 +20,18 @@ package com.orpheusdroid.screenrecorder.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.FileProvider;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.orpheusdroid.screenrecorder.R;
 
@@ -95,6 +98,29 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 } else
                     itemViewHolder.iv_thumbnail.setImageResource(0);
 
+                itemViewHolder.overflow.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        PopupMenu popupMenu = new PopupMenu(context, view);
+                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                switch (item.getItemId()){
+                                    case R.id.share:
+                                        shareVideo(itemViewHolder.getAdapterPosition());
+                                        break;
+                                    case R.id.delete:
+                                        deleteVideo(itemViewHolder.getAdapterPosition());
+                                        break;
+                                }
+                                return true;
+                            }
+                        });
+                        popupMenu.inflate(R.menu.popupmenu);
+                        popupMenu.show();
+                    }
+                });
+
                 //Show user a chooser to play the video with
                 itemViewHolder.videoCard.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -108,23 +134,32 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                         context.startActivity(openVideoIntent);
                     }
                 });
-
-                //Show chooser to the user to select an app to share the video with
-                itemViewHolder.shareBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Log.d("Videos List", "share position clicked: " + itemViewHolder.getAdapterPosition());
-                        Intent Shareintent = new Intent(Intent.ACTION_SEND)
-                                .setDataAndType(videos.get(itemViewHolder.getAdapterPosition()).getFile(), "video/*");
-                        context.startActivity(Intent.createChooser(Shareintent,
-                                context.getString(R.string.share_intent_notification_title)));
-                    }
-                });
                 break;
             case VIEW_SECTION:
                 SectionViewHolder sectionViewHolder = (SectionViewHolder) holder;
                 sectionViewHolder.section.setText(generateSectionTitle(videos.get(position).getLastModified()));
                 break;
+        }
+    }
+
+    private void shareVideo(int position){
+        Log.d("Videos List", "share position clicked: " + position);
+        Intent Shareintent = new Intent()
+                .setAction(Intent.ACTION_SEND)
+                .setType("video/*")
+                .putExtra(Intent.EXTRA_STREAM, videos.get(position).getFile());
+        context.startActivity(Intent.createChooser(Shareintent,
+                context.getString(R.string.share_intent_notification_title)));
+    }
+
+    private void deleteVideo(int position){
+        Log.d("Videos List", "delete position clicked: " + position);
+        File file = new File(videos.get(position).getFile().getPath());
+        if (file.delete()){
+            Toast.makeText(context, "File deleted successfully", Toast.LENGTH_SHORT).show();
+            videos.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, videos.size());
         }
     }
 
@@ -181,7 +216,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         private TextView tv_fileName;
         private ImageView iv_thumbnail;
         private RelativeLayout videoCard;
-        private ImageButton shareBtn;
+        private ImageButton overflow;
 
         ItemViewHolder(View view) {
             super(view);
@@ -189,7 +224,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             iv_thumbnail = (ImageView) view.findViewById(R.id.thumbnail);
             iv_thumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
             videoCard = (RelativeLayout) view.findViewById(R.id.videoCard);
-            shareBtn = (ImageButton) view.findViewById(R.id.share);
+            overflow = (ImageButton) view.findViewById(R.id.ic_overflow);
         }
     }
 
