@@ -397,8 +397,9 @@ public class RecorderService extends Service{
             indexFile();
             Log.i(Const.TAG, "MediaProjection Stopped");
         } catch (RuntimeException e) {
-            //TODO: Delete the created file as it would be corrupted
             Log.e(Const.TAG, "Fatal exception! Destroying media projection failed." + "\n" + e.getMessage());
+            if (new File(SAVEPATH).delete())
+                Log.d(Const.TAG, "Corrupted file delete successful");
             Toast.makeText(this, getString(R.string.fatal_exception_message), Toast.LENGTH_SHORT).show();
         } finally {
             mMediaRecorder.reset();
