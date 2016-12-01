@@ -48,4 +48,8 @@
     <string name="share_intent_notification_action_text">共有</string>
     <string name="preference_floating_control_title">フローティングコントロールを使用する</string>
     <string name="preference_floating_control_summary">それぞれの画面で描画されるフローティングコントロールを有効/無効にします</string>
+    <string name="tab_settings_title">設定</string>
+    <string name="tab_videos_title">ビデオ</string>
+    <string name="video_list_permission_denied_message">ストレージのアクセス許可が拒否されました</string>
+    <string name="video_list_no_video_message">ビデオは利用できません</string>
 </resources>
