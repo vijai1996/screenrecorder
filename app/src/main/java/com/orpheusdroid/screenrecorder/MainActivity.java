@@ -18,22 +18,29 @@
 package com.orpheusdroid.screenrecorder;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -43,6 +50,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static final String APPDIR = "screenrecorder";
@@ -51,9 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private MediaProjection mMediaProjection;
     private MediaProjectionManager mProjectionManager;
     private FloatingActionButton fab;
-    private enum Status{
-      RECORDING, STOPPED
-    }
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,32 +71,28 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
         //Arbitrary "Write to external storage" permission since this permission is most important for the app
         requestPermissionStorage();
-
-        //final boolean isServiceRunning = isServiceRunning(RecorderService.class);
-        //Let's add SettingsPreferenceFragment to the activity
-        FragmentManager mFragmentManager = getFragmentManager();
-        FragmentTransaction mFragmentTransaction = mFragmentManager
-                .beginTransaction();
-        SettingsPreferenceFragment mPrefsFragment = new SettingsPreferenceFragment();
-        mFragmentTransaction.replace(R.id.settingsFragment, mPrefsFragment);
-        mFragmentTransaction.commit();
 
         //Acquiring media projection service to start screen mirroring
         mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
         //Respond to app shortcut
-        if(getIntent().getAction() != null && getIntent().getAction().equals(getString(R.string.app_shortcut_action))){
+        if (getIntent().getAction() != null && getIntent().getAction().equals(getString(R.string.app_shortcut_action))) {
             startActivityForResult(mProjectionManager.createScreenCaptureIntent(), SCREEN_RECORD_REQUEST_CODE);
             return;
         }
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        if (isServiceRunning(RecorderService.class)){
-            Log.d(Const.TAG, "service is running" );
-            changeFabIcon(Status.RECORDING);
+        if (isServiceRunning(RecorderService.class)) {
+            Log.d(Const.TAG, "service is running");
         }
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,36 +100,50 @@ public class MainActivity extends AppCompatActivity {
                 if (mMediaProjection == null && !isServiceRunning(RecorderService.class)) {
                     //Request Screen recording permission
                     startActivityForResult(mProjectionManager.createScreenCaptureIntent(), SCREEN_RECORD_REQUEST_CODE);
-                } else if(isServiceRunning(RecorderService.class)){
+                } else if (isServiceRunning(RecorderService.class)) {
                     //stop recording if the service is already active and recording
-                    Intent stopRecording = new Intent(MainActivity.this, RecorderService.class);
-                    stopRecording.setAction(Const.SCREEN_RECORDING_STOP);
-                    startService(stopRecording);
-                    changeFabIcon(Status.STOPPED);
+                    Toast.makeText(MainActivity.this, "Screen already recording", Toast.LENGTH_SHORT).show();
                 }
             }
         });
         fab.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                //Show hint toast based on recording status
-                if (isServiceRunning(RecorderService.class))
-                    Toast.makeText(MainActivity.this, R.string.fab_record_hint, Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(MainActivity.this, R.string.fab_stop_hint, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.fab_record_hint, Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
 
     }
 
-    //Method to change FAB icon based on recording status
-    private void changeFabIcon(Status status){
-        if (status.equals(Status.RECORDING)){
-            fab.setImageResource(R.drawable.ic_notification_stop);
-        } else {
-            fab.setImageResource(R.drawable.fab_record);
-        }
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getFragmentManager());
+        adapter.addFragment(new SettingsPreferenceFragment(), getString(R.string.tab_settings_title));
+        adapter.addFragment(new VideosListFragment(), getString(R.string.tab_videos_title));
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        fab.show();
+                        break;
+                    case 1:
+                        fab.hide();
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     //Method to check if the service is running
@@ -147,19 +165,23 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        //Result for system windows permission required to show floating controls
+        setSystemWindowsPermissionResult();
+
         //The user has denied permission for screen mirroring. Let's notify the user
         if (resultCode == RESULT_CANCELED) {
-            Toast.makeText(this,
-                    getString(R.string.screen_recording_permission_denied), Toast.LENGTH_SHORT).show();
+            if (requestCode != Const.SYSTEM_WINDOWS_CODE)
+                Toast.makeText(this,
+                        getString(R.string.screen_recording_permission_denied), Toast.LENGTH_SHORT).show();
             //Return to home screen if the app was started from app shortcut
             if (getIntent().getAction().equals(getString(R.string.app_shortcut_action)))
                 this.finish();
             return;
+
         }
 
         /*If code reaches this point, congratulations! The user has granted screen mirroring permission
         * Let us set the recorderservice intent with relevant data and start service*/
-        changeFabIcon(Status.RECORDING);
         Intent recorderService = new Intent(this, RecorderService.class);
         recorderService.setAction(Const.SCREEN_RECORDING_START);
         recorderService.putExtra(Const.RECORDER_INTENT_DATA, data);
@@ -174,6 +196,13 @@ public class MainActivity extends AppCompatActivity {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && !appDir.isDirectory()) {
             appDir.mkdirs();
         }
+    }
+
+    //Update video list fragment once save directory has been changed
+    public void onDirectoryChanged(){
+        ViewPagerAdapter adapter =  (ViewPagerAdapter) viewPager.getAdapter();
+        ((VideosListFragment)adapter.getItem(1)).removeVideosList();
+        Log.d(Const.TAG, "reached main act");
     }
 
     /* Marshmallow style permission request.
@@ -191,13 +220,44 @@ public class MainActivity extends AppCompatActivity {
                                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                     Const.EXTDIR_REQUEST_CODE);
                         }
-                    });
+                    })
+                    .setCancelable(false);
 
             alert.create().show();
         }
     }
 
-    // Marshmallor style permission request for audio recording
+    //Permission on api below 23 are granted by default
+    @TargetApi(23)
+    public void requestSystemWindowsPermission() {
+        if (!Settings.canDrawOverlays(this)) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, Const.SYSTEM_WINDOWS_CODE);
+        }
+    }
+
+    //Pass the system windows permission result to settings fragment
+    @TargetApi(23)
+    private void setSystemWindowsPermissionResult() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Settings.canDrawOverlays(this)) {
+                mPermissionResultListener.onPermissionResult(Const.SYSTEM_WINDOWS_CODE,
+                        new String[]{"System Windows Permission"},
+                        new int[]{PackageManager.PERMISSION_GRANTED});
+            } else {
+                mPermissionResultListener.onPermissionResult(Const.SYSTEM_WINDOWS_CODE,
+                        new String[]{"System Windows Permission"},
+                        new int[]{PackageManager.PERMISSION_DENIED});
+            }
+        } else {
+                mPermissionResultListener.onPermissionResult(Const.SYSTEM_WINDOWS_CODE,
+                        new String[]{"System Windows Permission"},
+                        new int[]{PackageManager.PERMISSION_GRANTED});
+        }
+    }
+
+    // Marshmallow style permission request for audio recording
     public void requestPermissionAudio() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -256,6 +316,41 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //ViewPager class for tab view
+    class ViewPagerAdapter extends FragmentStatePagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return super.getItemPosition(object);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
         }
     }
 }

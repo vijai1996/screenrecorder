@@ -67,4 +67,16 @@
             android:summary="Enter a prefix for the saved file name"
             android:title="@string/preference_filename_prefix_title" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Misc">
+        <CheckBoxPreference
+            android:title="@string/preference_floating_control_title"
+            android:summary="@string/preference_floating_control_summary"
+            android:key="@string/preference_floating_control_key"
+            android:defaultValue="false" />
+        <Preference
+            android:title=""
+            android:summary=""
+            android:visibility="invisible" />
+    </PreferenceCategory>
 </PreferenceScreen>
