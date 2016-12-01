@@ -19,6 +19,7 @@ package com.orpheusdroid.screenrecorder.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -126,11 +127,16 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                     @Override
                     public void onClick(View view) {
                         Log.d("Videos List", "video position clicked: " + itemViewHolder.getAdapterPosition());
-                        Intent openVideoIntent = new Intent(Intent.ACTION_VIEW);
-                        openVideoIntent.setData(FileProvider.getUriForFile(context,
-                                context.getApplicationContext().getPackageName() +
-                                        ".provider", new File(videos.get(itemViewHolder.getAdapterPosition()).getFile().getPath())))
-                                .setType("video/*");
+                        Uri fileUri = FileProvider.getUriForFile(
+                                context,context.getPackageName()+
+                                ".provider",
+                                new File(videos.get(itemViewHolder.getAdapterPosition()).getFile().getPath()));
+                        Intent openVideoIntent = new Intent();
+                        openVideoIntent.setAction(Intent.ACTION_VIEW)
+                                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                .setDataAndType(
+                                        fileUri,
+                                        context.getContentResolver().getType(fileUri));
                         context.startActivity(openVideoIntent);
                     }
                 });

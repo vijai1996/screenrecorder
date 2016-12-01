@@ -240,7 +240,15 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         {
             Calendar currentSectionDate = toCalendar(current.getTime());
             Calendar nextVideoDate = toCalendar(next.getTime());
-            return currentSectionDate.get(Calendar.DATE) - nextVideoDate.get(Calendar.DATE) > 0;
+
+            // Get the represented date in milliseconds
+            long milis1 = currentSectionDate.getTimeInMillis();
+            long milis2 = nextVideoDate.getTimeInMillis();
+
+            // Calculate difference in milliseconds
+            int dayDiff = (int)Math.abs((milis2 - milis1) / (24 * 60 * 60 * 1000));
+            Log.d(Const.TAG, "Date diff is: " + (dayDiff));
+            return dayDiff > 0;
         }
 
         //Generate and return new Calendar object
