@@ -54,8 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String APPDIR = "screenrecorder";
-    private static final int SCREEN_RECORD_REQUEST_CODE = 1002;
+
     private PermissionResultListener mPermissionResultListener;
     private MediaProjection mMediaProjection;
     private MediaProjectionManager mProjectionManager;
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Respond to app shortcut
         if (getIntent().getAction() != null && getIntent().getAction().equals(getString(R.string.app_shortcut_action))) {
-            startActivityForResult(mProjectionManager.createScreenCaptureIntent(), SCREEN_RECORD_REQUEST_CODE);
+            startActivityForResult(mProjectionManager.createScreenCaptureIntent(), Const.SCREEN_RECORD_REQUEST_CODE);
             return;
         }
 
@@ -99,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mMediaProjection == null && !isServiceRunning(RecorderService.class)) {
                     //Request Screen recording permission
-                    startActivityForResult(mProjectionManager.createScreenCaptureIntent(), SCREEN_RECORD_REQUEST_CODE);
+                    startActivityForResult(mProjectionManager.createScreenCaptureIntent(), Const.SCREEN_RECORD_REQUEST_CODE);
                 } else if (isServiceRunning(RecorderService.class)) {
                     //stop recording if the service is already active and recording
                     Toast.makeText(MainActivity.this, "Screen already recording", Toast.LENGTH_SHORT).show();
@@ -160,17 +159,15 @@ public class MainActivity extends AppCompatActivity {
     //Overriding onActivityResult to capture screen mirroring permission request result
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode != SCREEN_RECORD_REQUEST_CODE) {
-            Log.e(Const.TAG, "Unknown request code: " + requestCode);
+
+        //Result for system windows permission required to show floating controls
+        if (requestCode == Const.SYSTEM_WINDOWS_CODE) {
+            setSystemWindowsPermissionResult();
             return;
         }
 
-        //Result for system windows permission required to show floating controls
-        setSystemWindowsPermissionResult();
-
         //The user has denied permission for screen mirroring. Let's notify the user
-        if (resultCode == RESULT_CANCELED) {
-            if (requestCode != Const.SYSTEM_WINDOWS_CODE)
+        if (resultCode == RESULT_CANCELED && requestCode == Const.SCREEN_RECORD_REQUEST_CODE) {
                 Toast.makeText(this,
                         getString(R.string.screen_recording_permission_denied), Toast.LENGTH_SHORT).show();
             //Return to home screen if the app was started from app shortcut
@@ -192,16 +189,16 @@ public class MainActivity extends AppCompatActivity {
 
     //Method to create app directory which is default directory for storing recorded videos
     private void createDir() {
-        File appDir = new File(Environment.getExternalStorageDirectory() + File.separator + APPDIR);
+        File appDir = new File(Environment.getExternalStorageDirectory() + File.separator + Const.APPDIR);
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && !appDir.isDirectory()) {
             appDir.mkdirs();
         }
     }
 
     //Update video list fragment once save directory has been changed
-    public void onDirectoryChanged(){
-        ViewPagerAdapter adapter =  (ViewPagerAdapter) viewPager.getAdapter();
-        ((VideosListFragment)adapter.getItem(1)).removeVideosList();
+    public void onDirectoryChanged() {
+        ViewPagerAdapter adapter = (ViewPagerAdapter) viewPager.getAdapter();
+        ((VideosListFragment) adapter.getItem(1)).removeVideosList();
         Log.d(Const.TAG, "reached main act");
     }
 
@@ -251,9 +248,9 @@ public class MainActivity extends AppCompatActivity {
                         new int[]{PackageManager.PERMISSION_DENIED});
             }
         } else {
-                mPermissionResultListener.onPermissionResult(Const.SYSTEM_WINDOWS_CODE,
-                        new String[]{"System Windows Permission"},
-                        new int[]{PackageManager.PERMISSION_GRANTED});
+            mPermissionResultListener.onPermissionResult(Const.SYSTEM_WINDOWS_CODE,
+                    new String[]{"System Windows Permission"},
+                    new int[]{PackageManager.PERMISSION_GRANTED});
         }
     }
 
