@@ -311,6 +311,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class));
                 return true;
+            case R.id.privacy_policy:
+                startActivity(new Intent(this, PrivacyPolicy.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
