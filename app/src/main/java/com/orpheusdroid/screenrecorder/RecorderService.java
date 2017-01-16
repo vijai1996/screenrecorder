@@ -352,7 +352,7 @@ public class RecorderService extends Service{
         BITRATE = Integer.parseInt(prefs.getString(getString(R.string.bitrate_key), "7130317"));
         mustRecAudio = prefs.getBoolean(getString(R.string.audiorec_key), false);
         String saveLocation = prefs.getString(getString(R.string.savelocation_key),
-                Environment.getExternalStorageDirectory() + File.separator + MainActivity.APPDIR);
+                Environment.getExternalStorageDirectory() + File.separator + Const.APPDIR);
         File saveDir = new File(saveLocation);
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && !saveDir.isDirectory()) {
             saveDir.mkdirs();
