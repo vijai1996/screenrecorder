@@ -64,4 +64,8 @@
     <string name="video_list_no_video_message">No videos available</string>
     <string name="alert_title_create_folder">Create Folder</string>
     <string name="alert_message_create_folder">Enter folder name</string>
+    <string name="prefs_category_video_settings_title">Video settings</string>
+    <string name="prefs_category_audio_settings_title">Audio settings</string>
+    <string name="prefs_category_save_options_title">Save options</string>
+    <string name="prefs_category_misc_title">Misc</string>
 </resources>
