@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
     <string name="about_activity_label">Über</string>
     <string name="about_credits">Danksagungen</string>
@@ -51,6 +52,6 @@
     <string name="storage_permission_request_title">Erlaube Speicherberechtigung</string>
     <string name="tab_settings_title">Settings</string>
     <string name="tab_videos_title">Videos</string>
-    <string name="video_list_permission_denied_message">Storage permission denied</string>
-    <string name="video_list_no_video_message">No videos available</string>
+    <string name="video_list_no_video_message">Keine Videos verfügbar</string>
+    <string name="video_list_permission_denied_message">Speicherzugriffsberechtigung verweigert</string>
 </resources>
