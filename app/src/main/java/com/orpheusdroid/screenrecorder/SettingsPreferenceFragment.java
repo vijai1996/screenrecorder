@@ -39,8 +39,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.ls.directoryselector.DirectoryPreference;
-import com.ls.directoryselector.OnDirectoryChangeListerner;
+import com.orpheusdroid.screenrecorder.folderpicker.FolderChooser;
+import com.orpheusdroid.screenrecorder.folderpicker.OnDirectorySelectedListerner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ import java.util.Arrays;
  */
 
 public class SettingsPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener
-        , PermissionResultListener, OnDirectoryChangeListerner {
+        , PermissionResultListener, OnDirectorySelectedListerner {
 
     SharedPreferences prefs;
     private CheckBoxPreference recaudio;
@@ -73,7 +73,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
 
         //Get Default save location from shared preference
         String defaultSaveLoc = (new File(Environment
-                .getExternalStorageDirectory() + File.separator + MainActivity.APPDIR)).getPath();
+                .getExternalStorageDirectory() + File.separator + Const.APPDIR)).getPath();
 
         //Get instances of all preferences
         prefs = getPreferenceScreen().getSharedPreferences();
@@ -81,20 +81,19 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         ListPreference fps = (ListPreference) findPreference(getString(R.string.fps_key));
         ListPreference bitrate = (ListPreference) findPreference(getString(R.string.bitrate_key));
         recaudio = (CheckBoxPreference) findPreference(getString(R.string.audiorec_key));
-        Preference saveloc = findPreference(getString(R.string.savelocation_key));
         ListPreference filenameFormat = (ListPreference) findPreference(getString(R.string.filename_key));
         EditTextPreference filenamePrefix = (EditTextPreference) findPreference(getString(R.string.fileprefix_key));
-        DirectoryPreference dirChooser = (DirectoryPreference) findPreference(getString(R.string.savelocation_key));
+        FolderChooser dirChooser = (FolderChooser) findPreference(getString(R.string.savelocation_key));
         floatingControl = (CheckBoxPreference) findPreference(getString(R.string.preference_floating_control_key));
         //Set previously chosen directory as initial directory
-        dirChooser.setRet(getValue(getString(R.string.savelocation_key), defaultSaveLoc));
+        dirChooser.setCurrentDir(getValue(getString(R.string.savelocation_key), defaultSaveLoc));
 
         //Set the summary of preferences dynamically with user choice or default if no user choice is made
         updateResolution(res);
         fps.setSummary(getValue(getString(R.string.fps_key), "30"));
         float bps = bitsToMb(Integer.parseInt(getValue(getString(R.string.bitrate_key), "7130317")));
         bitrate.setSummary(bps + " Mbps");
-        saveloc.setSummary(getValue(getString(R.string.savelocation_key), defaultSaveLoc));
+        dirChooser.setSummary(getValue(getString(R.string.savelocation_key), defaultSaveLoc));
         filenameFormat.setSummary(getFileSaveFormat());
         filenamePrefix.setSummary(getValue(getString(R.string.fileprefix_key), "recording"));
 
@@ -107,7 +106,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
             requestSystemWindowsPermission();
 
         //set callback for directory change
-        dirChooser.setOnDirectoryChangeListerner(this);
+        dirChooser.setOnDirectoryClickedListerner(this);
     }
 
     private void updateResolution(ListPreference res) {
@@ -183,7 +182,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         Preference pref = findPreference(s);
         switch (pref.getTitleRes()) {
             case R.string.preference_resolution_title:
-                updateResolution((ListPreference)pref);
+                updateResolution((ListPreference) pref);
                 break;
             case R.string.preference_bit_title:
                 float bps = bitsToMb(Integer.parseInt(getValue(getString(R.string.bitrate_key), "7130317")));
@@ -222,7 +221,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         }
     }
 
-    private void requestSystemWindowsPermission(){
+    private void requestSystemWindowsPermission() {
         if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             activity.requestSystemWindowsPermission();
         } else {
@@ -282,9 +281,10 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
     }
 
     @Override
-    public void onDirectoryChanged(String directory) {
-        //Communicate to mainactivity that save directory has changed
-        ((MainActivity)getActivity()).onDirectoryChanged();
+    public void onDirectorySelected() {
         Log.d(Const.TAG, "In settings fragment");
+        if (getActivity() != null && getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).onDirectoryChanged();
+        }
     }
 }

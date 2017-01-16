@@ -16,7 +16,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Video settings">
+    <PreferenceCategory android:title="@string/prefs_category_video_settings_title">
         <ListPreference
             android:defaultValue="1440x2560"
             android:entries="@array/resolutionValues"
@@ -42,15 +42,15 @@
             android:title="@string/preference_bit_title" />
 
     </PreferenceCategory>
-    <PreferenceCategory android:title="Audio settings">
+    <PreferenceCategory android:title="@string/prefs_category_audio_settings_title">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/audiorec_key"
             android:summary="@string/preference_audio_record_summary"
             android:title="@string/preference_audio_record_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Save options">
-        <com.ls.directoryselector.DirectoryPreference
+    <PreferenceCategory android:title="@string/prefs_category_save_options_title">
+        <com.orpheusdroid.screenrecorder.folderpicker.FolderChooser
             android:key="@string/savelocation_key"
             android:negativeButtonText="@android:string/cancel"
             android:positiveButtonText="@android:string/ok"
@@ -68,7 +68,7 @@
             android:title="@string/preference_filename_prefix_title" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="Misc">
+        android:title="@string/prefs_category_misc_title">
         <CheckBoxPreference
             android:title="@string/preference_floating_control_title"
             android:summary="@string/preference_floating_control_summary"
