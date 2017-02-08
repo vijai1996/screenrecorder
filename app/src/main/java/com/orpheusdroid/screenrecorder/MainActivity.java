@@ -53,6 +53,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import ly.count.android.sdk.Countly;
+import ly.count.android.sdk.DeviceId;
+
 public class MainActivity extends AppCompatActivity {
 
     private PermissionResultListener mPermissionResultListener;
@@ -113,6 +116,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /* Enable analytics only for release builds */
+        if (!BuildConfig.DEBUG) {
+            Log.d(Const.TAG, "Is a release build. Setting up analytics");
+            setupAnalytics();
+        } else {
+            Log.d(Const.TAG, "Debug build. Analytics is disabled");
+        }
+
+    }
+
+    private void setupAnalytics(){
+        Countly.sharedInstance().init(this, Const.ANALYTICS_URL, Const.ANALYTICS_API_KEY,
+                null, DeviceId.Type.OPEN_UDID);
+        Countly.sharedInstance().setStarRatingDisableAskingForEachAppVersion(false);
+
+        Countly.sharedInstance().setHttpPostForced(true);
+
+        Countly.sharedInstance().setViewTracking(true);
+        Countly.sharedInstance().enableCrashReporting();
+        //Countly.sharedInstance().setLoggingEnabled(true);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -204,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
 
     /* Marshmallow style permission request.
      * We also present the user with a dialog to notify why storage permission is required */
-    public void requestPermissionStorage() {
+    public boolean requestPermissionStorage() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
@@ -221,7 +244,9 @@ public class MainActivity extends AppCompatActivity {
                     .setCancelable(false);
 
             alert.create().show();
+            return false;
         }
+        return true;
     }
 
     //Permission on api below 23 are granted by default
@@ -296,6 +321,20 @@ public class MainActivity extends AppCompatActivity {
     //Set the callback interface for permission result from SettingsPreferenceFragment
     public void setPermissionResultListener(PermissionResultListener mPermissionResultListener) {
         this.mPermissionResultListener = mPermissionResultListener;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!BuildConfig.DEBUG)
+            Countly.sharedInstance().onStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        if (!BuildConfig.DEBUG)
+            Countly.sharedInstance().onStop();
+        super.onStop();
     }
 
     @Override
