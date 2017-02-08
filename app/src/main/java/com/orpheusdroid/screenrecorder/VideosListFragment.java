@@ -153,7 +153,9 @@ public class VideosListFragment extends Fragment implements PermissionResultList
             case Const.EXTDIR_REQUEST_CODE:
                 if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     Log.d(Const.TAG, "Storage permission granted.");
-                    new GetVideosAsync().execute();
+                    //Performing storage task immediately after granting permission sometimes causes
+                    //permission not taking effect.
+                    checkPermission();
                 } else {
                     Log.d(Const.TAG, "Storage permission denied.");
                     videoRV.setVisibility(View.GONE);
@@ -212,7 +214,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
 
         //Add sections depending on the date the video is recorded to array list
         private ArrayList<Video> addSections(ArrayList<Video> videos) {
-            ArrayList<Video>videosWithSections = new ArrayList<>();
+            ArrayList<Video> videosWithSections = new ArrayList<>();
             Date currentSection = new Date();
             Log.d(Const.TAG, "Original Length: " + videos.size());
             for (int i = 0; i < videos.size(); i++) {
