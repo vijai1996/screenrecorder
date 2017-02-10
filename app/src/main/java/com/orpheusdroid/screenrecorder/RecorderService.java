@@ -72,6 +72,7 @@ public class RecorderService extends Service{
     private static String SAVEPATH;
     private boolean isRecording;
     private boolean useFloatingControls;
+    private boolean showTouches;
     private FloatingControlService floatingControlService;
     private boolean isBound = false;
 
@@ -152,6 +153,14 @@ public class RecorderService extends Service{
                         if (isBound)
                             floatingControlService.setRecordingState(Const.RecordingState.RECORDING);
                         isRecording = true;
+
+                        //Send a broadcast receiver to the plugin app to enable show touches since the recording is started
+                        if(showTouches){
+                            Intent TouchIntent = new Intent();
+                            TouchIntent.setAction("com.orpheusdroid.screenrecorder.SHOWTOUCH");
+                            TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+                            sendBroadcast(TouchIntent);
+                        }
                         Toast.makeText(this, R.string.screen_recording_started_toast, Toast.LENGTH_SHORT).show();
                     } catch (IllegalStateException e){
                         Log.d(Const.TAG, "Mediarecorder reached Illegal state exception. Did you start the recording twice?");
@@ -190,6 +199,15 @@ public class RecorderService extends Service{
                 if (isBound)
                     unbindService(serviceConnection);
                 stopScreenSharing();
+
+                //Send a broadcast receiver to the plugin app to disable show touches since the recording is stopped
+                if(showTouches){
+                    Intent TouchIntent = new Intent();
+                    TouchIntent.setAction("com.orpheusdroid.screenrecorder.DISABLETOUCH");
+                    TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+                    sendBroadcast(TouchIntent);
+                }
+
                 //The service is started as foreground service and hence has to be stopped
                 stopForeground(true);
                 break;
@@ -214,6 +232,14 @@ public class RecorderService extends Service{
 
         if (isBound)
             floatingControlService.setRecordingState(Const.RecordingState.PAUSED);
+
+        //Send a broadcast receiver to the plugin app to disable show touches since the recording is paused
+        if(showTouches){
+            Intent TouchIntent = new Intent();
+            TouchIntent.setAction("com.orpheusdroid.screenrecorder.DISABLETOUCH");
+            TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+            sendBroadcast(TouchIntent);
+        }
     }
 
     @TargetApi(24)
@@ -235,6 +261,17 @@ public class RecorderService extends Service{
 
         if (isBound)
             floatingControlService.setRecordingState(Const.RecordingState.RECORDING);
+
+
+        //Send a broadcast receiver to the plugin app to enable show touches since the recording is resumed
+        if(showTouches){
+            if(showTouches){
+                Intent TouchIntent = new Intent();
+                TouchIntent.setAction("com.orpheusdroid.screenrecorder.SHOWTOUCH");
+                TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+                sendBroadcast(TouchIntent);
+            }
+        }
     }
 
     //Virtual display created by mirroring the actual physical display
@@ -358,6 +395,7 @@ public class RecorderService extends Service{
             saveDir.mkdirs();
         }
         useFloatingControls = prefs.getBoolean(getString(R.string.preference_floating_control_key), false);
+        showTouches = prefs.getBoolean(getString(R.string.preference_show_touch_key), false);
         String saveFileName = getFileSaveName();
         SAVEPATH = saveLocation + File.separator + saveFileName + ".mp4";
     }

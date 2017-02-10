@@ -17,7 +17,9 @@
 
 package com.orpheusdroid.screenrecorder;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -85,6 +87,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         EditTextPreference filenamePrefix = (EditTextPreference) findPreference(getString(R.string.fileprefix_key));
         FolderChooser dirChooser = (FolderChooser) findPreference(getString(R.string.savelocation_key));
         floatingControl = (CheckBoxPreference) findPreference(getString(R.string.preference_floating_control_key));
+        CheckBoxPreference touchPointer = (CheckBoxPreference) findPreference("touch_pointer");
         //Set previously chosen directory as initial directory
         dirChooser.setCurrentDir(getValue(getString(R.string.savelocation_key), defaultSaveLoc));
 
@@ -104,6 +107,11 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         //If floating controls is checked, check for system windows permission
         if (floatingControl.isChecked())
             requestSystemWindowsPermission();
+
+        if(touchPointer.isChecked()){
+            if (!hasPluginInstalled())
+                touchPointer.setChecked(false);
+        }
 
         //set callback for directory change
         dirChooser.setOnDirectoryClickedListerner(this);
@@ -203,9 +211,50 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
             case R.string.preference_floating_control_title:
                 requestSystemWindowsPermission();
                 break;
+            case R.string.preference_show_touch_title:
+                CheckBoxPreference showTouchCB = (CheckBoxPreference)pref;
+                if (showTouchCB.isChecked() && !hasPluginInstalled()){
+                    showTouchCB.setChecked(false);
+                    showDownloadAlert();
+                }
+                break;
             default:
                 pref.setSummary(sharedPreferences.getString(s, ""));
         }
+    }
+
+    private void showDownloadAlert() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.alert_plugin_not_found_title)
+                .setMessage(R.string.alert_plugin_not_found_message)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        try {
+                            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.orpheusdroid.screencamplugin")));
+                        } catch (android.content.ActivityNotFoundException e) { // if there is no Google Play on device
+                            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.orpheusdroid.screencamplugin")));
+                        }
+                    }
+                })
+                .setNeutralButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .create().show();
+    }
+
+    private boolean hasPluginInstalled(){
+        PackageManager pm = getActivity().getPackageManager();
+        try {
+            pm.getPackageInfo("com.orpheusdroid.screencamplugin",PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.d(Const.TAG, "Plugin not installed");
+            return false;
+        }
+        return true;
     }
 
     //Method to concat file prefix with dateTime format

@@ -69,4 +69,9 @@
     <string name="prefs_category_save_options_title">Save options</string>
     <string name="prefs_category_misc_title">Misc</string>
     <string name="menu_privacy_policy">Privacy Policy</string>
+    <string name="preference_show_touch_title">Show touches</string>
+    <string name="preference_show_touch_summary">Enable/disable touch</string>
+    <string name="preference_show_touch_key" translatable="false">touch_pointer</string>
+    <string name="alert_plugin_not_found_title">Plugin not found</string>
+    <string name="alert_plugin_not_found_message">Plugin is required to show touches. Do you want to buy it now?</string>
 </resources>
