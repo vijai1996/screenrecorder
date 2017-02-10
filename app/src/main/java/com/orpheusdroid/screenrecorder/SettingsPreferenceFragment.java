@@ -32,7 +32,6 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.util.DisplayMetrics;
@@ -58,6 +57,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
     SharedPreferences prefs;
     private CheckBoxPreference recaudio;
     private CheckBoxPreference floatingControl;
+    private FolderChooser dirChooser;
     private MainActivity activity;
 
     @Override
@@ -85,7 +85,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         recaudio = (CheckBoxPreference) findPreference(getString(R.string.audiorec_key));
         ListPreference filenameFormat = (ListPreference) findPreference(getString(R.string.filename_key));
         EditTextPreference filenamePrefix = (EditTextPreference) findPreference(getString(R.string.fileprefix_key));
-        FolderChooser dirChooser = (FolderChooser) findPreference(getString(R.string.savelocation_key));
+        dirChooser = (FolderChooser) findPreference(getString(R.string.savelocation_key));
         floatingControl = (CheckBoxPreference) findPreference(getString(R.string.preference_floating_control_key));
         CheckBoxPreference touchPointer = (CheckBoxPreference) findPreference("touch_pointer");
         //Set previously chosen directory as initial directory
@@ -285,16 +285,34 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        intent.addCategory(Intent.CATEGORY_DEFAULT);
-                        intent.setData(Uri.parse("package:" + getActivity().getPackageName()));
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                        startActivity(intent);
+                        if (activity != null){
+                            activity.requestPermissionStorage();
+                        }
                     }
                 }).show();
+    }
+
+    private void showPermissionDeniedDialog(){
+        new AlertDialog.Builder(activity)
+                .setTitle(R.string.alert_permission_denied_title)
+                .setMessage(R.string.alert_permission_denied_message)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (activity != null){
+                            activity.requestPermissionStorage();
+                        }
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        showSnackbar();
+                    }
+                })
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setCancelable(false)
+                .create().show();
     }
 
     //Permission result callback to process the result of Marshmallow style permission request
@@ -304,7 +322,10 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
             case Const.EXTDIR_REQUEST_CODE:
                 if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_DENIED)) {
                     Log.d(Const.TAG, "Storage permission denied. Requesting again");
-                    showSnackbar();
+                    dirChooser.setEnabled(false);
+                    showPermissionDeniedDialog();
+                } else if((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+                    dirChooser.setEnabled(true);
                 }
                 return;
             case Const.AUDIO_REQUEST_CODE:

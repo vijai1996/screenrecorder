@@ -74,4 +74,6 @@
     <string name="preference_show_touch_key" translatable="false">touch_pointer</string>
     <string name="alert_plugin_not_found_title">Plugin not found</string>
     <string name="alert_plugin_not_found_message">Plugin is required to show touches. Do you want to buy it now?</string>
+    <string name="alert_permission_denied_title">Storage Permission Denied</string>
+    <string name="alert_permission_denied_message">The app requires storage permission to save the recorded video and change default save directory.The app is rendered useless without the permission\n\nDo you want to grant it now?</string>
 </resources>
