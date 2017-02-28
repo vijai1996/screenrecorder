@@ -1,6 +1,9 @@
 # ScreenRecorder   [![Build Status](https://travis-ci.org/vijai1996/screenrecorder.svg?branch=master)](https://travis-ci.org/vijai1996/screenrecorder)
 ![App Icon](ic_launcher-web.png?raw=true "App Icon")
 
+# Notice
+Development stopped temporarily due to development machine being sent in for replacement. Expected to resume in a couple of weeks
+
 Requires Lollipop and above (SDK 21+)
 
 [![Google Play](https://orpheusdroid.com/google-play-badge.png "Google play badge")](https://play.google.com/store/apps/details?id=com.orpheusdroid.screenrecorder)
