@@ -26,75 +26,97 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.orpheusdroid.screenrecorder.AboutActivity">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:paddingBottom="25dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/about_credits"
-            android:textStyle="bold" />
-        <!-- A CardView that contains a TextView -->
-        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:elevation="16dp"
-            card_view:cardCornerRadius="3dp">
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/icon_credit_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:autoLink="web"
-                android:padding="16dp" />
-        </android.support.v7.widget.CardView>
+                android:layout_height="wrap_content"
+                android:text="@string/about_credits"
+                android:textStyle="bold" />
+            <!-- A CardView that contains a TextView -->
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:elevation="16dp"
+                card_view:cardCornerRadius="3dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/about_libraries"
-            android:textStyle="bold" />
-        <!-- A CardView that contains a TextView -->
-        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:elevation="16dp"
-            card_view:cardCornerRadius="3dp">
-
-            <TextView
-                android:id="@+id/dir_chooser_lib_credit_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:autoLink="web"
-                android:padding="16dp" />
-        </android.support.v7.widget.CardView>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/about_opensource"
-            android:textStyle="bold" />
-        <!-- A CardView that contains a TextView -->
-        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:elevation="16dp"
-            card_view:cardCornerRadius="3dp">
+                <TextView
+                    android:id="@+id/icon_credit_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:autoLink="web"
+                    android:padding="16dp" />
+            </android.support.v7.widget.CardView>
 
             <TextView
-                android:id="@+id/opensource_info_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:autoLink="web"
-                android:padding="16dp" />
-        </android.support.v7.widget.CardView>
-    </LinearLayout>
+                android:layout_height="wrap_content"
+                android:text="@string/about_libraries"
+                android:textStyle="bold" />
+            <!-- A CardView that contains a TextView -->
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:elevation="16dp"
+                card_view:cardCornerRadius="3dp">
+
+                <TextView
+                    android:id="@+id/video_editor_lib_credit_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:autoLink="web"
+                    android:padding="16dp" />
+            </android.support.v7.widget.CardView>
+            <!-- A CardView that contains a TextView -->
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:elevation="16dp"
+                card_view:cardCornerRadius="3dp">
+
+                <TextView
+                    android:id="@+id/analytics_lib_credit_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:autoLink="web"
+                    android:padding="16dp" />
+            </android.support.v7.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_opensource"
+                android:textStyle="bold" />
+            <!-- A CardView that contains a TextView -->
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:elevation="16dp"
+                card_view:cardCornerRadius="3dp">
+
+                <TextView
+                    android:id="@+id/opensource_info_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:autoLink="web"
+                    android:padding="16dp" />
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+    </ScrollView>
 
     <TextView
         android:id="@+id/versionTxt"

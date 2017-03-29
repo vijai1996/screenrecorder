@@ -46,7 +46,6 @@
     <string name="about_libraries">Библиотеки</string>
     <string name="about_opensource">Открытый исходный код</string>
     <string name="app_icon_credit_Niko">Значки в приложении от %1$s\n\nСайт: %2$s</string>
-    <string name="directory_chooser_library_credit">Выбор папок от %1$s\n\n Ссылка на Github: %2$s\n\nLicense: %3$s</string>
     <string name="opensource_info">Приложение имеет открытый исходный код, доступный по ссылке: \n\nGithub: %1$s\n\nЛицензия: %2$s</string>
     <string name="fab_record_hint">Начать запись</string>
     <string name="recording_failed_toast">Запись экрана не удалась</string>

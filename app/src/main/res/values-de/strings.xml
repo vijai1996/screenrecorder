@@ -7,7 +7,6 @@
     <string name="about_opensource">Open Source</string>
     <string name="app_icon_credit_Niko">App-Symbole von %1$s\n\nWebsite: %2$s</string>
     <string name="cancel">Abbrechen</string>
-    <string name="directory_chooser_library_credit">Ordner-Wähler von %1$s\n\nGithub URL: %2$s\n\nLizenz: %3$s</string>
     <string name="fab_record_hint">Mitschnitt starten</string>
     <string name="fab_stop_hint">Mitschnitt stoppem</string>
     <string name="fatal_exception_message">ScreenRecorder: Fatale Ausnahmesituation eingetreten. Protokoll ist verschickt worden</string>

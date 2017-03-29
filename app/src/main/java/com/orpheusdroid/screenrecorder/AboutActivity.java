@@ -1,9 +1,11 @@
 package com.orpheusdroid.screenrecorder;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.text.Spanned;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -23,12 +25,16 @@ public class AboutActivity extends AppCompatActivity {
         //Let's set the copyright and app version dynamically
         TextView appVersion = (TextView) findViewById(R.id.versionTxt);
         TextView iconCredit = (TextView) findViewById(R.id.icon_credit_tv);
-        TextView dirChooserCredit = (TextView) findViewById(R.id.dir_chooser_lib_credit_tv);
+        TextView videoEditorCredit = (TextView) findViewById(R.id.video_editor_lib_credit_tv);
+        TextView analyticsCredit = (TextView) findViewById(R.id.analytics_lib_credit_tv);
         TextView openSourceInfo = (TextView) findViewById(R.id.opensource_info_tv);
 
         iconCredit.setText(getString(R.string.app_icon_credit_Niko, "Niko Hörkkö", "http://nikosite.net"));
-        dirChooserCredit.setText(getString(R.string.directory_chooser_library_credit, "Lemberg",
-                "https://github.com/lemberg/directory-selector-dialog-preference",
+        videoEditorCredit.setText(getString(R.string.video_editor_library_credit, "knowledge4life",
+                "https://github.com/knowledge4life/k4l-video-trimmer",
+                "MIT Opensource License"));
+        analyticsCredit.setText(getString(R.string.analytics_library_credit, "Countly",
+                "https://github.com/Countly/countly-sdk-android",
                 "MIT Opensource License"));
         openSourceInfo.setText(getString(R.string.opensource_info, "https://github.com/vijai1996/screenrecorder", "GNU AGPLv3"));
 
@@ -45,13 +51,22 @@ public class AboutActivity extends AppCompatActivity {
                     .append(" ")
                     .append(BuildConfig.VERSION_NAME);
             //set the text as html to get copyright symbol
-            appVersion.setText(Html.fromHtml(copyRight.toString()));
+            appVersion.setText(fromHtml(copyRight.toString()));
         } else {
             copyRight.append(getResources().getString(R.string.app_name))
                     .append(" V")
                     .append(BuildConfig.VERSION_NAME);
             //set the text as html to get copyright symbol
-            appVersion.setText(Html.fromHtml(copyRight.toString()));
+            appVersion.setText(fromHtml(copyRight.toString()));
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Spanned fromHtml(String source) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(source, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            return Html.fromHtml(source);
         }
     }
 
