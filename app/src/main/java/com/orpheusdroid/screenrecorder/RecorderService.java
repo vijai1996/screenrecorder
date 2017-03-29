@@ -340,12 +340,16 @@ public class RecorderService extends Service{
     private void showShareNotification(){
         Bitmap icon = BitmapFactory.decodeResource(getResources(),
                 R.mipmap.ic_launcher);
-        Intent Shareintent = new Intent()
+        /*Intent Shareintent = new Intent()
                 .setAction(Intent.ACTION_SEND)
                 .putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(SAVEPATH)))
-                .setType("video/mp4");
+                .setType("video/mp4");*/
+        Intent videoListIntent = new Intent();
+        Intent editIntent = new Intent(this, EditVideoActivity.class);
+        editIntent.putExtra(Const.VIDEO_EDIT_URI_KEY, SAVEPATH);
+        PendingIntent editPendingIntent = PendingIntent.getActivity(this, 0, editIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent sharePendingIntent = PendingIntent.getActivity(this, 0, Intent.createChooser(
-                Shareintent, getString(R.string.share_intent_title)), PendingIntent.FLAG_UPDATE_CURRENT);
+                videoListIntent, getString(R.string.share_intent_title)), PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder shareNotification = new NotificationCompat.Builder(this)
                 .setContentTitle(getString(R.string.share_intent_notification_title))
                 .setContentText(getString(R.string.share_intent_notification_content))
@@ -354,7 +358,9 @@ public class RecorderService extends Service{
                 .setAutoCancel(true)
                 .setContentIntent(sharePendingIntent)
                 .addAction(android.R.drawable.ic_menu_share, getString(R.string.share_intent_notification_action_text)
-                        , sharePendingIntent);
+                        , sharePendingIntent)
+                .addAction(android.R.drawable.ic_menu_edit, getString(R.string.edit_intent_notification_action_text)
+                        , editPendingIntent);
         updateNotification(shareNotification.build(), Const.SCREEN_RECORDER_SHARE_NOTIFICATION_ID);
     }
 

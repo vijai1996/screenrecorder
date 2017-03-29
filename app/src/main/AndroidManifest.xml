@@ -22,8 +22,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.orpheusdroid.screenrecorder.TOGGLETOUCHES" />
 
     <application
@@ -55,7 +55,6 @@
         <service
             android:name=".FloatingControlService"
             android:exported="false" />
-
         <service android:name="org.openudid.OpenUDID_service">
             <intent-filter>
                 <action android:name="org.openudid.GETUDID" />
@@ -66,7 +65,7 @@
             android:name=".AboutActivity"
             android:label="@string/about_activity_label" />
 
-        <!-- TODO: For future Firebase dynamic linking -->
+        <!-- We no longer use firebase. Will be removed shortly -->
         <activity android:name=".DeepLinkActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -96,8 +95,10 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".PrivacyPolicy"
+        <activity
+            android:name=".PrivacyPolicy"
             android:label="Privacy Policy" />
+        <activity android:name=".EditVideoActivity" />
     </application>
 
 </manifest>

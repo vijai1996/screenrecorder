@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (c) 2016. Vijai Chandra Prasad R.
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2017. Vijai Chandra Prasad R.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -16,17 +15,7 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/share"
-        android:icon="@android:drawable/ic_menu_share"
-        android:title="Share" />
-    <item
-        android:id="@+id/delete"
-        android:icon="@android:drawable/ic_delete"
-        android:title="Delete" />
-    <item
-        android:id="@+id/edit"
-        android:icon="@android:drawable/ic_menu_edit"
-        android:title="Edit" />
-</menu>
+<life.knowledge4.videotrimmer.K4LVideoTrimmer xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/videoTimeLine"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />

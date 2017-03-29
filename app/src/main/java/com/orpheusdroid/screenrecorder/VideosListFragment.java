@@ -21,6 +21,7 @@ import android.Manifest;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -36,6 +37,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -46,6 +50,7 @@ import com.orpheusdroid.screenrecorder.adapter.VideoRecyclerAdapter;
 import java.io.File;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -77,7 +82,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setHasOptionsMenu(true);
     }
 
     //Load videos from the directory only when the fragment is visible to the screen
@@ -88,6 +93,23 @@ public class VideosListFragment extends Fragment implements PermissionResultList
             Log.d(Const.TAG, "Videos fragment is visible load the videos");
             checkPermission();
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        MenuItem refresh = menu.add("Refresh");
+        refresh.setIcon(R.drawable.ic_refresh_white_24dp);
+        refresh.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        refresh.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                videosList.clear();
+                checkPermission();
+                Log.d(Const.TAG, "Refreshing");
+                return false;
+            }
+        });
     }
 
     //Check if we have permission to read the external storage. The fragment is useless without this
@@ -106,10 +128,17 @@ public class VideosListFragment extends Fragment implements PermissionResultList
                         Environment.getExternalStorageDirectory()
                                 + File.separator + "screenrecorder"));
                 //Remove directory pointers and other files from the list
-                File[] files = getVideos(directory.listFiles());
+                if (!directory.exists()){
+                    MainActivity.createDir();
+                    Log.d(Const.TAG, "Directory missing! Creating dir");
+                }
+                ArrayList<File> filesList = new ArrayList<File>();
+                if (directory.isDirectory() && directory.exists()) {
+                    filesList.addAll(Arrays.asList(getVideos(directory.listFiles())));
+                }
                 //Read the videos and extract details from it in async.
                 // This is essential if the directory contains huge number of videos
-                new GetVideosAsync().execute(files);
+                new GetVideosAsync().execute(filesList.toArray(new File[filesList.size()]));
             }
         }
     }
@@ -135,7 +164,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         videoRV.setHasFixedSize(true);
         final GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
         videoRV.setLayoutManager(layoutManager);
-        final VideoRecyclerAdapter adapter = new VideoRecyclerAdapter(getActivity(), videos);
+        final VideoRecyclerAdapter adapter = new VideoRecyclerAdapter(getActivity(), videos, this);
         videoRV.setAdapter(adapter);
         //Set the span to 1 (width to match the screen) if the view type is section
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -169,6 +198,14 @@ public class VideosListFragment extends Fragment implements PermissionResultList
     public void removeVideosList() {
         videosList.clear();
         Log.d(Const.TAG, "Reached video fragment");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(Const.TAG, "Refresh data after edit!");
+        removeVideosList();
+        checkPermission();
     }
 
     //Class to retrieve video details in async

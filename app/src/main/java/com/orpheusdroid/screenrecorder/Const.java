@@ -27,6 +27,8 @@ public class Const {
     static final int AUDIO_REQUEST_CODE = 1001;
     static final int SYSTEM_WINDOWS_CODE = 1002;
     static final int SCREEN_RECORD_REQUEST_CODE = 1003;
+    public static final int VIDEO_EDIT_REQUEST_CODE = 1004;
+    public static final int VIDEO_EDIT_RESULT_CODE = 1005;
     static final String SCREEN_RECORDING_START = "com.orpheusdroid.screenrecorder.services.action.startrecording";
     static final String SCREEN_RECORDING_PAUSE = "com.orpheusdroid.screenrecorder.services.action.pauserecording";
     static final String SCREEN_RECORDING_RESUME = "com.orpheusdroid.screenrecorder.services.action.resumerecording";
@@ -37,6 +39,8 @@ public class Const {
     static final String RECORDER_INTENT_RESULT = "recorder_intent_result";
     public static final String TAG = "SCREENRECORDER";
     public static final String APPDIR = "screenrecorder";
+
+    public static final String VIDEO_EDIT_URI_KEY = "edit_video";
 
     static final String ANALYTICS_URL = "http://analytics.orpheusdroid.com";
     static final String ANALYTICS_API_KEY = "07273a5c91f8a932685be1e3ad0d160d3de6d4ba";

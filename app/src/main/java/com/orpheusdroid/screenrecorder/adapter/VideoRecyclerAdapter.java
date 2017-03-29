@@ -34,7 +34,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.orpheusdroid.screenrecorder.Const;
+import com.orpheusdroid.screenrecorder.EditVideoActivity;
 import com.orpheusdroid.screenrecorder.R;
+import com.orpheusdroid.screenrecorder.VideosListFragment;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -49,14 +52,16 @@ import java.util.Locale;
 
 //Custom Recycler view adapter for video list fragment
 public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private VideosListFragment videosListFragment;
     private ArrayList<Video> videos;
     private Context context;
     private static final int VIEW_SECTION = 0;
     private static final int VIEW_ITEM = 1;
 
-    public VideoRecyclerAdapter(Context context, ArrayList<Video> android) {
+    public VideoRecyclerAdapter(Context context, ArrayList<Video> android, VideosListFragment videosListFragment) {
         this.videos = android;
         this.context = context;
+        this.videosListFragment = videosListFragment;
     }
 
     //Find if the view is a section type or video type
@@ -87,7 +92,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         switch (holder.getItemViewType()) {
             case VIEW_ITEM:
                 final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
@@ -96,8 +101,10 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 //If thumbnail has failed for some reason, set empty image resource to imageview
                 if (videos.get(position).getThumbnail() != null) {
                     itemViewHolder.iv_thumbnail.setImageBitmap(videos.get(position).getThumbnail());
-                } else
+                } else {
                     itemViewHolder.iv_thumbnail.setImageResource(0);
+                    Log.d(Const.TAG, "thumbnail error");
+                }
 
                 itemViewHolder.overflow.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -113,6 +120,11 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                                     case R.id.delete:
                                         deleteVideo(itemViewHolder.getAdapterPosition());
                                         break;
+                                    case R.id.edit:
+                                        Toast.makeText(context, "Edit video for " + itemViewHolder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
+                                        Intent editIntent = new Intent(context, EditVideoActivity.class);
+                                        editIntent.putExtra(Const.VIDEO_EDIT_URI_KEY, videos.get(position).getFile().toString());
+                                        videosListFragment.startActivityForResult(editIntent, Const.VIDEO_EDIT_REQUEST_CODE);
                                 }
                                 return true;
                             }
