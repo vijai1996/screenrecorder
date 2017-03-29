@@ -29,37 +29,59 @@
     android:layout_marginBottom="8dp">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/videoCard"
-        android:clickable="true"
-        android:foreground="?attr/selectableItemBackground">
-
-        <ImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:minHeight="112dp"/>
-
-        <ImageView
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/play_iv"
-            android:src="@drawable/ic_play_circle_outline_grey_400_48dp"
-            android:layout_centerInParent="true"/>
+            android:layout_height="0dp"
+            android:layout_weight="0.85"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/videoCard"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:id="@+id/thumbnail"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:minHeight="112dp"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/play_iv"
+                    android:src="@drawable/ic_play_circle_outline_grey_400_48dp"
+                    android:layout_centerInParent="true"/>
 
 
-    </RelativeLayout>
-        <RelativeLayout
+            </RelativeLayout>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_weight="0.25"
             android:id="@+id/detail_rv"
             android:background="#eaeaea">
+            <TextView
+                android:id="@+id/fileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/colorAccent"
+                android:text="TEST"
+                android:gravity="start"
+                android:layout_weight="0.8"
+                android:paddingStart="8dp"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp" />
 
             <ImageButton
                 android:layout_width="wrap_content"
@@ -68,22 +90,8 @@
                 android:src="@drawable/ic_more_vert_black_48dp"
                 android:background="@drawable/ic_overflow_shadow"
                 android:gravity="end"
-                android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true" />
-            <TextView
-                android:id="@+id/fileName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="@color/colorAccent"
-                android:layout_toStartOf="@id/ic_overflow"
-                android:text="TEST"
-                android:gravity="start"
-                android:layout_alignParentStart="true"
-                android:paddingBottom="8dp"
-                android:paddingStart="8dp"
-                android:paddingTop="8dp" />
-        </RelativeLayout>
+                android:layout_weight="0.2" />
+        </LinearLayout>
     </LinearLayout>
 
 </android.support.v7.widget.CardView>
