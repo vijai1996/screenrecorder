@@ -26,6 +26,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
@@ -33,6 +34,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -127,15 +129,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupAnalytics(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (!prefs.getBoolean(getString(R.string.preference_crash_reporting_key), true) &&
+                !prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), true)){
+            Log.d(Const.TAG, "Analytics disabled by user");
+            return;
+        }
         Countly.sharedInstance().init(this, Const.ANALYTICS_URL, Const.ANALYTICS_API_KEY,
                 null, DeviceId.Type.OPEN_UDID);
-        Countly.sharedInstance().setStarRatingDisableAskingForEachAppVersion(false);
-
         Countly.sharedInstance().setHttpPostForced(true);
 
-        Countly.sharedInstance().setViewTracking(true);
-        Countly.sharedInstance().enableCrashReporting();
-        //Countly.sharedInstance().setLoggingEnabled(true);
+        if(prefs.getBoolean(getString(R.string.preference_crash_reporting_key), true)) {
+            Countly.sharedInstance().enableCrashReporting();
+            Log.d(Const.TAG, "Enabling crash reporting");
+        }
+        if(prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), true)) {
+            Countly.sharedInstance().setStarRatingDisableAskingForEachAppVersion(false);
+            Countly.sharedInstance().setViewTracking(true);
+            Log.d(Const.TAG, "Enabling countly statistics");
+        }
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -211,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Method to create app directory which is default directory for storing recorded videos
-    private void createDir() {
+    public static void createDir() {
         File appDir = new File(Environment.getExternalStorageDirectory() + File.separator + Const.APPDIR);
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && !appDir.isDirectory()) {
             appDir.mkdirs();

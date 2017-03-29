@@ -68,6 +68,20 @@
             android:title="@string/preference_filename_prefix_title" />
     </PreferenceCategory>
     <PreferenceCategory
+        android:title="@string/prefs_category_analytics_title">
+        <CheckBoxPreference
+            android:title="@string/preference_crash_reporting_title"
+            android:summary="@string/preference_crash_reporting_summary"
+            android:key="@string/preference_crash_reporting_key"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:title="@string/preference_anonymous_statistics_title"
+            android:summary="@string/preference_anonymous_statistics_summary"
+            android:key="@string/preference_anonymous_statistics_key"
+            android:defaultValue="true"
+            android:dependency="@string/preference_crash_reporting_key"/>
+    </PreferenceCategory>
+    <PreferenceCategory
         android:title="@string/prefs_category_misc_title">
         <CheckBoxPreference
             android:title="@string/preference_floating_control_title"

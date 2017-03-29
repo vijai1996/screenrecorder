@@ -76,4 +76,12 @@
     <string name="alert_plugin_not_found_message">Plugin is required to show touches. Do you want to buy it now?</string>
     <string name="alert_permission_denied_title">Storage Permission Denied</string>
     <string name="alert_permission_denied_message">The app requires storage permission to save the recorded video and change default save directory.The app is rendered useless without the permission\n\nDo you want to grant it now?</string>
+    <string name="edit_intent_notification_action_text">Edit</string>
+    <string name="prefs_category_analytics_title">Anonymous analytics</string>
+    <string name="preference_crash_reporting_title">Crash reporting</string>
+    <string name="preference_crash_reporting_summary">Enable anonymous crash reporting</string>
+    <string name="preference_crash_reporting_key" translatable="false">crash_reporting</string>
+    <string name="preference_anonymous_statistics_title">Anonymous statistics</string>
+    <string name="preference_anonymous_statistics_summary">Enable anonymous statistics on number of app usages</string>
+    <string name="preference_anonymous_statistics_key" translatable="false">usage_statistics</string>
 </resources>

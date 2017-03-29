@@ -218,8 +218,14 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
                     showDownloadAlert();
                 }
                 break;
-            default:
-                pref.setSummary(sharedPreferences.getString(s, ""));
+            case R.string.preference_crash_reporting_title:
+                CheckBoxPreference crashReporting = (CheckBoxPreference)pref;
+                CheckBoxPreference anonymousStats = (CheckBoxPreference) findPreference(getString(R.string.preference_anonymous_statistics_key));
+                if(!crashReporting.isChecked())
+                    anonymousStats.setChecked(false);
+                break;
+            case R.string.preference_anonymous_statistics_title:
+                break;
         }
     }
 
