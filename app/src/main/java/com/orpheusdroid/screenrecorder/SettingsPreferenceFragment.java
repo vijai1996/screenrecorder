@@ -52,11 +52,13 @@ import java.util.Arrays;
  */
 
 public class SettingsPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener
-        , PermissionResultListener, OnDirectorySelectedListerner {
+        , PermissionResultListener, OnDirectorySelectedListerner, MainActivity.AnalyticsSettingsListerner {
 
     SharedPreferences prefs;
     private CheckBoxPreference recaudio;
     private CheckBoxPreference floatingControl;
+    private CheckBoxPreference crashReporting;
+    private CheckBoxPreference usageStats;
     private FolderChooser dirChooser;
     private MainActivity activity;
 
@@ -73,6 +75,8 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         //init permission listener callback
         setPermissionListener();
 
+        setAnalyticsPermissionListerner();
+
         //Get Default save location from shared preference
         String defaultSaveLoc = (new File(Environment
                 .getExternalStorageDirectory() + File.separator + Const.APPDIR)).getPath();
@@ -88,6 +92,8 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         dirChooser = (FolderChooser) findPreference(getString(R.string.savelocation_key));
         floatingControl = (CheckBoxPreference) findPreference(getString(R.string.preference_floating_control_key));
         CheckBoxPreference touchPointer = (CheckBoxPreference) findPreference("touch_pointer");
+        crashReporting = (CheckBoxPreference) findPreference(getString(R.string.preference_crash_reporting_key));
+        usageStats = (CheckBoxPreference) findPreference(getString(R.string.preference_anonymous_statistics_key));
         //Set previously chosen directory as initial directory
         dirChooser.setCurrentDir(getValue(getString(R.string.savelocation_key), defaultSaveLoc));
 
@@ -153,6 +159,13 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         }
     }
 
+    private void setAnalyticsPermissionListerner(){
+        if (getActivity() != null && getActivity() instanceof MainActivity) {
+            activity = (MainActivity) getActivity();
+            activity.setAnalyticsSettingsListerner(this);
+        }
+    }
+
     //method to return string from SharedPreferences
     private String getValue(String key, String defVal) {
         return prefs.getString(key, defVal);
@@ -188,6 +201,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         Preference pref = findPreference(s);
+        if (pref == null) return;
         switch (pref.getTitleRes()) {
             case R.string.preference_resolution_title:
                 updateResolution((ListPreference) pref);
@@ -223,8 +237,10 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
                 CheckBoxPreference anonymousStats = (CheckBoxPreference) findPreference(getString(R.string.preference_anonymous_statistics_key));
                 if(!crashReporting.isChecked())
                     anonymousStats.setChecked(false);
+                startAnalytics();
                 break;
             case R.string.preference_anonymous_statistics_title:
+                startAnalytics();
                 break;
         }
     }
@@ -361,6 +377,24 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         Log.d(Const.TAG, "In settings fragment");
         if (getActivity() != null && getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).onDirectoryChanged();
+        }
+    }
+
+    @Override
+    public void updateAnalyticsSettings(Const.analytics analytics) {
+        switch (analytics){
+            case CRASHREPORTING:
+                crashReporting.setChecked(true);
+                break;
+            case USAGESTATS:
+                usageStats.setChecked(true);
+                break;
+        }
+    }
+
+    private void startAnalytics(){
+        if (getActivity() != null && getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).setupAnalytics();
         }
     }
 }

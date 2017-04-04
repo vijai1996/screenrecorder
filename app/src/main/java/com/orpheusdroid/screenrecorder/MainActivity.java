@@ -61,11 +61,13 @@ import ly.count.android.sdk.DeviceId;
 public class MainActivity extends AppCompatActivity {
 
     private PermissionResultListener mPermissionResultListener;
+    private AnalyticsSettingsListerner analyticsSettingsListerner;
     private MediaProjection mMediaProjection;
     private MediaProjectionManager mProjectionManager;
     private FloatingActionButton fab;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         //Arbitrary "Write to external storage" permission since this permission is most important for the app
         requestPermissionStorage();
@@ -121,18 +125,16 @@ public class MainActivity extends AppCompatActivity {
         /* Enable analytics only for release builds */
         if (!BuildConfig.DEBUG) {
             Log.d(Const.TAG, "Is a release build. Setting up analytics");
-            setupAnalytics();
+            requestAnalyticsPermission();
         } else {
             Log.d(Const.TAG, "Debug build. Analytics is disabled");
         }
 
     }
 
-    private void setupAnalytics(){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        if (!prefs.getBoolean(getString(R.string.preference_crash_reporting_key), true) &&
-                !prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), true)){
+    public void setupAnalytics(){
+        if (!prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false) &&
+                !prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false)){
             Log.d(Const.TAG, "Analytics disabled by user");
             return;
         }
@@ -140,11 +142,11 @@ public class MainActivity extends AppCompatActivity {
                 null, DeviceId.Type.OPEN_UDID);
         Countly.sharedInstance().setHttpPostForced(true);
 
-        if(prefs.getBoolean(getString(R.string.preference_crash_reporting_key), true)) {
+        if(prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false)) {
             Countly.sharedInstance().enableCrashReporting();
             Log.d(Const.TAG, "Enabling crash reporting");
         }
-        if(prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), true)) {
+        if(prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false)) {
             Countly.sharedInstance().setStarRatingDisableAskingForEachAppVersion(false);
             Countly.sharedInstance().setViewTracking(true);
             Log.d(Const.TAG, "Enabling countly statistics");
@@ -327,13 +329,55 @@ public class MainActivity extends AppCompatActivity {
         if (mPermissionResultListener != null) {
             mPermissionResultListener.onPermissionResult(requestCode, permissions, grantResults);
         }
+    }
 
 
+    private void requestAnalyticsPermission() {
+        if(!prefs.getBoolean(Const.PREFS_REQUEST_ANALYTICS_PERMISSION, true))
+            return;
+
+        new AlertDialog.Builder(this)
+                .setTitle("Allow anonymous analytics")
+                .setMessage("Do you want to allow anonymous crash reporting and usage metrics now?" +
+                        "\nRead the privacy policy to know more on what data are collected")
+                .setPositiveButton("Enable analytics", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        analyticsSettingsListerner.updateAnalyticsSettings(Const.analytics.CRASHREPORTING);
+                        analyticsSettingsListerner.updateAnalyticsSettings(Const.analytics.USAGESTATS);
+                        prefs.edit()
+                                .putBoolean(Const.PREFS_REQUEST_ANALYTICS_PERMISSION, false)
+                                .apply();
+                    }
+                })
+                .setNeutralButton("Enable Crash reporting only", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        analyticsSettingsListerner.updateAnalyticsSettings(Const.analytics.CRASHREPORTING);
+                        prefs.edit()
+                                .putBoolean(Const.PREFS_REQUEST_ANALYTICS_PERMISSION, false)
+                                .apply();
+                    }
+                })
+                .setNegativeButton("Disable everything", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        prefs.edit()
+                                .putBoolean(Const.PREFS_REQUEST_ANALYTICS_PERMISSION, false)
+                                .apply();
+                    }
+                })
+                .setCancelable(false)
+                .create().show();
     }
 
     //Set the callback interface for permission result from SettingsPreferenceFragment
     public void setPermissionResultListener(PermissionResultListener mPermissionResultListener) {
         this.mPermissionResultListener = mPermissionResultListener;
+    }
+
+    public void setAnalyticsSettingsListerner(AnalyticsSettingsListerner analyticsSettingsListerner) {
+        this.analyticsSettingsListerner = analyticsSettingsListerner;
     }
 
     @Override
@@ -404,5 +448,9 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+    }
+
+    public interface AnalyticsSettingsListerner{
+        void updateAnalyticsSettings(Const.analytics analytics);
     }
 }
