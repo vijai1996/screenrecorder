@@ -26,7 +26,7 @@ which supports shortcuts in lower api isnt happy about it -->
         android:shortcutLongLabel="@string/shortcut_long_label"
         android:shortcutDisabledMessage="@string/shortcut_disabled_message">
         <intent
-            android:action="@string/app_shortcut_action"
+            android:action="com.orpheusdroid.screenrecorder.RECORD"
             android:targetPackage="com.orpheusdroid.screenrecorder"
             android:targetClass="com.orpheusdroid.screenrecorder.MainActivity" />
     </shortcut>
