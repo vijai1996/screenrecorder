@@ -5,6 +5,9 @@ Requires Lollipop and above (SDK 21+)
 
 [![Google Play](https://orpheusdroid.com/google-play-badge.png "Google play badge")](https://play.google.com/store/apps/details?id=com.orpheusdroid.screenrecorder) [![F-Droid](https://orpheusdroid.com/F-Droid-badge.png "F-Droid badge")](https://f-droid.org/repository/browse/?fdfilter=screencam&fdid=com.orpheusdroid.screenrecorder)
 
+## Donation/Payments
+#### Bitcoin:     1Cbf61y8XNx3BLWvoZB71x4XgBKB7r8BuB
+
 ## Building the app
 
 ### Make a copy of the repository
