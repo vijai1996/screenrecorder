@@ -21,12 +21,15 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -69,6 +72,9 @@ public class FloatingControlService extends Service implements View.OnClickListe
 
         stopIB.setOnClickListener(this);
 
+        //Get floating control icon size from sharedpreference
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+
         //Pause/Resume doesnt work below SDK version 24. Remove them
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             pauseIB.setVisibility(View.GONE);
@@ -83,7 +89,7 @@ public class FloatingControlService extends Service implements View.OnClickListe
         //Set layout params to display the controls over any screen.
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                250,
+                dpToPx(pref.getInt(getString(R.string.preference_floating_control_size_key), 100)),
                 WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
@@ -292,5 +298,11 @@ public class FloatingControlService extends Service implements View.OnClickListe
         Log.d(Const.TAG, "Unbinding and stopping service");
         stopSelf();
         return super.onUnbind(intent);
+    }
+
+    //Method to convert dp to px
+    private int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 }

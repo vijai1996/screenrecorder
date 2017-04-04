@@ -85,4 +85,7 @@
     <string name="preference_anonymous_statistics_title">Anonymous statistics</string>
     <string name="preference_anonymous_statistics_summary">Enable anonymous statistics on number of app usages</string>
     <string name="preference_anonymous_statistics_key" translatable="false">usage_statistics</string>
+    <string name="preference_floating_control_size_title">Floating controls icon size</string>
+    <string name="preference_floating_control_size_summary">Set the icon size of on-screen floating control</string>
+    <string name="preference_floating_control_size_key" translatable="false">floatingControlSize</string>
 </resources>
