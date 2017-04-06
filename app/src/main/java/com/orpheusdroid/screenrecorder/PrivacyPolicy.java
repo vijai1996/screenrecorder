@@ -33,7 +33,7 @@ public class PrivacyPolicy extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        ((WebView) findViewById(R.id.wv_privacy_policy)).loadUrl("file:///android_res/raw/privacy_policy.html");
+        ((WebView) findViewById(R.id.wv_privacy_policy)).loadUrl("file:///android_asset/privacy_policy.html");
     }
 
     @Override
