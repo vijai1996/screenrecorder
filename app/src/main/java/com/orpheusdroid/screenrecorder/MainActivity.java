@@ -383,14 +383,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (!BuildConfig.DEBUG)
-            Countly.sharedInstance().onStart(this);
+        if (!BuildConfig.DEBUG) {
+            if (prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false) ||
+                    prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false))
+                Countly.sharedInstance().onStart(this);
+        }
     }
 
     @Override
     protected void onStop() {
-        if (!BuildConfig.DEBUG)
-            Countly.sharedInstance().onStop();
+        if (!BuildConfig.DEBUG) {
+            if (prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false) ||
+                    prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false))
+                Countly.sharedInstance().onStop();
+        }
         super.onStop();
     }
 
