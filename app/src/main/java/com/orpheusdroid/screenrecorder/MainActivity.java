@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         if (!BuildConfig.DEBUG) {
             Log.d(Const.TAG, "Is a release build. Setting up analytics");
             requestAnalyticsPermission();
+            setupAnalytics();
         } else {
             Log.d(Const.TAG, "Debug build. Analytics is disabled");
         }
