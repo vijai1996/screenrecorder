@@ -7,6 +7,8 @@ Requires Lollipop and above (SDK 21+)
 
 ## Donation/Payments
 #### Bitcoin:     1Cbf61y8XNx3BLWvoZB71x4XgBKB7r8BuB
+#### PayPal:      [![Paypal Donate](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/gold-pill-paypal-26px.png)](https://paypal.me/vijaichander/5)
+#### Flattr:      [![Flattr this git repo](https://button.flattr.com/flattr-badge-large.png)](https://flattr.com/submit/auto?fid=66ngyo&url=https%3A%2F%2Fgithub.com%2Fvijai1996%2Fscreenrecorder)
 
 ## Building the app
 
