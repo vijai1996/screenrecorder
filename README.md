@@ -5,6 +5,13 @@ Requires Lollipop and above (SDK 21+)
 
 [![Google Play](https://orpheusdroid.com/google-play-badge.png "Google play badge")](https://play.google.com/store/apps/details?id=com.orpheusdroid.screenrecorder) [![F-Droid](https://orpheusdroid.com/F-Droid-badge.png "F-Droid badge")](https://f-droid.org/repository/browse/?fdfilter=screencam&fdid=com.orpheusdroid.screenrecorder)
 
+## User Support
+Telegram: [https://goo.gl/TDs42r](https://goo.gl/TDs42r)
+
+[![Telegram Support QR](https://goo.gl/TDs42r.qr "Telegram Support QR")](https://goo.gl/TDs42r.qr)
+
+Slack:    Comming soon!
+
 ## Donation/Payments
 #### Bitcoin:     1Cbf61y8XNx3BLWvoZB71x4XgBKB7r8BuB
 #### PayPal:      [![Paypal Donate](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/gold-pill-paypal-26px.png)](https://paypal.me/vijaichander/5)
