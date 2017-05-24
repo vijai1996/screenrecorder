@@ -46,10 +46,11 @@ public class AboutActivity extends AppCompatActivity {
         //If the apk is beta version include version code. Else ignore
         if (BuildConfig.VERSION_NAME.contains("Beta")) {
             copyRight.append(getResources().getString(R.string.app_name))
-                    .append(" V")
+                    .append(" Build")
                     .append(BuildConfig.VERSION_CODE)
-                    .append(" ")
-                    .append(BuildConfig.VERSION_NAME);
+                    .append(" V")
+                    .append(BuildConfig.VERSION_NAME)
+                    .append("\n Internal Build. Not to be released");
             //set the text as html to get copyright symbol
             appVersion.setText(fromHtml(copyRight.toString()));
         } else {
