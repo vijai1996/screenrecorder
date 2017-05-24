@@ -88,4 +88,6 @@
     <string name="preference_floating_control_size_title">Floating controls icon size</string>
     <string name="preference_floating_control_size_summary">Set the icon size of on-screen floating control</string>
     <string name="preference_floating_control_size_key" translatable="false">floatingControlSize</string>
+    <string name="storage_selection_spinner_title">Select storage</string>
+    <string name="external_storage_dir_not_writable">The directory is not writable</string>
 </resources>
