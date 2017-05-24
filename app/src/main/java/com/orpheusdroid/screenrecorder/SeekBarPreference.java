@@ -18,6 +18,7 @@
 package com.orpheusdroid.screenrecorder;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -41,6 +42,8 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
 
     private String mSuffix;
     private int mDefault, mMax, mValue = 0;
+
+    private int defaultColor;
 
     private ViewGroup.LayoutParams mIV_pararams;
 
@@ -81,6 +84,7 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
         Log.d(Const.TAG, "size is: " + mValue);
         mSeekBar = (SeekBar) v.findViewById(R.id.seekBar);
         mValueText = (TextView) v.findViewById(R.id.tv_size);
+        defaultColor = mValueText.getTextColors().getDefaultColor();
         mFloatingTogglePreview = (ImageView) v.findViewById(R.id.iv_floatingControl);
         mSeekBar.setMax(mMax);
         mSeekBar.setProgress(mValue);
@@ -101,8 +105,13 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
     public void onProgressChanged(SeekBar seek, int value, boolean fromTouch)
     {
         //Set the min value of seekbar to 70.
-        if (value < 70){
-            mSeekBar.setProgress(70);
+        if (value < 70)
+            mValueText.setTextColor(Color.RED);
+        else
+            mValueText.setTextColor(defaultColor);
+
+        if (value < 25){
+            mSeekBar.setProgress(25);
             return;
         }
 
