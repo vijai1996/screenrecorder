@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.preference.DialogPreference;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,9 +34,12 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,12 +52,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by vijai on 01-12-2016.
  */
 
-public class FolderChooser extends DialogPreference implements View.OnClickListener, DirectoryRecyclerAdapter.OnDirectoryClickedListerner{
+public class FolderChooser extends DialogPreference implements View.OnClickListener,
+        DirectoryRecyclerAdapter.OnDirectoryClickedListerner, AdapterView.OnItemSelectedListener {
     private RecyclerView rv;
     private TextView tv_currentDir;
     private TextView tv_empty;
@@ -61,7 +67,10 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
     private ArrayList<File> directories;
     private AlertDialog dialog;
     private DirectoryRecyclerAdapter adapter;
+    private Spinner spinner;
     private static OnDirectorySelectedListerner onDirectorySelectedListerner;
+    private List<Storages> storages = new ArrayList<>();
+    private boolean isExternalStorageSelected = false;
 
     public FolderChooser(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -78,6 +87,11 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
         currentDir = new File(Environment.getExternalStorageDirectory() + File.separator + Const.APPDIR);
         setSummary(getPersistedString(currentDir.getPath()));
         Log.d(Const.TAG, "Persisted String is: " + getPersistedString(currentDir.getPath()));
+        File[] SDCards = ContextCompat.getExternalFilesDirs(getContext().getApplicationContext(), null);
+        storages.add(new Storages(Environment.getExternalStorageDirectory().getPath(), Storages.StorageType.Internal));
+        if (SDCards.length > 1)
+            storages.add(new Storages(SDCards[1].getPath(), Storages.StorageType.External));
+        //getRemovableSDPath(SDCards[1]);
     }
 
     @Override
@@ -91,8 +105,12 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
-        if (positiveResult){
+        if (positiveResult) {
             Log.d(Const.TAG, "Directory choosed! " + currentDir.getPath());
+            if (!currentDir.canWrite()) {
+                Toast.makeText(getContext(), "Cannot write to selected directory. Path will not be saved.", Toast.LENGTH_SHORT).show();
+                return;
+            }
             persistString(currentDir.getPath());
             onDirectorySelectedListerner.onDirectorySelected();
             setSummary(currentDir.getPath());
@@ -137,8 +155,8 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
         tv_currentDir.setText(currentDir.getPath());
     }
 
-    private boolean isDirectoryEmpty(){
-        if (directories.isEmpty()){
+    private boolean isDirectoryEmpty() {
+        if (directories.isEmpty()) {
             rv.setVisibility(View.GONE);
             tv_empty.setVisibility(View.VISIBLE);
             return true;
@@ -153,7 +171,7 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
         File[] dir = currentDir.listFiles(new DirectoryFilter());
         directories = new ArrayList<>(Arrays.asList(dir));
         Collections.sort(directories, new SortFileName());
-        Log.d(Const.TAG, "Directory size "+directories.size());
+        Log.d(Const.TAG, "Directory size " + directories.size());
     }
 
     private void initView(View view) {
@@ -162,8 +180,23 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
         tv_currentDir = (TextView) view.findViewById(R.id.tv_selected_dir);
         rv = (RecyclerView) view.findViewById(R.id.rv);
         tv_empty = (TextView) view.findViewById(R.id.tv_empty);
+        spinner = (Spinner) view.findViewById(R.id.storageSpinner);
         up.setOnClickListener(this);
         createDir.setOnClickListener(this);
+        ArrayList<String> StorageStrings = new ArrayList<>();
+        for (Storages storage : storages) {
+            String storageType = storage.getType() == Storages.StorageType.Internal ? "Internal Storage" :
+                    "Removable Storage";
+            StorageStrings.add(storageType);
+        }
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, StorageStrings);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        spinner.setAdapter(dataAdapter);
+        spinner.setOnItemSelectedListener(this);
     }
 
     private void changeDirectory(File file) {
@@ -275,11 +308,15 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.nav_up:
                 File parentDirectory = new File(currentDir.getParent());
-                if (parentDirectory.getPath().contains(Environment.getExternalStorageDirectory().getPath()))
-                    changeDirectory(parentDirectory);
+                Log.d(Const.TAG, parentDirectory.getPath());
+                if (!isExternalStorageSelected) {
+                    if (parentDirectory.getPath().contains(storages.get(0).getPath()))
+                        changeDirectory(parentDirectory);
+                } else
+                    changeExternalDirectory(parentDirectory);
                 return;
             case R.id.create_dir:
                 newDirDialog(null);
@@ -287,12 +324,42 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
         }
     }
 
+    private void changeExternalDirectory(File parentDirectory) {
+        String externalBaseDir = getRemovableSDPath(storages.get(1).getPath());
+        if (parentDirectory.getPath().contains(externalBaseDir) && parentDirectory.canWrite())
+            changeDirectory(parentDirectory);
+        else if (parentDirectory.getPath().contains(externalBaseDir) && !parentDirectory.canWrite())
+            Toast.makeText(getContext(), R.string.external_storage_dir_not_writable, Toast.LENGTH_SHORT).show();
+    }
+
+    private String getRemovableSDPath(String pathSD) {
+        //String pathSD = file.toString();
+        int index = pathSD.indexOf("Android");
+        Log.d(Const.TAG, "Short code is: " + pathSD.substring(0, index));
+        String filename = pathSD.substring(0, index - 1);
+        Log.d(Const.TAG, "External Base Dir " + filename);
+        return filename;
+    }
+
     @Override
     public void OnDirectoryClicked(File directory) {
         changeDirectory(directory);
     }
 
-    private class DirectoryFilter implements FileFilter{
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        Log.d(Const.TAG, "Selected storage is: " + storages.get(i));
+        isExternalStorageSelected = (storages.get(i).getType() == Storages.StorageType.External);
+        Log.d(Const.TAG, "Store is external " + isExternalStorageSelected);
+        changeDirectory(new File(storages.get(i).getPath()));
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
+    private class DirectoryFilter implements FileFilter {
         @Override
         public boolean accept(File file) {
             return file.isDirectory() && !file.isHidden();

@@ -40,12 +40,17 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
+            <!-- <TextView
                 android:id="@+id/txt_selected_folder_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Selected Folder"
-                android:textStyle="bold" />
+                android:textStyle="bold" /> -->
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/storageSpinner"
+                android:prompt="@string/storage_selection_spinner_title"/>
 
             <TextView
                 android:id="@+id/tv_selected_dir"
