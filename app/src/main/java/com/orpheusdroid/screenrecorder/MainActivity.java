@@ -133,25 +133,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void setupAnalytics(){
+    public void setupAnalytics() {
         if (!prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false) &&
-                !prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false)){
+                !prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false)) {
             Log.d(Const.TAG, "Analytics disabled by user");
             return;
         }
         Countly.sharedInstance().init(this, Const.ANALYTICS_URL, Const.ANALYTICS_API_KEY,
-                null, DeviceId.Type.OPEN_UDID);
+                null, DeviceId.Type.OPEN_UDID, 3, null, null, null, null);
         Countly.sharedInstance().setHttpPostForced(true);
 
-        if(prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false)) {
+        if (prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false)) {
             Countly.sharedInstance().enableCrashReporting();
             Log.d(Const.TAG, "Enabling crash reporting");
         }
-        if(prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false)) {
+        if (prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false)) {
             Countly.sharedInstance().setStarRatingDisableAskingForEachAppVersion(false);
             Countly.sharedInstance().setViewTracking(true);
+            Countly.sharedInstance().setIfStarRatingShownAutomatically(true);
             Log.d(Const.TAG, "Enabling countly statistics");
         }
+        Countly.sharedInstance().onStart(this);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -207,8 +209,8 @@ public class MainActivity extends AppCompatActivity {
 
         //The user has denied permission for screen mirroring. Let's notify the user
         if (resultCode == RESULT_CANCELED && requestCode == Const.SCREEN_RECORD_REQUEST_CODE) {
-                Toast.makeText(this,
-                        getString(R.string.screen_recording_permission_denied), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    getString(R.string.screen_recording_permission_denied), Toast.LENGTH_SHORT).show();
             //Return to home screen if the app was started from app shortcut
             if (getIntent().getAction().equals(getString(R.string.app_shortcut_action)))
                 this.finish();
@@ -334,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void requestAnalyticsPermission() {
-        if(!prefs.getBoolean(Const.PREFS_REQUEST_ANALYTICS_PERMISSION, true))
+        if (!prefs.getBoolean(Const.PREFS_REQUEST_ANALYTICS_PERMISSION, true))
             return;
 
         new AlertDialog.Builder(this)
@@ -384,19 +386,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (!BuildConfig.DEBUG) {
-            if (prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false) ||
-                    prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false))
-                Countly.sharedInstance().onStart(this);
-        }
     }
 
     @Override
     protected void onStop() {
         if (!BuildConfig.DEBUG) {
-            if (prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false) ||
-                    prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false))
+            if (Countly.sharedInstance().hasBeenCalledOnStart()) {
                 Countly.sharedInstance().onStop();
+                Log.d(Const.TAG, "Countly stopped");
+            }
         }
         super.onStop();
     }
@@ -457,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public interface AnalyticsSettingsListerner{
+    public interface AnalyticsSettingsListerner {
         void updateAnalyticsSettings(Const.analytics analytics);
     }
 }
