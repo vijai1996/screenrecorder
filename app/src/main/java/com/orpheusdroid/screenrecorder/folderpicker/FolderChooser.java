@@ -20,10 +20,12 @@ package com.orpheusdroid.screenrecorder.folderpicker;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.preference.DialogPreference;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +39,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -71,6 +74,7 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
     private static OnDirectorySelectedListerner onDirectorySelectedListerner;
     private List<Storages> storages = new ArrayList<>();
     private boolean isExternalStorageSelected = false;
+    private SharedPreferences prefs;
 
     public FolderChooser(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -89,6 +93,7 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
         Log.d(Const.TAG, "Persisted String is: " + getPersistedString(currentDir.getPath()));
         File[] SDCards = ContextCompat.getExternalFilesDirs(getContext().getApplicationContext(), null);
         storages.add(new Storages(Environment.getExternalStorageDirectory().getPath(), Storages.StorageType.Internal));
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         if (SDCards.length > 1)
             storages.add(new Storages(SDCards[1].getPath(), Storages.StorageType.External));
         //getRemovableSDPath(SDCards[1]);
@@ -350,8 +355,28 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         Log.d(Const.TAG, "Selected storage is: " + storages.get(i));
         isExternalStorageSelected = (storages.get(i).getType() == Storages.StorageType.External);
-        Log.d(Const.TAG, "Store is external " + isExternalStorageSelected);
+        if (isExternalStorageSelected && !prefs.getBoolean(Const.ALERT_EXTR_STORAGE_CB_KEY, false)){
+            showExtDirAlert();
+        }
         changeDirectory(new File(storages.get(i).getPath()));
+    }
+
+    private void showExtDirAlert() {
+        View checkBoxView = View.inflate(getContext(), R.layout.alert_checkbox, null);
+        final CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.donot_warn_cb);
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.alert_ext_dir_warning_title)
+                .setMessage(R.string.alert_ext_dir_warning_message)
+                .setView(checkBoxView)
+                .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (checkBox.isChecked())
+                            prefs.edit().putBoolean(Const.ALERT_EXTR_STORAGE_CB_KEY, true).apply();
+                    }
+                })
+                .create().show();
+
     }
 
     @Override

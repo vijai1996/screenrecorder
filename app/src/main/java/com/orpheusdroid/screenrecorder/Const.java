@@ -40,6 +40,8 @@ public class Const {
     public static final String TAG = "SCREENRECORDER";
     public static final String APPDIR = "screenrecorder";
 
+    public static final String ALERT_EXTR_STORAGE_CB_KEY = "ext_dir_warn_donot_show_again";
+
     public static final String VIDEO_EDIT_URI_KEY = "edit_video";
 
     static final String ANALYTICS_URL = "http://analytics.orpheusdroid.com";

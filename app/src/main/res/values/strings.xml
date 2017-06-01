@@ -90,4 +90,7 @@
     <string name="preference_floating_control_size_key" translatable="false">floatingControlSize</string>
     <string name="storage_selection_spinner_title">Select storage</string>
     <string name="external_storage_dir_not_writable">The directory is not writable</string>
+    <string name="alert_external_storage_warn_cb_text">Do not show again</string>
+    <string name="alert_ext_dir_warning_title">Warning</string>
+    <string name="alert_ext_dir_warning_message">Saving to external directory may not work on all phones. Proceed with caution.</string>
 </resources>
