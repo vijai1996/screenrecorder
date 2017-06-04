@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2016. Vijai Chandra Prasad R.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see http://www.gnu.org/licenses
+  -->
+
+<resources>
+    <string-array name="fpsArray">
+        <item>25</item>
+        <item>30</item>
+        <item>35</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+    </string-array>
+
+    <string-array name="resolutionsArray">
+        <item>640p</item>
+        <item>720p</item>
+        <item>1080p</item>
+        <item>1440p</item>
+    </string-array>
+
+    <string-array name="resolutionValues">
+        <item>360x640</item>
+        <item>720x1280</item>
+        <item>1080x1920</item>
+        <item>1440x2560</item>
+    </string-array>
+
+    <string-array name="bitrateArray">
+        <item>1.0 Mbit (最低)</item>
+        <item>2.5 Mbit</item>
+        <item>3.5Mbit (低)</item>
+        <item>4.5 Mbit</item>
+        <item>6.8 Mbit (良)</item>
+        <item>9.8 Mbit</item>
+        <item>12 Mbit (最高)</item>
+    </string-array>
+
+    <string-array name="bitratesValue">
+        <item>1048576</item>
+        <item>2621440</item>
+        <item>3670016</item>
+        <item>4718592</item>
+        <item>7130317</item>
+        <item>10276045</item>
+        <item>12582912</item>
+    </string-array>
+
+    <string-array name="filename">
+        <item>yyyyMMdd_hhmmss</item>
+        <item>ddMMyyyy_hhmmss</item>
+        <item>yyMMdd_hhmmss</item>
+        <item>ddMMyy_hhmmss</item>
+        <item>hhMMss_yyyymmdd</item>
+        <item>hhMMss_ddmmyyyy</item>
+        <item>hhMMss_yymmdd</item>
+        <item>hhMMss_ddmmyy</item>
+    </string-array>
+
+    <string-array name="filename_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+</resources>
