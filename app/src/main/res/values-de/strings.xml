@@ -1,56 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
+    <string name="preference_resolution_title">Bildschirmauflösung</string>
+    <string name="preference_resolution_summary">Wähle die Auflösung zum Aufnehmen</string>
+    <string name="preference_fps_title">Bilder pro Sekunde (fps)</string>
+    <string name="preference_fps_summary">Wähle Bilder/Sek. bei der Aufnahme mit</string>
+    <string name="preference_bit_title">Bit-Rate</string>
+    <string name="preference_bit_summary">Bit-Rate wählen</string>
+    <string name="preference_audio_record_title">Audio aufnehmen</string>
+    <string name="preference_audio_record_summary">Nimmt zusammen mit dem Bildschirmvideo Audio übers Mikrofon auf</string>
+    <string name="preference_save_location_title">Speicherort</string>
+    <string name="preference_filename_format_title">Dateinamensformat</string>
+    <string name="preference_filename_prefix_title">Dateinamenspräfix</string>
+    <string name="storage_permission_request_title">Erlaube Speicherberechtigung</string>
+    <string name="storage_permission_request_summary">Schreib-Berechtigung auf dem Speicher ist erforderlich, um das aufgenommene Video zu speichern.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="screen_recording_permission_denied">Berechtigung zur Bildschirmaufnahme verweigert</string>
+    <string name="screen_recording_notification_title">Bildschirmaufnahme</string>
+    <string name="screen_recording_notification_action_stop">Stopp</string>
+    <string name="screen_recording_notification_action_pause">Pause</string>
+    <string name="screen_recording_notification_action_resume">Fortsetzen</string>
+    <string name="fatal_exception_message">ScreenRecorder: Fatale Ausnahmesituation eingetreten. Protokoll ist verschickt worden</string>
     <string name="about_activity_label">Über</string>
+    <string name="snackbar_storage_permission_message">Speicherzugriff gewähren</string>
+    <string name="snackbar_storage_permission_action_enable">AKTIVIEREN</string>
+    <string name="menu_about_title">Über</string>
     <string name="about_credits">Danksagungen</string>
     <string name="about_libraries">Bibliotheken</string>
     <string name="about_opensource">Open Source</string>
-    <string name="app_icon_credit_Niko">App-Symbole von %1$s\n\nWebsite: %2$s</string>
-    <string name="cancel">Abbrechen</string>
+    <string name="app_icon_credit_Niko">App-Symbole von %1$s\n
+    \n
+    Website: %2$s</string>
+    <string name="video_editor_library_credit">Video Editor von %1$s\n
+    \n
+    Github url: %2$s\n
+    \n
+    Lizenz: %3$s</string>
+    <string name="analytics_library_credit">Fehlerberichts und -analysierungs SDK von %1$s\n
+    \n
+    GitHub URL: %2$s\n
+    \n
+    Lizenz: %3$s</string>
+    <string name="opensource_info">Diese Anwendung ist quelloffen, und der Quellcode kann abgerufen werden unter\n
+    \n
+    Github URL: %1$s\n
+    \n
+    Lizenz: %2$s</string>
     <string name="fab_record_hint">Mitschnitt starten</string>
-    <string name="fab_stop_hint">Mitschnitt stoppem</string>
-    <string name="fatal_exception_message">ScreenRecorder: Fatale Ausnahmesituation eingetreten. Protokoll ist verschickt worden</string>
-    <string name="large_resolution_selected_toast">Die ausgewählte Auflösung ist größer als die Bildschirmauflösung. Wähle stattdessen %1$s Auflösung</string>
-    <string name="menu_about_title">Über</string>
-    <string name="ok">OK</string>
-    <string name="opensource_info">Diese Anwendung ist quelloffen, und der Quellcode kann abgerufen werden unter\n\nGithub URL: %1$s\n\nLizenz: %2$s</string>
-    <string name="preference_audio_record_summary">Nimmt zusammen mit dem Bildschirmvideo Audio übers Mikrofon auf</string>
-    <string name="preference_audio_record_title">Audio aufnehmen</string>
-    <string name="preference_bit_summary">Bit-Rate wählen</string>
-    <string name="preference_bit_title">Bit-Rate</string>
-    <string name="preference_filename_format_title">Dateinamensformat</string>
-    <string name="preference_filename_prefix_title">Dateinamenspräfix</string>
-    <string name="preference_floating_control_summary">Schwebende Bedienelemente ein-/ausschalten, die über jeden Bildschirm aufzeichen</string>
-    <string name="preference_floating_control_title">Schwebende Bedienelemente nutzen</string>
-    <string name="preference_fps_summary">Wähle Bilder/Sek. bei der Aufnahme mit</string>
-    <string name="preference_fps_title">Bilder pro Sekunde</string>
-    <string name="preference_resolution_summary">Wähle die Auflösung zum Aufnehmen mit</string>
-    <string name="preference_resolution_title">Bildschirmauflösung</string>
-    <string name="preference_save_location_title">Speicherort</string>
     <string name="recording_failed_toast">Bildschirmmitschnitt fehlgeschlagen.</string>
-    <string name="screen_recording_notification_action_pause">Pause</string>
-    <string name="screen_recording_notification_action_resume">Fortsetzen</string>
-    <string name="screen_recording_notification_action_stop">Stopp</string>
-    <string name="screen_recording_notification_title">Bildschirmaufnahme</string>
-    <string name="screen_recording_paused_toast">Bildschirmaufnahme angehalten</string>
-    <string name="screen_recording_permission_denied">Berechtigung zur Bildschirmaufnahme verwehrt</string>
-    <string name="screen_recording_resumed_toast">Bildschirmmitschnitt fortgesetzt</string>
+    <string name="screenrecording_already_active_toast">Bildschirmmitschnitt läuft schon</string>
+    <string name="large_resolution_selected_toast">Die ausgewählte Auflösung ist größer als die Bildschirmauflösung. Stattdessen die Auflösung von %1$s gewählt.</string>
+    <string name="shortcut_short_label">Aufnahme</string>
+    <string name="shortcut_long_label">Schnellaufnahme</string>
+    <string name="shortcut_disabled_message">Aufnahme abgeschaltet</string>
     <string name="screen_recording_started_toast">Bildschirmmitschnitt gestartet</string>
     <string name="screen_recording_stopped_toast">Bildschirmmitschnitt gestoppt</string>
-    <string name="screenrecording_already_active_toast">Bildschirmmitschnitt läuft schon</string>
-    <string name="share_intent_notification_action_text">Teilen</string>
-    <string name="share_intent_notification_content">Klicken, um das aufgenommene Video zu teilen</string>
-    <string name="share_intent_notification_title">Aufgenommenes Video teilen</string>
+    <string name="screen_recording_resumed_toast">Bildschirmmitschnitt fortgesetzt</string>
+    <string name="screen_recording_paused_toast">Bildschirmaufnahme angehalten</string>
+    <string name="fab_stop_hint">Mitschnitt stoppem</string>
     <string name="share_intent_title">Aufgenommenes teilen</string>
-    <string name="shortcut_disabled_message">Aufnahme abgeschaltet</string>
-    <string name="shortcut_long_label">Schnellaufnahme</string>
-    <string name="shortcut_short_label">Aufnahme</string>
-    <string name="snackbar_storage_permission_action_enable">AKTIVIEREN</string>
-    <string name="snackbar_storage_permission_message">Speicherzugriff gewähren</string>
-    <string name="storage_permission_request_summary">Schreib-Berechtigung auf dem Speicher ist erforderlich, um das aufgenommene Video zu speichern.</string>
-    <string name="storage_permission_request_title">Erlaube Speicherberechtigung</string>
+    <string name="share_intent_notification_title">Aufgenommenes Video teilen</string>
+    <string name="share_intent_notification_content">Klicken, um das aufgenommene Video zu teilen</string>
+    <string name="share_intent_notification_action_text">Teilen</string>
+    <string name="preference_floating_control_title">Schwebende Bedienelemente nutzen</string>
+    <string name="preference_floating_control_summary">Schwebende Bedienelemente ein-/ausschalten, die über jeden Bildschirm aufzeichen</string>
     <string name="tab_settings_title">Settings</string>
     <string name="tab_videos_title">Videos</string>
-    <string name="video_list_no_video_message">Keine Videos verfügbar</string>
     <string name="video_list_permission_denied_message">Speicherzugriffsberechtigung verweigert</string>
+    <string name="video_list_no_video_message">Keine Videos verfügbar</string>
+    <string name="alert_title_create_folder">Ordner erstellen</string>
+    <string name="alert_message_create_folder">Bitte Ordnernamen eingeben</string>
+    <string name="prefs_category_video_settings_title">Videoeinstellungen</string>
+    <string name="prefs_category_audio_settings_title">Toneinstellungen</string>
+    <string name="prefs_category_save_options_title">Speicheroptionen</string>
+    <string name="prefs_category_misc_title">Versch.</string>
+    <string name="menu_privacy_policy">Datenschutzerklärung</string>
+    <string name="preference_show_touch_title">Berührungen anzeigen</string>
+    <string name="preference_show_touch_summary">Berührungen de-/aktivieren</string>
+    <string name="alert_plugin_not_found_title">Plugin nicht gefunden</string>
+    <string name="alert_plugin_not_found_message">Ein Plugin ist nötig, um Berührungen anzuzeigen, wollen Sie diesen jetzt kaufen?</string>
+    <string name="alert_permission_denied_title">Speicherzugriffsberechtigung verweigert.</string>
+    <string name="alert_permission_denied_message">Diese App braucht Speicherzugriffsberechtigung um aufgenommene Videos zu speichern und das Speicherverzeichnis zu ändern. Ohne dieser ist sie nutzlos.\n
+    \n
+    Wollen Sie diesen jetzt gewähren?</string>
+    <string name="edit_intent_notification_action_text">Bearbeiten</string>
+    <string name="prefs_category_analytics_title">Anonyme Analytics</string>
+    <string name="preference_crash_reporting_title">Absturzberichte</string>
+    <string name="preference_crash_reporting_summary">Anonyme Absturberichte erlauben</string>
+    <string name="preference_anonymous_statistics_title">Anonyme Statistiken</string>
+    <string name="preference_anonymous_statistics_summary">Anonyme Statistiken über die Benutzungshäufigkeit der App erlauben</string>
+    <string name="preference_floating_control_size_title">Größe der schwebenden Bedienung</string>
+    <string name="preference_floating_control_size_summary">Größe der schwebenden Bedienung festsetzen</string>
+    <string name="storage_selection_spinner_title">Speicher auswählen</string>
+    <string name="external_storage_dir_not_writable">Der Ordner ist nicht beschreibbar</string>
+    <string name="alert_external_storage_warn_cb_text">Nicht erneut anzeigen</string>
+    <string name="alert_ext_dir_warning_title">Warnung</string>
+    <string name="alert_ext_dir_warning_message">Das Speichern auf externe Medien funktioniert möglicherweise nicht auf allen Geräten. Mit Vorsicht fortfahren.</string>
 </resources>
