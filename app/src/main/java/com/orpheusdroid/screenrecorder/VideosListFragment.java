@@ -26,13 +26,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -73,8 +73,8 @@ public class VideosListFragment extends Fragment implements PermissionResultList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_videos, container, false);
-        message = (TextView) view.findViewById(R.id.message_tv);
-        videoRV = (RecyclerView) view.findViewById(R.id.videos_rv);
+        message = view.findViewById(R.id.message_tv);
+        videoRV = view.findViewById(R.id.videos_rv);
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return view;
     }
@@ -319,7 +319,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
                 File file = files[i];
                 if (!file.isDirectory() && isVideoFile(file.getPath())) {
                     videosList.add(new Video(file.getName(),
-                            Uri.fromFile(file),
+                            FileProvider.getUriForFile(getActivity(), getActivity().getApplicationContext().getPackageName() + ".provider",file),
                             getBitmap(file),
                             new Date(file.lastModified())));
                     //Update progress dialog
