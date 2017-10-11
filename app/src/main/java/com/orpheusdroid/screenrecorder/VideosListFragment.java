@@ -32,7 +32,6 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -319,7 +318,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
                 File file = files[i];
                 if (!file.isDirectory() && isVideoFile(file.getPath())) {
                     videosList.add(new Video(file.getName(),
-                            FileProvider.getUriForFile(getActivity(), getActivity().getApplicationContext().getPackageName() + ".provider",file),
+                            file,
                             getBitmap(file),
                             new Date(file.lastModified())));
                     //Update progress dialog

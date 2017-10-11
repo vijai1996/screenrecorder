@@ -139,7 +139,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                                         break;
                                     case R.id.savegif:
                                         Mp4toGIFConverter gif = new Mp4toGIFConverter(context);
-                                        gif.setVideoUri(videos.get(position).getFileUri());
+                                        gif.setVideoUri(Uri.fromFile(videos.get(position).getFile()));
                                         gif.convertToGif();
                                 }
                                 return true;

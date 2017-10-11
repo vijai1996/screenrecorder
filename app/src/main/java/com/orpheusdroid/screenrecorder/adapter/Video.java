@@ -18,8 +18,8 @@
 package com.orpheusdroid.screenrecorder.adapter;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -28,7 +28,7 @@ import java.util.Date;
 
 public class Video implements Comparable<Video> {
     private String FileName;
-    private Uri file;
+    private File file;
     private Bitmap thumbnail;
     private Date lastModified;
     private boolean isSection = false;
@@ -38,7 +38,7 @@ public class Video implements Comparable<Video> {
         this.lastModified = lastModified;
     }
 
-    public Video(String fileName, Uri file, Bitmap thumbnail, Date lastModified) {
+    public Video(String fileName, File file, Bitmap thumbnail, Date lastModified) {
         FileName = fileName;
         this.file = file;
         this.thumbnail = thumbnail;
@@ -49,7 +49,7 @@ public class Video implements Comparable<Video> {
         return FileName;
     }
 
-    public Uri getFile() {
+    public File getFile() {
         return file;
     }
 
