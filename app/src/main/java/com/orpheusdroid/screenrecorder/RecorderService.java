@@ -20,6 +20,7 @@ package com.orpheusdroid.screenrecorder;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -30,6 +31,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.MediaRecorder;
@@ -43,9 +45,12 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.FileProvider;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -53,18 +58,21 @@ import android.view.Surface;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.orpheusdroid.screenrecorder.gesture.ShakeEventManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by vijai on 12-10-2016.
  */
 //TODO: Update icons for notifcation
-public class RecorderService extends Service{
+public class RecorderService extends Service implements ShakeEventManager.ShakeListener{
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static int WIDTH, HEIGHT, FPS, DENSITY_DPI;
     private static int BITRATE;
@@ -75,6 +83,10 @@ public class RecorderService extends Service{
     private boolean showTouches;
     private FloatingControlService floatingControlService;
     private boolean isBound = false;
+    private NotificationManager mNotificationManager;
+    private ShakeEventManager mShakeDetector;
+    private Intent data;
+    private int result;
 
     //Service connection to manage the connection state between this service and the bounded service
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -110,80 +122,57 @@ public class RecorderService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            createNotificationChannels();
+
         //return super.onStartCommand(intent, flags, startId);
         //Find the action to perform from intent
         switch (intent.getAction()) {
             case Const.SCREEN_RECORDING_START:
+
                 /* Wish MediaRecorder had a method isRecording() or similar. But, we are forced to
                  * manage the state ourself. Let's hope the request is honored.
                   * Request: https://code.google.com/p/android/issues/detail?id=800 */
                 if (!isRecording) {
                     //Get values from Default SharedPreferences
                     getValues();
-                    Intent data = intent.getParcelableExtra(Const.RECORDER_INTENT_DATA);
-                    int result = intent.getIntExtra(Const.RECORDER_INTENT_RESULT, Activity.RESULT_OK);
+                    data = intent.getParcelableExtra(Const.RECORDER_INTENT_DATA);
+                    result = intent.getIntExtra(Const.RECORDER_INTENT_RESULT, Activity.RESULT_OK);
 
-                    //Initialize MediaRecorder class and initialize it with preferred configuration
-                    mMediaRecorder = new MediaRecorder();
-                    initRecorder();
+                    //SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+                    mShakeDetector = new ShakeEventManager(this);
+                    mShakeDetector.init(this);
 
-                    //Set Callback for MediaProjection
-                    mMediaProjectionCallback = new MediaProjectionCallback();
-                    MediaProjectionManager mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+                    boolean isShakeGestureActive = PreferenceManager.getDefaultSharedPreferences(this)
+                            .getBoolean(getString(R.string.preference_shake_gesture_key), false);
 
-                    //Initialize MediaProjection using data received from Intent
-                    mMediaProjection = mProjectionManager.getMediaProjection(result, data);
-                    mMediaProjection.registerCallback(mMediaProjectionCallback, null);
+                    if(isShakeGestureActive){
 
-                /* Create a new virtual display with the actual default display
-                 * and pass it on to MediaRecorder to start recording */
-                    mVirtualDisplay = createVirtualDisplay();
-                    try {
-                        mMediaRecorder.start();
+                        Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                                R.mipmap.ic_launcher);
 
-                        //If floating controls is enabled, start the floating control service and bind it here
-                        if (useFloatingControls) {
-                            Intent floatinControlsIntent = new Intent(this, FloatingControlService.class);
-                            startService(floatinControlsIntent);
-                            bindService(floatinControlsIntent,
-                                    serviceConnection, BIND_AUTO_CREATE);
-                        }
+                        Intent destroyMediaRecorderIntent = new Intent(this, RecorderService.class);
+                        destroyMediaRecorderIntent.setAction(Const.SCREEN_RECORDING_DESTORY_SHAKE_GESTURE);
+                        PendingIntent pdestroyMediaRecorderIntent = PendingIntent.getService(this, 0, destroyMediaRecorderIntent, 0);
 
-                        //Set the state of the recording
-                        if (isBound)
-                            floatingControlService.setRecordingState(Const.RecordingState.RECORDING);
-                        isRecording = true;
+                        NotificationCompat.Builder shakeGestureWaitNotification =
+                                new NotificationCompat.Builder(this, Const.RECORDING_NOTIFICATION_CHANNEL_ID)
+                                .setContentTitle("Waiting for device shake")
+                                .setContentText("Shake your device to start recording or press this notification to cancel")
+                                .setOngoing(true)
+                                .setSmallIcon(R.drawable.ic_notification)
+                                .setLargeIcon(
+                                        Bitmap.createScaledBitmap(icon, 128, 128, false))
+                                .setContentIntent(pdestroyMediaRecorderIntent);
 
-                        //Send a broadcast receiver to the plugin app to enable show touches since the recording is started
-                        if(showTouches){
-                            Intent TouchIntent = new Intent();
-                            TouchIntent.setAction("com.orpheusdroid.screenrecorder.SHOWTOUCH");
-                            TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-                            sendBroadcast(TouchIntent);
-                        }
-                        Toast.makeText(this, R.string.screen_recording_started_toast, Toast.LENGTH_SHORT).show();
-                    } catch (IllegalStateException e){
-                        Log.d(Const.TAG, "Mediarecorder reached Illegal state exception. Did you start the recording twice?");
-                        Toast.makeText(this, R.string.recording_failed_toast, Toast.LENGTH_SHORT).show();
-                        isRecording = false;
+                        startNotificationForeGround(shakeGestureWaitNotification.build(), Const.SCREEN_RECORDER_SHARE_NOTIFICATION_ID);
+
+                        Toast.makeText(this, R.string.screenrecording_waiting_for_gesture_toast,
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        startRecording();
                     }
 
-                /* Add Pause action to Notification to pause screen recording if the user's android version
-                 * is >= Nougat(API 24) since pause() isnt available previous to API24 else build
-                 * Notification with only default stop() action */
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        //startTime is to calculate elapsed recording time to update notification during pause/resume
-                        startTime = System.currentTimeMillis();
-                        Intent recordPauseIntent = new Intent(this, RecorderService.class);
-                        recordPauseIntent.setAction(Const.SCREEN_RECORDING_PAUSE);
-                        PendingIntent precordPauseIntent = PendingIntent.getService(this, 0, recordPauseIntent, 0);
-                        NotificationCompat.Action action = new NotificationCompat.Action(android.R.drawable.ic_media_pause,
-                                getString(R.string.screen_recording_notification_action_pause), precordPauseIntent);
-
-                        //Start Notification as foreground
-                        startNotificationForeGround(createNotification(action).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
-                    } else
-                        startNotificationForeGround(createNotification(null).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
                 } else {
                     Toast.makeText(this, R.string.screenrecording_already_active_toast, Toast.LENGTH_SHORT).show();
                 }
@@ -196,8 +185,10 @@ public class RecorderService extends Service{
                 break;
             case Const.SCREEN_RECORDING_STOP:
                 //Unbind the floating control service if its bound (naturally unbound if floating controls is disabled)
-                if (isBound)
+                if (isBound) {
                     unbindService(serviceConnection);
+                    Log.d(Const.TAG, "Unbinding connection service");
+                }
                 stopScreenSharing();
 
                 //Send a broadcast receiver to the plugin app to disable show touches since the recording is stopped
@@ -210,6 +201,10 @@ public class RecorderService extends Service{
 
                 //The service is started as foreground service and hence has to be stopped
                 stopForeground(true);
+                break;
+            case Const.SCREEN_RECORDING_DESTORY_SHAKE_GESTURE:
+                mShakeDetector.stop();
+                stopSelf();
                 break;
         }
         return START_STICKY;
@@ -227,7 +222,7 @@ public class RecorderService extends Service{
         PendingIntent precordResumeIntent = PendingIntent.getService(this, 0, recordResumeIntent, 0);
         NotificationCompat.Action action = new NotificationCompat.Action(android.R.drawable.ic_media_play,
                 getString(R.string.screen_recording_notification_action_resume), precordResumeIntent);
-        updateNotification(createNotification(action).setUsesChronometer(false).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
+        updateNotification(createRecordingNotification(action).setUsesChronometer(false).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
         Toast.makeText(this, R.string.screen_recording_paused_toast, Toast.LENGTH_SHORT).show();
 
         if (isBound)
@@ -255,7 +250,7 @@ public class RecorderService extends Service{
         PendingIntent precordPauseIntent = PendingIntent.getService(this, 0, recordPauseIntent, 0);
         NotificationCompat.Action action = new NotificationCompat.Action(android.R.drawable.ic_media_pause,
                 getString(R.string.screen_recording_notification_action_pause), precordPauseIntent);
-        updateNotification(createNotification(action).setUsesChronometer(true)
+        updateNotification(createRecordingNotification(action).setUsesChronometer(true)
                 .setWhen((System.currentTimeMillis() - elapsedTime)).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
         Toast.makeText(this, R.string.screen_recording_resumed_toast, Toast.LENGTH_SHORT).show();
 
@@ -272,6 +267,70 @@ public class RecorderService extends Service{
                 sendBroadcast(TouchIntent);
             }
         }
+    }
+
+    private void startRecording() {
+        //Initialize MediaRecorder class and initialize it with preferred configuration
+        mMediaRecorder = new MediaRecorder();
+        initRecorder();
+
+        //Set Callback for MediaProjection
+        mMediaProjectionCallback = new MediaProjectionCallback();
+        MediaProjectionManager mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+
+        //Initialize MediaProjection using data received from Intent
+        mMediaProjection = mProjectionManager.getMediaProjection(result, data);
+        mMediaProjection.registerCallback(mMediaProjectionCallback, null);
+
+        /* Create a new virtual display with the actual default display
+                 * and pass it on to MediaRecorder to start recording */
+        mVirtualDisplay = createVirtualDisplay();
+        try {
+            mMediaRecorder.start();
+
+            //If floating controls is enabled, start the floating control service and bind it here
+            if (useFloatingControls) {
+                Intent floatinControlsIntent = new Intent(this, FloatingControlService.class);
+                startService(floatinControlsIntent);
+                bindService(floatinControlsIntent,
+                        serviceConnection, BIND_AUTO_CREATE);
+            }
+
+            //Set the state of the recording
+            if (isBound)
+                floatingControlService.setRecordingState(Const.RecordingState.RECORDING);
+            isRecording = true;
+
+            //Send a broadcast receiver to the plugin app to enable show touches since the recording is started
+            if(showTouches){
+                Intent TouchIntent = new Intent();
+                TouchIntent.setAction("com.orpheusdroid.screenrecorder.SHOWTOUCH");
+                TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+                sendBroadcast(TouchIntent);
+            }
+            Toast.makeText(this, R.string.screen_recording_started_toast, Toast.LENGTH_SHORT).show();
+        } catch (IllegalStateException e){
+            Log.d(Const.TAG, "Mediarecorder reached Illegal state exception. Did you start the recording twice?");
+            Toast.makeText(this, R.string.recording_failed_toast, Toast.LENGTH_SHORT).show();
+            isRecording = false;
+        }
+
+                /* Add Pause action to Notification to pause screen recording if the user's android version
+                 * is >= Nougat(API 24) since pause() isnt available previous to API24 else build
+                 * Notification with only default stop() action */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //startTime is to calculate elapsed recording time to update notification during pause/resume
+            startTime = System.currentTimeMillis();
+            Intent recordPauseIntent = new Intent(this, RecorderService.class);
+            recordPauseIntent.setAction(Const.SCREEN_RECORDING_PAUSE);
+            PendingIntent precordPauseIntent = PendingIntent.getService(this, 0, recordPauseIntent, 0);
+            NotificationCompat.Action action = new NotificationCompat.Action(android.R.drawable.ic_media_pause,
+                    getString(R.string.screen_recording_notification_action_pause), precordPauseIntent);
+
+            //Start Notification as foreground
+            startNotificationForeGround(createRecordingNotification(action).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
+        } else
+            startNotificationForeGround(createRecordingNotification(null).build(), Const.SCREEN_RECORDER_NOTIFICATION_ID);
     }
 
     //Virtual display created by mirroring the actual physical display
@@ -307,9 +366,40 @@ public class RecorderService extends Service{
         }
     }
 
+    //Add notification channel for supporting Notification in Api 26 (Oreo)
+    @TargetApi(26)
+    private void createNotificationChannels(){
+        List<NotificationChannel> notificationChannels = new ArrayList<>();
+        NotificationChannel recordingNotificationChannel  = new NotificationChannel(
+                Const.RECORDING_NOTIFICATION_CHANNEL_ID,
+                Const.RECORDING_NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT
+        );
+        recordingNotificationChannel.enableLights(true);
+        recordingNotificationChannel.setLightColor(Color.RED);
+        recordingNotificationChannel.setShowBadge(true);
+        recordingNotificationChannel.enableVibration(true);
+        recordingNotificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        notificationChannels.add(recordingNotificationChannel);
+
+        NotificationChannel shareNotificationChannel  = new NotificationChannel(
+                Const.SHARE_NOTIFICATION_CHANNEL_ID,
+                Const.SHARE_NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT
+        );
+        shareNotificationChannel.enableLights(true);
+        shareNotificationChannel.setLightColor(Color.RED);
+        shareNotificationChannel.setShowBadge(true);
+        shareNotificationChannel.enableVibration(true);
+        shareNotificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        notificationChannels.add(shareNotificationChannel);
+
+        getManager().createNotificationChannels(notificationChannels);
+    }
+
     /* Create Notification.Builder with action passed in case user's android version is greater than
      * API24 */
-    private NotificationCompat.Builder createNotification(NotificationCompat.Action action) {
+    private NotificationCompat.Builder createRecordingNotification(NotificationCompat.Action action) {
         Bitmap icon = BitmapFactory.decodeResource(getResources(),
                 R.mipmap.ic_launcher);
 
@@ -320,7 +410,7 @@ public class RecorderService extends Service{
         Intent UIIntent = new Intent(this, MainActivity.class);
         PendingIntent notificationContentIntent = PendingIntent.getActivity(this, 0, UIIntent, 0);
 
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this)
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, Const.RECORDING_NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getResources().getString(R.string.screen_recording_notification_title))
                 .setTicker(getResources().getString(R.string.screen_recording_notification_title))
                 .setSmallIcon(R.drawable.ic_notification)
@@ -329,7 +419,7 @@ public class RecorderService extends Service{
                 .setUsesChronometer(true)
                 .setOngoing(true)
                 .setContentIntent(notificationContentIntent)
-                .setPriority(Notification.PRIORITY_MAX)
+                .setPriority(NotificationManager.IMPORTANCE_DEFAULT)
                 .addAction(R.drawable.ic_notification_stop, getResources().getString(R.string.screen_recording_notification_action_stop),
                         precordStopIntent);
         if (action != null)
@@ -340,17 +430,23 @@ public class RecorderService extends Service{
     private void showShareNotification(){
         Bitmap icon = BitmapFactory.decodeResource(getResources(),
                 R.mipmap.ic_launcher);
-        /*Intent Shareintent = new Intent()
+
+        Uri videoUri = FileProvider.getUriForFile(
+                this, this.getApplicationContext().getPackageName() + ".provider",
+                new File(SAVEPATH));
+
+        Intent Shareintent = new Intent()
                 .setAction(Intent.ACTION_SEND)
-                .putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(SAVEPATH)))
-                .setType("video/mp4");*/
-        Intent videoListIntent = new Intent();
+                .putExtra(Intent.EXTRA_STREAM, videoUri)
+                .setType("video/mp4");
+
         Intent editIntent = new Intent(this, EditVideoActivity.class);
         editIntent.putExtra(Const.VIDEO_EDIT_URI_KEY, SAVEPATH);
         PendingIntent editPendingIntent = PendingIntent.getActivity(this, 0, editIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent sharePendingIntent = PendingIntent.getActivity(this, 0, Intent.createChooser(
-                videoListIntent, getString(R.string.share_intent_title)), PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder shareNotification = new NotificationCompat.Builder(this)
+                Shareintent, getString(R.string.share_intent_title)), PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder shareNotification = new NotificationCompat.Builder(this, Const.SHARE_NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getString(R.string.share_intent_notification_title))
                 .setContentText(getString(R.string.share_intent_notification_content))
                 .setSmallIcon(R.drawable.ic_notification)
@@ -371,12 +467,19 @@ public class RecorderService extends Service{
 
     //Update existing notification with its ID and new Notification data
     private void updateNotification(Notification notification, int ID) {
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(ID, notification);
+        getManager().notify(ID, notification);
+    }
+
+    private NotificationManager getManager() {
+        if (mNotificationManager == null) {
+            mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        return mNotificationManager;
     }
 
     @Override
     public void onDestroy() {
+        Log.d(Const.TAG, "Recorder service destroyed");
         super.onDestroy();
     }
 
@@ -492,9 +595,33 @@ public class RecorderService extends Service{
 
     private void stopScreenSharing() {
         if (mVirtualDisplay == null) {
+            Log.d(Const.TAG, "Virtual display is null. Screen sharing already stopped");
             return;
         }
         destroyMediaProjection();
+    }
+
+    @Override
+    public void onShake() {
+        if (!isRecording) {
+            Vibrator vibrate = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+            getManager().cancel(Const.SCREEN_RECORDER_WAITING_FOR_SHAKE_NOTIFICATION_ID);
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                vibrate.vibrate(500);
+            else
+                VibrationEffect.createOneShot(500, 255);
+
+            startRecording();
+            Toast.makeText(this, "Rec start", Toast.LENGTH_SHORT).show();
+        } else {
+            Intent recordStopIntent = new Intent(this, RecorderService.class);
+            recordStopIntent.setAction(Const.SCREEN_RECORDING_STOP);
+            startService(recordStopIntent);
+            Toast.makeText(this, "Rec stop", Toast.LENGTH_SHORT).show();
+            mShakeDetector.stop();
+        }
     }
 
     private class MediaProjectionCallback extends MediaProjection.Callback {
