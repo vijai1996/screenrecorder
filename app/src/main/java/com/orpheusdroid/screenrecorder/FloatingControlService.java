@@ -65,9 +65,9 @@ public class FloatingControlService extends Service implements View.OnClickListe
         controls = floatingControls.findViewById(R.id.controls);
 
         //Initialize imageButtons
-        ImageButton stopIB = (ImageButton) controls.findViewById(R.id.stop);
-        pauseIB = (ImageButton) controls.findViewById(R.id.pause);
-        resumeIB = (ImageButton) controls.findViewById(R.id.resume);
+        ImageButton stopIB = controls.findViewById(R.id.stop);
+        pauseIB = controls.findViewById(R.id.pause);
+        resumeIB = controls.findViewById(R.id.resume);
         resumeIB.setEnabled(false);
 
         stopIB.setOnClickListener(this);
@@ -90,9 +90,13 @@ public class FloatingControlService extends Service implements View.OnClickListe
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 dpToPx(pref.getInt(getString(R.string.preference_floating_control_size_key), 100)),
-                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
+
+        // From API26, TYPE_PHONE depricated. Use TYPE_APPLICATION_OVERLAY for O
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            params.type = WindowManager.LayoutParams.TYPE_PHONE;
 
         //Initial position of the floating controls
         params.gravity = Gravity.TOP | Gravity.START;
