@@ -139,14 +139,13 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
                     data = intent.getParcelableExtra(Const.RECORDER_INTENT_DATA);
                     result = intent.getIntExtra(Const.RECORDER_INTENT_RESULT, Activity.RESULT_OK);
 
-                    //SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-                    mShakeDetector = new ShakeEventManager(this);
-                    mShakeDetector.init(this);
-
                     boolean isShakeGestureActive = PreferenceManager.getDefaultSharedPreferences(this)
                             .getBoolean(getString(R.string.preference_shake_gesture_key), false);
 
                     if(isShakeGestureActive){
+                        //SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+                        mShakeDetector = new ShakeEventManager(this);
+                        mShakeDetector.init(this);
 
                         Bitmap icon = BitmapFactory.decodeResource(getResources(),
                                 R.mipmap.ic_launcher);
