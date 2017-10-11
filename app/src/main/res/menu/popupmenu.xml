@@ -29,4 +29,8 @@
         android:id="@+id/edit"
         android:icon="@android:drawable/ic_menu_edit"
         android:title="Edit" />
+    <item
+        android:id="@+id/savegif"
+        android:title="Save as GIF"
+        android:enabled="false"/>
 </menu>

@@ -20,6 +20,7 @@ package com.orpheusdroid.screenrecorder.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -38,6 +39,7 @@ import com.orpheusdroid.screenrecorder.Const;
 import com.orpheusdroid.screenrecorder.EditVideoActivity;
 import com.orpheusdroid.screenrecorder.R;
 import com.orpheusdroid.screenrecorder.VideosListFragment;
+import com.orpheusdroid.screenrecorder.encoder.Mp4toGIFConverter;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -110,6 +112,11 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                     @Override
                     public void onClick(View view) {
                         PopupMenu popupMenu = new PopupMenu(context, view);
+                        popupMenu.inflate(R.menu.popupmenu);
+                        popupMenu.show();
+                        popupMenu.getMenu().getItem(3).setEnabled(PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(
+                                        context.getString(R.string.preference_save_gif_key), false));
                         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
@@ -122,15 +129,22 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                                         break;
                                     case R.id.edit:
                                         Toast.makeText(context, "Edit video for " + itemViewHolder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
+                                        Uri videoUri = FileProvider.getUriForFile(
+                                                context, context.getApplicationContext().getPackageName() + ".provider",
+                                                videos.get(position).getFile());
                                         Intent editIntent = new Intent(context, EditVideoActivity.class);
-                                        editIntent.putExtra(Const.VIDEO_EDIT_URI_KEY, videos.get(position).getFile().toString());
+                                        editIntent.putExtra(Const.VIDEO_EDIT_URI_KEY, videoUri.toString());
+                                        Log.d(Const.TAG, "Uri: " + Uri.fromFile(videos.get(position).getFile()));
                                         videosListFragment.startActivityForResult(editIntent, Const.VIDEO_EDIT_REQUEST_CODE);
+                                        break;
+                                    case R.id.savegif:
+                                        Mp4toGIFConverter gif = new Mp4toGIFConverter(context);
+                                        gif.setVideoUri(videos.get(position).getFileUri());
+                                        gif.convertToGif();
                                 }
                                 return true;
                             }
                         });
-                        popupMenu.inflate(R.menu.popupmenu);
-                        popupMenu.show();
                     }
                 });
 
@@ -138,11 +152,15 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 itemViewHolder.videoCard.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        File videoFile = videos.get(itemViewHolder.getAdapterPosition()).getFile();
                         Log.d("Videos List", "video position clicked: " + itemViewHolder.getAdapterPosition());
+
                         Uri fileUri = FileProvider.getUriForFile(
                                 context,context.getPackageName()+
                                 ".provider",
-                                new File(videos.get(itemViewHolder.getAdapterPosition()).getFile().getPath()));
+                                videoFile
+                                );
+                        Log.d(Const.TAG, fileUri.toString());
                         Intent openVideoIntent = new Intent();
                         openVideoIntent.setAction(Intent.ACTION_VIEW)
                                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -238,11 +256,11 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         ItemViewHolder(View view) {
             super(view);
-            tv_fileName = (TextView) view.findViewById(R.id.fileName);
-            iv_thumbnail = (ImageView) view.findViewById(R.id.thumbnail);
+            tv_fileName = view.findViewById(R.id.fileName);
+            iv_thumbnail = view.findViewById(R.id.thumbnail);
             iv_thumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            videoCard = (RelativeLayout) view.findViewById(R.id.videoCard);
-            overflow = (ImageButton) view.findViewById(R.id.ic_overflow);
+            videoCard = view.findViewById(R.id.videoCard);
+            overflow = view.findViewById(R.id.ic_overflow);
         }
     }
 
@@ -252,7 +270,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         SectionViewHolder(View view) {
             super(view);
-            section = (TextView) view.findViewById(R.id.sectionID);
+            section = view.findViewById(R.id.sectionID);
         }
     }
 }

@@ -93,4 +93,12 @@
     <string name="alert_external_storage_warn_cb_text">Do not show again</string>
     <string name="alert_ext_dir_warning_title">Warning</string>
     <string name="alert_ext_dir_warning_message">Saving to external directory may not work on all phones. Proceed with caution.</string>
+    <string name="prefs_category_experimental_title">Expertmental</string>
+    <string name="preference_save_gif_title">Enable saving in GIF</string>
+    <string name="preference_save_gif_summary">Enables saving videos as GIF animation</string>
+    <string name="preference_save_gif_key" translatable="false">save_gif</string>
+    <string name="preference_shake_gesture_title">Shake to start/stop recording</string>
+    <string name="preference_shake_gesture_summary">Shake your device to start or stop recording</string>
+    <string name="preference_shake_gesture_key" translatable="false">shake_gesture</string>
+    <string name="screenrecording_waiting_for_gesture_toast">Shake your device to start recording when ready</string>
 </resources>
