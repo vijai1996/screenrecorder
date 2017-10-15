@@ -60,17 +60,15 @@ public class Mp4toGIFConverter {
     }
 
     public void convertToGif(){
-        MediaMetadataRetriever tRetriever = new MediaMetadataRetriever();
+        //MediaMetadataRetriever tRetriever = new MediaMetadataRetriever();
 
         try{
-            tRetriever.setDataSource(context, videoUri);
+            mediaMetadataRetriever.setDataSource(context, videoUri);
 
-            mediaMetadataRetriever = tRetriever;
-            //extract duration in millisecond, as String
-            //String DURATION = mediaMetadataRetriever.extractMetadata(
-                    //MediaMetadataRetriever.METADATA_KEY_DURATION);
-            //convert to us, as int
-            //maxDur = (long)(1000*Double.parseDouble(DURATION));
+            //extract duration in millisecond
+            String DURATION = mediaMetadataRetriever.extractMetadata(
+                    MediaMetadataRetriever.METADATA_KEY_DURATION);
+            maxDur = (long)(Double.parseDouble(DURATION));
 
             Log.d(Const.TAG, "max dur is" + maxDur);
 
@@ -87,21 +85,17 @@ public class Mp4toGIFConverter {
     public class TaskSaveGIF extends AsyncTask<Void, Integer, String> {
         ProgressDialog dialog = new ProgressDialog(context);
 
-        //SeekBar bar;
-
-        /*public TaskSaveGIF(SeekBar sb){
-            //bar = sb;
-            Toast.makeText(context,
-                    "Generate GIF animation",
-                    Toast.LENGTH_LONG).show();
-        }*/
+        private String getGifFIleName(){
+            String Filename = videoUri.getLastPathSegment();
+            return Filename.replace("mp4", "gif");
+        }
 
 
 
         @Override
         protected String doInBackground(Void... params) {
             String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-            File outFile = new File(extStorageDirectory + File.separator + Const.APPDIR, "test.GIF");
+            File outFile = new File(extStorageDirectory + File.separator + Const.APPDIR, getGifFIleName());
             try {
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outFile));
                 bos.write(genGIF());
@@ -149,7 +143,7 @@ public class Mp4toGIFConverter {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
             GifEncoder animatedGifEncoder = new GifEncoder();
-            //animatedGifEncoder.setDelay(1000);
+            animatedGifEncoder.setDelay(1000);
             animatedGifEncoder.setRepeat(0);
             animatedGifEncoder.setQuality(15);
             //animatedGifEncoder.setSize(0,0);
@@ -159,6 +153,7 @@ public class Mp4toGIFConverter {
             animatedGifEncoder.start(bos);
             for(int i=0; i<100; i+=10){
                 long frameTime = maxDur * i/100;
+                Log.d(Const.TAG, "GIF GETTING FRAME AT: " + frameTime + "ms");
                 bmFrame = mediaMetadataRetriever.getFrameAtTime(frameTime);
                 animatedGifEncoder.addFrame(bmFrame);
                 publishProgress(i);
