@@ -9,6 +9,8 @@ import android.text.Spanned;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.util.Calendar;
+
 public class AboutActivity extends AppCompatActivity {
 
     @Override
@@ -23,11 +25,11 @@ public class AboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
 
         //Let's set the copyright and app version dynamically
-        TextView appVersion = (TextView) findViewById(R.id.versionTxt);
-        TextView iconCredit = (TextView) findViewById(R.id.icon_credit_tv);
-        TextView videoEditorCredit = (TextView) findViewById(R.id.video_editor_lib_credit_tv);
-        TextView analyticsCredit = (TextView) findViewById(R.id.analytics_lib_credit_tv);
-        TextView openSourceInfo = (TextView) findViewById(R.id.opensource_info_tv);
+        TextView appVersion = findViewById(R.id.versionTxt);
+        TextView iconCredit = findViewById(R.id.icon_credit_tv);
+        TextView videoEditorCredit = findViewById(R.id.video_editor_lib_credit_tv);
+        TextView analyticsCredit = findViewById(R.id.analytics_lib_credit_tv);
+        TextView openSourceInfo = findViewById(R.id.opensource_info_tv);
 
         iconCredit.setText(getString(R.string.app_icon_credit_Niko, "Niko Hörkkö", "http://nikosite.net"));
         videoEditorCredit.setText(getString(R.string.video_editor_library_credit, "knowledge4life",
@@ -40,7 +42,9 @@ public class AboutActivity extends AppCompatActivity {
 
         //Let's build the copyright text using String builder
         StringBuilder copyRight = new StringBuilder();
-        copyRight.append("Copyright &copy; orpheusdroid 2014-2016\n");
+        copyRight.append("Copyright &copy; orpheusdroid 2014-")
+                .append(Calendar.getInstance().get(Calendar.YEAR))
+                .append("\n");
 
 
         //If the apk is beta version include version code. Else ignore
