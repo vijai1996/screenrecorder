@@ -15,7 +15,6 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.orpheusdroid.screenrecorder">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -32,8 +31,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:replace="android:theme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
