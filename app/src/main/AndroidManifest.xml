@@ -63,26 +63,6 @@
             android:name=".AboutActivity"
             android:label="@string/about_activity_label" />
 
-        <!-- We no longer use firebase. Will be removed shortly -->
-        <activity android:name=".DeepLinkActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data
-                    android:host="screenrecording"
-                    android:scheme="od" />
-                <data
-                    android:host="screenrecord.orpheusdroid.com"
-                    android:scheme="https" />
-                <data
-                    android:host="screenrecord.orpheusdroid.com"
-                    android:scheme="http" />
-            </intent-filter>
-        </activity>
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
