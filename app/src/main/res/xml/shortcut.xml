@@ -16,7 +16,7 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses
   -->
 <!-- This should have been localized to xml-25 but few custom launchers like action3 laucher
-which supports shortcuts in lower api isnt happy about it -->
+which supports shortcuts in lower api isnt happy overflow_menu it -->
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
         android:shortcutId="record"

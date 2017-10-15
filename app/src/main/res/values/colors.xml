@@ -5,4 +5,13 @@
     <color name="colorAccent">#FF5722</color>
     <color name="windowBackground">#FFFFFF</color>
     <color name="navigationBarColor">#000000</color>
+
+    <color name="colorPrimary_dark">#101010</color>
+    <color name="colorPrimaryDark_dark">@android:color/black</color>
+    <color name="textColorPrimary_dark">@android:color/white</color>
+    <color name="textColorSecondary_dark">#fafafa</color>
+    <color name="colorAccent_dark">#009688</color>
+    <color name="windowBackground_dark">@android:color/black</color>
+    <color name="navigationBarColor_dark">@android:color/black</color>
+    <color name="actionBarStyle_dark">@android:color/black</color>
 </resources>

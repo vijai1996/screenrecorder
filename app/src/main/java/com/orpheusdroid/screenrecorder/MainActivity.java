@@ -71,16 +71,24 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Const.PREFS_DARK_THEME, false))
+            setTheme(R.style.AppTheme_Dark_NoActionBar);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Const.PREFS_DARK_THEME, false))
+            toolbar.setPopupTheme(R.style.AppTheme_PopupOverlay_Dark);
+
         setSupportActionBar(toolbar);
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -97,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
 
         if (isServiceRunning(RecorderService.class)) {
             Log.d(Const.TAG, "service is running");
@@ -401,14 +409,22 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.about, menu);
+        getMenuInflater().inflate(R.menu.overflow_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //return super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
+            case R.id.switch_theme:
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                boolean dark_theme = prefs.getBoolean(Const.PREFS_DARK_THEME, false);
+                if (dark_theme)
+                    prefs.edit().putBoolean(Const.PREFS_DARK_THEME, false).apply();
+                else
+                    prefs.edit().putBoolean(Const.PREFS_DARK_THEME, true).apply();
+                this.recreate();
+                return true;
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class));
                 return true;

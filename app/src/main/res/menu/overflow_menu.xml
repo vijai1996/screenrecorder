@@ -27,4 +27,9 @@
         android:title="@string/menu_privacy_policy"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/switch_theme"
+        android:title="@string/menu_switch_theme_title"
+        app:showAsAction="never" />
+
 </menu>

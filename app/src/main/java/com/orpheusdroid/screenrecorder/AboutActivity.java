@@ -2,6 +2,7 @@ package com.orpheusdroid.screenrecorder;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -15,6 +16,10 @@ public class AboutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Const.PREFS_DARK_THEME, false))
+            setTheme(R.style.AppTheme_Dark);
+
         super.onCreate(savedInstanceState);
 
         // Set up arrow to close the activity

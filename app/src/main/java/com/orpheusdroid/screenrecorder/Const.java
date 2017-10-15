@@ -56,6 +56,7 @@ public class Const {
     static final String ANALYTICS_API_KEY = "07273a5c91f8a932685be1e3ad0d160d3de6d4ba";
 
     static final String PREFS_REQUEST_ANALYTICS_PERMISSION = "request_analytics_permission";
+    static final String PREFS_DARK_THEME = "dark_theme";
 
     public enum RecordingState {
         RECORDING, PAUSED, STOPPED

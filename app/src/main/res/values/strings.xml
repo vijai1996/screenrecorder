@@ -101,4 +101,5 @@
     <string name="preference_shake_gesture_summary">Shake your device to start or stop recording</string>
     <string name="preference_shake_gesture_key" translatable="false">shake_gesture</string>
     <string name="screenrecording_waiting_for_gesture_toast">Shake your device to start recording when ready</string>
+    <string name="menu_switch_theme_title">Switch Theme</string>
 </resources>

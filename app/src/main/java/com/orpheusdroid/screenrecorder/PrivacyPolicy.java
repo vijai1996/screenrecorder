@@ -18,6 +18,7 @@
 package com.orpheusdroid.screenrecorder;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -27,6 +28,10 @@ public class PrivacyPolicy extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Const.PREFS_DARK_THEME, false))
+            setTheme(R.style.AppTheme_Dark);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_privacy_policy);
         ActionBar actionBar = getSupportActionBar();
