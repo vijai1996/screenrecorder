@@ -97,6 +97,9 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         //Set previously chosen directory as initial directory
         dirChooser.setCurrentDir(getValue(getString(R.string.savelocation_key), defaultSaveLoc));
 
+        ListPreference theme = (ListPreference) findPreference(getString(R.string.preference_theme_key));
+        theme.setSummary(theme.getEntry());
+
         //Set the summary of preferences dynamically with user choice or default if no user choice is made
         updateResolution(res);
         fps.setSummary(getValue(getString(R.string.fps_key), "30"));
@@ -241,6 +244,9 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
                 break;
             case R.string.preference_anonymous_statistics_title:
                 startAnalytics();
+                break;
+            case R.string.preference_theme_title:
+                activity.recreate();
                 break;
         }
     }

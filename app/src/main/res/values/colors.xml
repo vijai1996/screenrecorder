@@ -8,7 +8,7 @@
     <color name="navigationBarColor">#000000</color>
 
     <!-- Dark theme color resources -->
-    <color name="colorPrimary_dark">#101010</color>
+    <color name="colorPrimary_dark">#202020</color>
     <color name="colorPrimaryDark_dark">@android:color/black</color>
     <color name="textColorPrimary_dark">@android:color/white</color>
     <color name="textColorSecondary_dark">#fafafa</color>
@@ -16,4 +16,16 @@
     <color name="windowBackground_dark">#212121</color>
     <color name="navigationBarColor_dark">@android:color/black</color>
     <color name="actionBarStyle_dark">@android:color/black</color>
+
+    <!-- Black theme color resources -->
+    <color name="colorPrimary_black">@android:color/black</color>
+    <color name="colorPrimaryDark_black">@android:color/black</color>
+    <color name="textColorPrimary_black">@android:color/white</color>
+    <color name="textColorSecondary_black">#fafafa</color>
+    <color name="colorAccent_black">#009688</color>
+    <color name="windowBackground_black">@android:color/black</color>
+    <color name="navigationBarColor_black">@android:color/black</color>
+    <color name="actionBarStyle_black">@android:color/black</color>
+    <color name="popupBackground_black">#202020</color>
+    <color name="appBackground_black">@android:color/black</color>
 </resources>

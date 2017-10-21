@@ -72,16 +72,31 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Const.PREFS_DARK_THEME, false))
-            setTheme(R.style.AppTheme_Dark_NoActionBar);
+        String theme = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.preference_theme_key), Const.PREFS_LIGHT_THEME);
+        int popupOverlayTheme = 0;
+        int toolBarColor = 0;
+        switch (theme){
+            case Const.PREFS_DARK_THEME:
+                setTheme(R.style.AppTheme_Dark_NoActionBar);
+                popupOverlayTheme = R.style.AppTheme_PopupOverlay_Dark;
+                toolBarColor = ContextCompat.getColor(this, R.color.colorPrimary_dark);
+                break;
+            case Const.PREFS_BLACK_THEME:
+                setTheme(R.style.AppTheme_Black_NoActionBar);
+                popupOverlayTheme = R.style.AppTheme_PopupOverlay_Black;
+                toolBarColor = ContextCompat.getColor(this, R.color.colorPrimary_black);
+                break;
+        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(toolBarColor);
 
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Const.PREFS_DARK_THEME, false))
-            toolbar.setPopupTheme(R.style.AppTheme_PopupOverlay_Dark);
+        if (popupOverlayTheme != 0)
+            toolbar.setPopupTheme(popupOverlayTheme);
 
         setSupportActionBar(toolbar);
 
@@ -90,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setBackgroundColor(toolBarColor);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -416,15 +432,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.switch_theme:
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                boolean dark_theme = prefs.getBoolean(Const.PREFS_DARK_THEME, false);
-                if (dark_theme)
-                    prefs.edit().putBoolean(Const.PREFS_DARK_THEME, false).apply();
-                else
-                    prefs.edit().putBoolean(Const.PREFS_DARK_THEME, true).apply();
-                this.recreate();
-                return true;
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class));
                 return true;

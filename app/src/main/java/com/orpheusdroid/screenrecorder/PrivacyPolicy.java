@@ -29,8 +29,16 @@ public class PrivacyPolicy extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Const.PREFS_DARK_THEME, false))
-            setTheme(R.style.AppTheme_Dark);
+        String theme = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.preference_theme_key), Const.PREFS_LIGHT_THEME);
+        switch (theme){
+            case Const.PREFS_DARK_THEME:
+                setTheme(R.style.AppTheme_Dark);
+                break;
+            case Const.PREFS_BLACK_THEME:
+                setTheme(R.style.AppTheme_Black);
+                break;
+        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_privacy_policy);

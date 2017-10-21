@@ -82,6 +82,15 @@
             android:dependency="@string/preference_crash_reporting_key"/>
     </PreferenceCategory>
     <PreferenceCategory
+        android:title="@string/prefs_category_theme_title" >
+        <ListPreference
+            android:title="@string/preference_theme_title"
+            android:defaultValue="light_theme"
+            android:entries="@array/themeArray"
+            android:entryValues="@array/themeValues"
+            android:key="@string/preference_theme_key" />
+    </PreferenceCategory>
+    <PreferenceCategory
         android:title="@string/prefs_category_misc_title">
         <CheckBoxPreference
             android:title="@string/preference_floating_control_title"

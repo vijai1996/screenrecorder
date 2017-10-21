@@ -37,16 +37,20 @@
 
     <style name="AppTheme.PopupOverlay.Light" parent="ThemeOverlay.AppCompat.Light" />
 
-    <!-- Dark theme -->
-    <style name="AppTheme.Dark" parent="Theme.AppCompat">
-        <item name="android:colorPrimary">@color/colorPrimary_dark</item>
-        <item name="android:colorPrimaryDark">@color/colorPrimaryDark_dark</item>
+    <!-- Base for dark themes (dark and black) -->
+    <style name="AppTheme.Dark.Base" parent="Theme.AppCompat">
         <item name="android:textColorPrimary">@color/textColorPrimary_dark</item>
-        <item name="android:colorAccent">@color/colorAccent_dark</item>
         <item name="android:color">@android:color/white</item>
-        <item name="android:windowBackground">@color/windowBackground_dark</item>
         <item name="android:navigationBarColor">@color/navigationBarColor_dark</item>
         <item name="android:actionBarStyle">@color/actionBarStyle_dark</item>
+    </style>
+
+    <!-- Dark theme -->
+    <style name="AppTheme.Dark" parent="AppTheme.Dark.Base">
+        <item name="android:colorPrimary">@color/colorPrimary_dark</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark_dark</item>
+        <item name="android:colorAccent">@color/colorAccent_dark</item>
+        <item name="android:windowBackground">@color/windowBackground_dark</item>
     </style>
 
     <style name="AppTheme.Dark.NoActionBar" parent="AppTheme.Dark">
@@ -61,7 +65,38 @@
 
     <style name="AppTheme.PopupOverlay.Dark" parent="ThemeOverlay.AppCompat.Dark" />
 
-    <!-- AppBarOverlay theme. Common to both light and dark theme -->
+    <!-- Black Theme -->
+    <style name="AppTheme.Black" parent="AppTheme.Dark.Base">
+        <item name="android:colorPrimary">@color/colorPrimary_black</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark_black</item>
+        <item name="android:colorAccent">@color/colorAccent_black</item>
+        <item name="android:windowBackground">@color/windowBackground_black</item>
+        <item name="actionBarTheme">@style/AppTheme.Black.ActionBar</item>
+    </style>
+
+    <style name="AppTheme.Black.ActionBar" parent="Theme.AppCompat">
+        <item name="android:background">@color/colorPrimary_black</item>
+    </style>
+
+    <style name="AppTheme.Black.Dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:background">@color/popupBackground_black</item>
+    </style>
+
+    <style name="AppTheme.Black.NoActionBar" parent="AppTheme.Black">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
+        <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay.Black" parent="ThemeOverlay.AppCompat.Dark" >
+        <item name="android:colorBackground">@color/popupBackground_black</item>
+    </style>
+
+    <!-- AppBarOverlay theme. Common to all theme -->
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
 </resources>
