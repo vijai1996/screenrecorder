@@ -15,6 +15,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-dontobfuscate
 -keep class org.openudid.** { *; }
 -keep class * implements com.coremedia.iso.boxes.Box {* ; }
 -dontwarn com.coremedia.iso.boxes.*
