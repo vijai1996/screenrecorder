@@ -19,7 +19,6 @@ package com.orpheusdroid.screenrecorder;
 
 import android.Manifest;
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,6 +40,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.orpheusdroid.screenrecorder.adapter.Video;
@@ -64,6 +64,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
     private TextView message;
     private SharedPreferences prefs;
     private ArrayList<Video> videosList = new ArrayList<>();
+    private ProgressBar progress;
 
     public VideosListFragment() {
 
@@ -74,6 +75,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         View view = inflater.inflate(R.layout.fragment_videos, container, false);
         message = view.findViewById(R.id.message_tv);
         videoRV = view.findViewById(R.id.videos_rv);
+        progress = view.findViewById(R.id.video_progress);
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return view;
     }
@@ -137,6 +139,9 @@ public class VideosListFragment extends Fragment implements PermissionResultList
                 }
                 //Read the videos and extract details from it in async.
                 // This is essential if the directory contains huge number of videos
+
+                progress.setIndeterminate(false);
+                progress.setMax(filesList.size()-2);
                 new GetVideosAsync().execute(filesList.toArray(new File[filesList.size()]));
             }
         }
@@ -210,7 +215,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
     //Class to retrieve video details in async
     //TODO: Translations
     class GetVideosAsync extends AsyncTask<File[], Integer, ArrayList<Video>> {
-        ProgressDialog progress;
+        //ProgressDialog progress;
         File[] files;
         ContentResolver resolver;
 
@@ -221,13 +226,9 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            //Create a progress dialog to notify the user of current progress
-            progress = new ProgressDialog(getActivity());
-            progress.setTitle("Please wait");
-            progress.setMessage("The videos are being loaded");
-            progress.setCancelable(false);
-            progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progress.show();
+            //Show Progress bar
+            progress.setProgress(0);
+            progress.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -245,7 +246,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
                 message.setVisibility(View.GONE);
             }
             //Cancel the progress dialog
-            progress.cancel();
+            progress.setVisibility(View.GONE);
         }
 
         //Add sections depending on the date the video is recorded to array list
@@ -313,7 +314,6 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         protected ArrayList<Video> doInBackground(File[]... arg) {
             //Get video file name, Uri and video thumbnail from mediastore
             files = arg[0];
-            progress.setMax(files.length - 2);
             for (int i = 0; i < files.length; i++) {
                 File file = files[i];
                 if (!file.isDirectory() && isVideoFile(file.getPath())) {
