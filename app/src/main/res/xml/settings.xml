@@ -130,6 +130,7 @@
         <Preference
             android:title=""
             android:summary=""
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            android:selectable="false"/>
     </PreferenceCategory>
 </PreferenceScreen>
