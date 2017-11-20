@@ -36,14 +36,6 @@ android {
         release
     }
 
-    if (project.hasProperty('RELEASE_STORE_FILE')){
-        printf ("Using release keys")
-        android.signingConfigs.release.storeFile new File(RELEASE_STORE_FILE)
-        android.signingConfigs.release.storePassword RELEASE_STORE_PASSWORD
-        android.signingConfigs.release.keyAlias RELEASE_KEY_ALIAS
-        android.signingConfigs.release.keyPassword RELEASE_KEY_PASSWORD
-    }
-
     buildTypes {
         release {
             minifyEnabled true
@@ -55,6 +47,17 @@ android {
             signingConfig signingConfigs.release
         }
     }
+}
+
+if (project.hasProperty('RELEASE_STORE_FILE')){
+    println 'Using release keys'
+    android.signingConfigs.release.storeFile new File(RELEASE_STORE_FILE)
+    android.signingConfigs.release.storePassword RELEASE_STORE_PASSWORD
+    android.signingConfigs.release.keyAlias RELEASE_KEY_ALIAS
+    android.signingConfigs.release.keyPassword RELEASE_KEY_PASSWORD
+} else {
+    println 'Release keys not found. Falling back to default config'
+    android.buildTypes.release.signingConfig = null
 }
 
 dependencies {
