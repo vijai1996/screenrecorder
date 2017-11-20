@@ -209,6 +209,10 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
             case R.string.preference_resolution_title:
                 updateResolution((ListPreference) pref);
                 break;
+            case R.string.preference_fps_title:
+                String fps = String.valueOf(getValue(getString(R.string.fps_key), "30"));
+                pref.setSummary(fps);
+                break;
             case R.string.preference_bit_title:
                 float bps = bitsToMb(Integer.parseInt(getValue(getString(R.string.bitrate_key), "7130317")));
                 pref.setSummary(bps + " Mbps");
