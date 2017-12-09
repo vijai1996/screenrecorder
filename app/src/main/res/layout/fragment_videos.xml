@@ -16,20 +16,11 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true">
-
-    <ProgressBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/video_progress"
-        android:layout_margin="15dp"
-        android:max="100"
-        android:progress="0"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:indeterminate="true"/>
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeRefresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/videos_rv"
@@ -41,6 +32,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/message_tv"
-        android:text="No videos available"
+        android:text="@string/video_list_no_video_message"
         android:gravity="center" />
-</LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

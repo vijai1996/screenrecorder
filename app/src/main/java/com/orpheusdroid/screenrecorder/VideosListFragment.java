@@ -31,6 +31,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -40,7 +41,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.orpheusdroid.screenrecorder.adapter.Video;
@@ -59,12 +59,12 @@ import java.util.List;
  * Created by vijai on 06-11-2016.
  */
 
-public class VideosListFragment extends Fragment implements PermissionResultListener {
+public class VideosListFragment extends Fragment implements PermissionResultListener, SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView videoRV;
     private TextView message;
     private SharedPreferences prefs;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private ArrayList<Video> videosList = new ArrayList<>();
-    private ProgressBar progress;
 
     public VideosListFragment() {
 
@@ -75,8 +75,16 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         View view = inflater.inflate(R.layout.fragment_videos, container, false);
         message = view.findViewById(R.id.message_tv);
         videoRV = view.findViewById(R.id.videos_rv);
-        progress = view.findViewById(R.id.video_progress);
+
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
         return view;
     }
 
@@ -105,6 +113,9 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         refresh.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
+                // Prevent repeated refresh requests
+                if (swipeRefreshLayout.isRefreshing())
+                        return false;
                 videosList.clear();
                 checkPermission();
                 Log.d(Const.TAG, "Refreshing");
@@ -140,8 +151,6 @@ public class VideosListFragment extends Fragment implements PermissionResultList
                 //Read the videos and extract details from it in async.
                 // This is essential if the directory contains huge number of videos
 
-                progress.setIndeterminate(false);
-                progress.setMax(filesList.size()-2);
                 new GetVideosAsync().execute(filesList.toArray(new File[filesList.size()]));
             }
         }
@@ -212,8 +221,14 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         checkPermission();
     }
 
+    @Override
+    public void onRefresh() {
+        videosList.clear();
+        checkPermission();
+        Log.d(Const.TAG, "Refreshing");
+    }
+
     //Class to retrieve video details in async
-    //TODO: Translations
     class GetVideosAsync extends AsyncTask<File[], Integer, ArrayList<Video>> {
         //ProgressDialog progress;
         File[] files;
@@ -226,9 +241,8 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            //Show Progress bar
-            progress.setProgress(0);
-            progress.setVisibility(View.VISIBLE);
+            //Set refreshing to true
+            swipeRefreshLayout.setRefreshing(true);
         }
 
         @Override
@@ -245,8 +259,8 @@ public class VideosListFragment extends Fragment implements PermissionResultList
                 videoRV.setVisibility(View.VISIBLE);
                 message.setVisibility(View.GONE);
             }
-            //Cancel the progress dialog
-            progress.setVisibility(View.GONE);
+            //Finish refreshing
+            swipeRefreshLayout.setRefreshing(false);
         }
 
         //Add sections depending on the date the video is recorded to array list
@@ -305,8 +319,7 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            //Update progress dialog every time a video is finished processing
-            progress.setProgress(values[0]);
+
             Log.d(Const.TAG, "Progress is :" + values[0]);
         }
 
