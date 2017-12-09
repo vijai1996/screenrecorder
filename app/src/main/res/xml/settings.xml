@@ -91,7 +91,7 @@
             android:key="@string/preference_theme_key" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="@string/prefs_category_misc_title">
+        android:title="@string/prefs_category_recording_settings_title">
         <CheckBoxPreference
             android:title="@string/preference_floating_control_title"
             android:summary="@string/preference_floating_control_summary"

@@ -68,7 +68,7 @@
     <string name="prefs_category_video_settings_title">Video settings</string>
     <string name="prefs_category_audio_settings_title">Audio settings</string>
     <string name="prefs_category_save_options_title">Save options</string>
-    <string name="prefs_category_misc_title">Misc</string>
+    <string name="prefs_category_recording_settings_title">Recording Settings</string>
     <string name="menu_privacy_policy">Privacy Policy</string>
     <string name="preference_show_touch_title">Show touches</string>
     <string name="preference_show_touch_summary">Enable/disable touch</string>

@@ -74,7 +74,7 @@
     <string name="prefs_category_video_settings_title">Videoeinstellungen</string>
     <string name="prefs_category_audio_settings_title">Toneinstellungen</string>
     <string name="prefs_category_save_options_title">Speicheroptionen</string>
-    <string name="prefs_category_misc_title">Versch.</string>
+    <string name="prefs_category_recording_settings_title">Versch.</string>
     <string name="menu_privacy_policy">Datenschutzerklärung</string>
     <string name="preference_show_touch_title">Berührungen anzeigen</string>
     <string name="preference_show_touch_summary">Berührungen de-/aktivieren</string>
