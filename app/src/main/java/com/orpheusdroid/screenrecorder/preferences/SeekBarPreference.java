@@ -15,7 +15,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses
  */
 
-package com.orpheusdroid.screenrecorder;
+package com.orpheusdroid.screenrecorder.preferences;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -28,6 +28,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.orpheusdroid.screenrecorder.Const;
+import com.orpheusdroid.screenrecorder.R;
 
 /**
  * Created by vijai on 04-04-2017.
@@ -82,10 +85,10 @@ public class SeekBarPreference extends DialogPreference implements SeekBar.OnSee
         super.onBindDialogView(v);
         mValue = getPersistedInt(mDefault);
         Log.d(Const.TAG, "size is: " + mValue);
-        mSeekBar = (SeekBar) v.findViewById(R.id.seekBar);
-        mValueText = (TextView) v.findViewById(R.id.tv_size);
+        mSeekBar = v.findViewById(R.id.seekBar);
+        mValueText = v.findViewById(R.id.tv_size);
         defaultColor = mValueText.getTextColors().getDefaultColor();
-        mFloatingTogglePreview = (ImageView) v.findViewById(R.id.iv_floatingControl);
+        mFloatingTogglePreview = v.findViewById(R.id.iv_floatingControl);
         mSeekBar.setMax(mMax);
         mSeekBar.setProgress(mValue);
 
