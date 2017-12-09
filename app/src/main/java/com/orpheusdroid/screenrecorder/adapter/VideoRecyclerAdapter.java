@@ -73,7 +73,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     //Method to determine the type
-    public boolean isSection(int position){
+    public boolean isSection(int position) {
         return videos.get(position).isSection();
     }
 
@@ -120,7 +120,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
-                                switch (item.getItemId()){
+                                switch (item.getItemId()) {
                                     case R.id.share:
                                         shareVideo(itemViewHolder.getAdapterPosition());
                                         break;
@@ -129,11 +129,10 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                                         break;
                                     case R.id.edit:
                                         Toast.makeText(context, "Edit video for " + itemViewHolder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
-                                        Uri videoUri = FileProvider.getUriForFile(
-                                                context, context.getApplicationContext().getPackageName() + ".provider",
-                                                videos.get(position).getFile());
+
                                         Intent editIntent = new Intent(context, EditVideoActivity.class);
-                                        editIntent.putExtra(Const.VIDEO_EDIT_URI_KEY, videoUri.toString());
+                                        editIntent.putExtra(Const.VIDEO_EDIT_URI_KEY,
+                                                Uri.fromFile(videos.get(position).getFile()).toString());
                                         Log.d(Const.TAG, "Uri: " + Uri.fromFile(videos.get(position).getFile()));
                                         videosListFragment.startActivityForResult(editIntent, Const.VIDEO_EDIT_REQUEST_CODE);
                                         break;
@@ -156,10 +155,10 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                         Log.d("Videos List", "video position clicked: " + itemViewHolder.getAdapterPosition());
 
                         Uri fileUri = FileProvider.getUriForFile(
-                                context,context.getPackageName()+
-                                ".provider",
+                                context, context.getPackageName() +
+                                        ".provider",
                                 videoFile
-                                );
+                        );
                         Log.d(Const.TAG, fileUri.toString());
                         Intent openVideoIntent = new Intent();
                         openVideoIntent.setAction(Intent.ACTION_VIEW)
@@ -178,7 +177,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-    private void shareVideo(int position){
+    private void shareVideo(int position) {
         Log.d("Videos List", "share position clicked: " + position);
         Intent Shareintent = new Intent()
                 .setAction(Intent.ACTION_SEND)
@@ -188,10 +187,10 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 context.getString(R.string.share_intent_notification_title)));
     }
 
-    private void deleteVideo(int position){
+    private void deleteVideo(int position) {
         Log.d("Videos List", "delete position clicked: " + position);
         File file = new File(videos.get(position).getFile().getPath());
-        if (file.delete()){
+        if (file.delete()) {
             Toast.makeText(context, "File deleted successfully", Toast.LENGTH_SHORT).show();
             videos.remove(position);
             notifyItemRemoved(position);
@@ -200,7 +199,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     //Generate title for the section depending on the recording date
-    private String generateSectionTitle(Date date){
+    private String generateSectionTitle(Date date) {
         Calendar sDate = toCalendar(new Date().getTime());
         Calendar eDate = toCalendar(date.getTime());
 
@@ -209,7 +208,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         long milis2 = eDate.getTimeInMillis();
 
         // Calculate difference in milliseconds
-        int dayDiff = (int)Math.abs((milis2 - milis1) / (24 * 60 * 60 * 1000));
+        int dayDiff = (int) Math.abs((milis2 - milis1) / (24 * 60 * 60 * 1000));
 
         int yearDiff = sDate.get(Calendar.YEAR) - eDate.get(Calendar.YEAR);
         Log.d("ScreenRecorder", "yeardiff: " + yearDiff);
@@ -231,8 +230,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     //Generate Calendar object and return it
-    private Calendar toCalendar(long timestamp)
-    {
+    private Calendar toCalendar(long timestamp) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timestamp);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
