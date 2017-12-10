@@ -72,7 +72,7 @@ import java.util.List;
  * Created by vijai on 12-10-2016.
  */
 //TODO: Update icons for notifcation
-public class RecorderService extends Service implements ShakeEventManager.ShakeListener{
+public class RecorderService extends Service implements ShakeEventManager.ShakeListener {
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static int WIDTH, HEIGHT, FPS, DENSITY_DPI;
     private static int BITRATE;
@@ -125,6 +125,9 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             createNotificationChannels();
 
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         //return super.onStartCommand(intent, flags, startId);
         //Find the action to perform from intent
         switch (intent.getAction()) {
@@ -139,10 +142,13 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
                     data = intent.getParcelableExtra(Const.RECORDER_INTENT_DATA);
                     result = intent.getIntExtra(Const.RECORDER_INTENT_RESULT, Activity.RESULT_OK);
 
-                    boolean isShakeGestureActive = PreferenceManager.getDefaultSharedPreferences(this)
-                            .getBoolean(getString(R.string.preference_shake_gesture_key), false);
+                    // Check if an app has to be started before recording and start the app
+                    if (prefs.getBoolean(getString(R.string.preference_enable_target_app_key), false))
+                        startAppBeforeRecording(prefs.getString(getString(R.string.preference_app_chooser_key), "none"));
 
-                    if(isShakeGestureActive){
+                    boolean isShakeGestureActive = prefs.getBoolean(getString(R.string.preference_shake_gesture_key), false);
+
+                    if (isShakeGestureActive) {
                         //SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
                         mShakeDetector = new ShakeEventManager(this);
                         mShakeDetector.init(this);
@@ -156,13 +162,13 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
 
                         NotificationCompat.Builder shakeGestureWaitNotification =
                                 new NotificationCompat.Builder(this, Const.RECORDING_NOTIFICATION_CHANNEL_ID)
-                                .setContentTitle("Waiting for device shake")
-                                .setContentText("Shake your device to start recording or press this notification to cancel")
-                                .setOngoing(true)
-                                .setSmallIcon(R.drawable.ic_notification)
-                                .setLargeIcon(
-                                        Bitmap.createScaledBitmap(icon, 128, 128, false))
-                                .setContentIntent(pdestroyMediaRecorderIntent);
+                                        .setContentTitle("Waiting for device shake")
+                                        .setContentText("Shake your device to start recording or press this notification to cancel")
+                                        .setOngoing(true)
+                                        .setSmallIcon(R.drawable.ic_notification)
+                                        .setLargeIcon(
+                                                Bitmap.createScaledBitmap(icon, 128, 128, false))
+                                        .setContentIntent(pdestroyMediaRecorderIntent);
 
                         startNotificationForeGround(shakeGestureWaitNotification.build(), Const.SCREEN_RECORDER_SHARE_NOTIFICATION_ID);
 
@@ -191,7 +197,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
                 stopScreenSharing();
 
                 //Send a broadcast receiver to the plugin app to disable show touches since the recording is stopped
-                if(showTouches){
+                if (showTouches) {
                     Intent TouchIntent = new Intent();
                     TouchIntent.setAction("com.orpheusdroid.screenrecorder.DISABLETOUCH");
                     TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
@@ -207,6 +213,15 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
                 break;
         }
         return START_STICKY;
+    }
+
+    // Start the selected app before recording if its enabled and an app is selected
+    private void startAppBeforeRecording(String packagename) {
+        if (packagename.equals("none"))
+            return;
+
+        Intent startAppIntent = getPackageManager().getLaunchIntentForPackage(packagename);
+        startActivity(startAppIntent);
     }
 
     @TargetApi(24)
@@ -228,7 +243,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
             floatingControlService.setRecordingState(Const.RecordingState.PAUSED);
 
         //Send a broadcast receiver to the plugin app to disable show touches since the recording is paused
-        if(showTouches){
+        if (showTouches) {
             Intent TouchIntent = new Intent();
             TouchIntent.setAction("com.orpheusdroid.screenrecorder.DISABLETOUCH");
             TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
@@ -258,8 +273,8 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
 
 
         //Send a broadcast receiver to the plugin app to enable show touches since the recording is resumed
-        if(showTouches){
-            if(showTouches){
+        if (showTouches) {
+            if (showTouches) {
                 Intent TouchIntent = new Intent();
                 TouchIntent.setAction("com.orpheusdroid.screenrecorder.SHOWTOUCH");
                 TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
@@ -301,14 +316,14 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
             isRecording = true;
 
             //Send a broadcast receiver to the plugin app to enable show touches since the recording is started
-            if(showTouches){
+            if (showTouches) {
                 Intent TouchIntent = new Intent();
                 TouchIntent.setAction("com.orpheusdroid.screenrecorder.SHOWTOUCH");
                 TouchIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
                 sendBroadcast(TouchIntent);
             }
             Toast.makeText(this, R.string.screen_recording_started_toast, Toast.LENGTH_SHORT).show();
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             Log.d(Const.TAG, "Mediarecorder reached Illegal state exception. Did you start the recording twice?");
             Toast.makeText(this, R.string.recording_failed_toast, Toast.LENGTH_SHORT).show();
             isRecording = false;
@@ -367,9 +382,9 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
 
     //Add notification channel for supporting Notification in Api 26 (Oreo)
     @TargetApi(26)
-    private void createNotificationChannels(){
+    private void createNotificationChannels() {
         List<NotificationChannel> notificationChannels = new ArrayList<>();
-        NotificationChannel recordingNotificationChannel  = new NotificationChannel(
+        NotificationChannel recordingNotificationChannel = new NotificationChannel(
                 Const.RECORDING_NOTIFICATION_CHANNEL_ID,
                 Const.RECORDING_NOTIFICATION_CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_DEFAULT
@@ -381,7 +396,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
         recordingNotificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         notificationChannels.add(recordingNotificationChannel);
 
-        NotificationChannel shareNotificationChannel  = new NotificationChannel(
+        NotificationChannel shareNotificationChannel = new NotificationChannel(
                 Const.SHARE_NOTIFICATION_CHANNEL_ID,
                 Const.SHARE_NOTIFICATION_CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_DEFAULT
@@ -426,7 +441,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
         return notification;
     }
 
-    private void showShareNotification(){
+    private void showShareNotification() {
         Bitmap icon = BitmapFactory.decodeResource(getResources(),
                 R.mipmap.ic_launcher);
 
@@ -490,7 +505,6 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
 
     //Get user's choices for user choosable settings
     public void getValues() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String res = prefs.getString(getString(R.string.res_key), getResolution());
         setWidthHeight(res);
         FPS = Integer.parseInt(prefs.getString(getString(R.string.fps_key), "30"));

@@ -33,6 +33,7 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
+        <item name="selected_app_check">@drawable/ic_check_circle_black_18dp</item>
     </style>
 
     <style name="AppTheme.PopupOverlay.Light" parent="ThemeOverlay.AppCompat.Light" />
@@ -61,6 +62,7 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
+        <item name="selected_app_check">@drawable/ic_check_circle_white_18dp</item>
     </style>
 
     <style name="AppTheme.PopupOverlay.Dark" parent="ThemeOverlay.AppCompat.Dark" />
@@ -90,6 +92,7 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
+        <item name="selected_app_check">@drawable/ic_check_circle_white_18dp</item>
     </style>
 
     <style name="AppTheme.PopupOverlay.Black" parent="ThemeOverlay.AppCompat.Dark" >

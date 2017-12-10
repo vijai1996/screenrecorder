@@ -104,4 +104,10 @@
     <string name="preference_theme_key" translatable="false">theme</string>
     <string name="prefs_category_theme_title">Theme</string>
     <string name="preference_theme_title">Choose Theme</string>
+    <string name="preference_enable_target_app_title">Enable target app</string>
+    <string name="preference_enable_target_app_summary">Open target app before recording</string>
+    <string name="preference_enable_target_app_key" translatable="false">enable_app_target</string>
+    <string name="preference_app_chooser_title">Choose App</string>
+    <string name="preference_app_chooser_summary">Choose an app to start by default while recording</string>
+    <string name="preference_app_chooser_key" translatable="false">app_chosen</string>
 </resources>
