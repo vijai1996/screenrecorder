@@ -178,11 +178,17 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     private void shareVideo(int position) {
-        Log.d("Videos List", "share position clicked: " + position);
+        Uri fileUri = FileProvider.getUriForFile(
+                context, context.getPackageName() +
+                        ".provider",
+                videos.get(position).getFile()
+        );
+
         Intent Shareintent = new Intent()
                 .setAction(Intent.ACTION_SEND)
                 .setType("video/*")
-                .putExtra(Intent.EXTRA_STREAM, videos.get(position).getFile());
+                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .putExtra(Intent.EXTRA_STREAM, fileUri);
         context.startActivity(Intent.createChooser(Shareintent,
                 context.getString(R.string.share_intent_notification_title)));
     }
