@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
         Countly.sharedInstance().init(this, Const.ANALYTICS_URL, Const.ANALYTICS_API_KEY,
                 null, DeviceId.Type.OPEN_UDID, 3, null, null, null, null);
         Countly.sharedInstance().setHttpPostForced(true);
+        Countly.sharedInstance().enableParameterTamperingProtection(getPackageName());
 
         if (prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false)) {
             Countly.sharedInstance().enableCrashReporting();
