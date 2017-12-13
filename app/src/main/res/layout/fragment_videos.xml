@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2016. Vijai Chandra Prasad R.
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -16,22 +15,26 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses
   -->
 
-<android.support.v4.widget.SwipeRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/swipeRefresh"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/videos_rv"
-        android:scrollbars="vertical"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/videos_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <TextView
+        android:id="@+id/message_tv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/message_tv"
-        android:text="@string/video_list_no_video_message"
-        android:gravity="center" />
-</android.support.v4.widget.SwipeRefreshLayout>
+        android:gravity="center"
+        android:text="@string/video_list_no_video_message" />
+</FrameLayout>
