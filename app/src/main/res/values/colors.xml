@@ -28,4 +28,5 @@
     <color name="actionBarStyle_black">@android:color/black</color>
     <color name="popupBackground_black">#202020</color>
     <color name="appBackground_black">@android:color/black</color>
+    <color name="dialog_background_black">#101010</color>
 </resources>

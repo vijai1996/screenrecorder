@@ -74,6 +74,15 @@
         <item name="android:colorAccent">@color/colorAccent_black</item>
         <item name="android:windowBackground">@color/windowBackground_black</item>
         <item name="actionBarTheme">@style/AppTheme.Black.ActionBar</item>
+        <item name="android:alertDialogTheme">@style/AppTheme.Black.DialogTheme</item>
+    </style>
+
+    <style name="AppTheme.Black.DialogTheme" parent="Theme.AppCompat.Dialog">
+        <item name="android:colorPrimary">@color/colorPrimary_black</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark_black</item>
+        <item name="android:colorAccent">@color/colorAccent_black</item>
+        <item name="android:background">@color/dialog_background_black</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
     </style>
 
     <style name="AppTheme.Black.ActionBar" parent="Theme.AppCompat">
