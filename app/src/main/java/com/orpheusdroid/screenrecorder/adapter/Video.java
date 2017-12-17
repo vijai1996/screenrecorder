@@ -32,6 +32,7 @@ public class Video implements Comparable<Video> {
     private Bitmap thumbnail;
     private Date lastModified;
     private boolean isSection = false;
+    private boolean isSelected = false;
 
     public Video(boolean isSection, Date lastModified) {
         this.isSection = isSection;
@@ -63,6 +64,14 @@ public class Video implements Comparable<Video> {
 
     public boolean isSection() {
         return isSection;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 
     @Override

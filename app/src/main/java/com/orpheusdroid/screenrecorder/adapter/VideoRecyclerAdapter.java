@@ -19,16 +19,23 @@ package com.orpheusdroid.screenrecorder.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -54,11 +61,64 @@ import java.util.Locale;
 
 //Custom Recycler view adapter for video list fragment
 public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int VIEW_SECTION = 0;
+    private static final int VIEW_ITEM = 1;
     private VideosListFragment videosListFragment;
     private ArrayList<Video> videos;
     private Context context;
-    private static final int VIEW_SECTION = 0;
-    private static final int VIEW_ITEM = 1;
+    private boolean isMultiSelect = false;
+    private int count = 0;
+    private ActionMode mActionMode;
+    // Show a contextual menu in multiselect mode
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.video_list_action_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            // Build an arraylist of selected item positions when an menu item is clicked
+            ArrayList<Integer> positions = new ArrayList<>();
+            for (Video video : videos) {
+                if (video.isSelected()) {
+                    positions.add(videos.indexOf(video));
+                }
+            }
+            switch (item.getItemId()) {
+                case R.id.delete:
+                    if (!positions.isEmpty())
+                        deleteVideos(positions);
+                    mActionMode.finish();
+                    break;
+                case R.id.share:
+                    if (!positions.isEmpty())
+                        shareVideos(positions);
+                    mActionMode.finish();
+                    break;
+            }
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            // remove all selected videos and reload recyclerview
+            for (Video video :
+                    videos) {
+                video.setSelected(false);
+            }
+            isMultiSelect = false;
+            notifyDataSetChanged();
+        }
+    };
 
     public VideoRecyclerAdapter(Context context, ArrayList<Video> android, VideosListFragment videosListFragment) {
         this.videos = android;
@@ -108,6 +168,22 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                     Log.d(Const.TAG, "thumbnail error");
                 }
 
+                // Hide the play image over thumbnail and overflow menu if multiselect enabled
+                if (isMultiSelect) {
+                    itemViewHolder.iv_play.setVisibility(View.INVISIBLE);
+                    itemViewHolder.overflow.setVisibility(View.INVISIBLE);
+                } else {
+                    itemViewHolder.iv_play.setVisibility(View.VISIBLE);
+                    itemViewHolder.overflow.setVisibility(View.VISIBLE);
+                }
+
+                // Set foreground color to identify selected items
+                if (videos.get(position).isSelected()) {
+                    itemViewHolder.selectableFrame.setForeground(new ColorDrawable(ContextCompat.getColor(context, R.color.multiSelectColor)));
+                } else {
+                    itemViewHolder.selectableFrame.setForeground(new ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent)));
+                }
+
                 itemViewHolder.overflow.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -151,6 +227,29 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 itemViewHolder.videoCard.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Video video = videos.get(itemViewHolder.getAdapterPosition());
+
+                        // If multiselect is enabled, select the items pressed by user
+                        if (isMultiSelect) {
+
+                            // main count of the selected items
+                            // If the video is already selected, reduce count else increment count
+                            if (video.isSelected())
+                                count--;
+                            else
+                                count++;
+
+                            // Enable disable selection based on previous choice
+                            video.setSelected(!video.isSelected());
+                            notifyDataSetChanged();
+                            mActionMode.setTitle("" + count);
+
+                            // If the count is 0, disable muliselect
+                            if (count == 0)
+                                setMultiSelect(false);
+                            return;
+                        }
+
                         File videoFile = videos.get(itemViewHolder.getAdapterPosition()).getFile();
                         Log.d("Videos List", "video position clicked: " + itemViewHolder.getAdapterPosition());
 
@@ -169,11 +268,38 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                         context.startActivity(openVideoIntent);
                     }
                 });
+
+                // LongClickListener to enable multiselect
+                itemViewHolder.videoCard.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        if (!isMultiSelect) {
+                            setMultiSelect(true);
+                            videos.get(itemViewHolder.getAdapterPosition()).setSelected(true);
+                            count++;
+                            mActionMode.setTitle("" + count);
+                            notifyDataSetChanged();
+                        }
+                        return true;
+                    }
+                });
+
                 break;
             case VIEW_SECTION:
                 SectionViewHolder sectionViewHolder = (SectionViewHolder) holder;
                 sectionViewHolder.section.setText(generateSectionTitle(videos.get(position).getLastModified()));
                 break;
+        }
+    }
+
+    private void setMultiSelect(boolean isMultiSelect) {
+        if (isMultiSelect) {
+            this.isMultiSelect = true;
+            count = 0;
+            mActionMode = ((AppCompatActivity) videosListFragment.getActivity()).startSupportActionMode(mActionModeCallback);
+        } else {
+            this.isMultiSelect = false;
+            mActionMode.finish();
         }
     }
 
@@ -193,6 +319,29 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 context.getString(R.string.share_intent_notification_title)));
     }
 
+    /**
+     * Share the videos selected
+     *
+     * @param positions Integer ArrayList containing the positions of the videos to be shared
+     */
+    private void shareVideos(ArrayList<Integer> positions) {
+        ArrayList<Uri> videoList = new ArrayList<>();
+        for (int position : positions) {
+            videoList.add(FileProvider.getUriForFile(
+                    context, context.getPackageName() +
+                            ".provider",
+                    videos.get(position).getFile()
+            ));
+        }
+        Intent Shareintent = new Intent()
+                .setAction(Intent.ACTION_SEND_MULTIPLE)
+                .setType("video/*")
+                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .putParcelableArrayListExtra(Intent.EXTRA_STREAM, videoList);
+        context.startActivity(Intent.createChooser(Shareintent,
+                context.getString(R.string.share_intent_notification_title)));
+    }
+
     private void deleteVideo(int position) {
         Log.d("Videos List", "delete position clicked: " + position);
         File file = new File(videos.get(position).getFile().getPath());
@@ -202,6 +351,22 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, videos.size());
         }
+    }
+
+    /**
+     * Delete the videos selected
+     *
+     * @param positions ArrayList of integers containing the position of the videos to be deleted
+     */
+    private void deleteVideos(ArrayList<Integer> positions) {
+        File video;
+        for (int position : positions) {
+            video = new File(videos.get(position).getFile().getPath());
+            if (video.delete()) {
+                videos.remove(position);
+            }
+        }
+        notifyDataSetChanged();
     }
 
     //Generate title for the section depending on the recording date
@@ -256,7 +421,9 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         private TextView tv_fileName;
         private ImageView iv_thumbnail;
         private RelativeLayout videoCard;
+        private FrameLayout selectableFrame;
         private ImageButton overflow;
+        private ImageView iv_play;
 
         ItemViewHolder(View view) {
             super(view);
@@ -265,6 +432,8 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             iv_thumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
             videoCard = view.findViewById(R.id.videoCard);
             overflow = view.findViewById(R.id.ic_overflow);
+            selectableFrame = view.findViewById(R.id.selectableFrame);
+            iv_play = view.findViewById(R.id.play_iv);
         }
     }
 

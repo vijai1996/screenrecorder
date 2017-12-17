@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="multiSelectColor">#503b3b3b</color>
+
     <!-- Light theme color resources -->
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryDark">#1976D2</color>
@@ -16,6 +18,7 @@
     <color name="windowBackground_dark">#212121</color>
     <color name="navigationBarColor_dark">@android:color/black</color>
     <color name="actionBarStyle_dark">@android:color/black</color>
+    <color name="actionMode_background_dark">#212121</color>
 
     <!-- Black theme color resources -->
     <color name="colorPrimary_black">@android:color/black</color>
@@ -29,4 +32,5 @@
     <color name="popupBackground_black">#202020</color>
     <color name="appBackground_black">@android:color/black</color>
     <color name="dialog_background_black">#101010</color>
+    <color name="actionMode_background_black">#000000</color>
 </resources>

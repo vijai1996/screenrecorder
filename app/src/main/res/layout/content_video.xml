@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2016. Vijai Chandra Prasad R.
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -15,83 +14,91 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see http://www.gnu.org/licenses
   -->
-
-<android.support.v7.widget.CardView
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/card_view"
+    android:id="@+id/selectableFrame"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardUseCompatPadding="true"
-    card_view:cardCornerRadius="4dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginBottom="8dp">
+    android:layout_margin="5dp">
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardUseCompatPadding="true">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="0.85"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/videoCard"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackground">
-
-                <ImageView
-                    android:id="@+id/thumbnail"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:minHeight="112dp"/>
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/play_iv"
-                    android:src="@drawable/ic_play_circle_outline_grey_400_48dp"
-                    android:layout_centerInParent="true"/>
-
-
-            </RelativeLayout>
-        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="0.25"
-            android:id="@+id/detail_rv"
-            android:background="#eaeaea">
-            <TextView
-                android:id="@+id/fileName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="@color/colorAccent"
-                android:text="TEST"
-                android:gravity="start"
-                android:layout_weight="0.8"
-                android:paddingStart="8dp"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <ImageButton
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/ic_overflow"
-                android:src="@drawable/ic_more_vert_black_48dp"
-                android:background="@drawable/ic_overflow_shadow"
-                android:gravity="end"
-                android:layout_weight="0.2" />
+                android:layout_height="0dp"
+                android:layout_weight="0.85"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/videoCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/thumbnail"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:minHeight="112dp" />
+
+                    <ImageView
+                        android:id="@+id/play_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_play_circle_outline_grey_400_48dp" />
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/detail_rv"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.25"
+                android:background="#eaeaea"
+                android:gravity="center_vertical|center_horizontal"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/fileName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.8"
+                    android:gravity="start"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingTop="8dp"
+                    android:text="TEST"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="13sp" />
+
+                <ImageButton
+                    android:id="@+id/ic_overflow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.2"
+                    android:background="@drawable/ic_overflow_shadow"
+                    android:gravity="end"
+                    android:src="@drawable/ic_more_vert_black_48dp" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
-</android.support.v7.widget.CardView>
+    </android.support.v7.widget.CardView>
+</FrameLayout>

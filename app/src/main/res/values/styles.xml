@@ -34,6 +34,8 @@
         <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
         <item name="selected_app_check">@drawable/ic_check_circle_black_18dp</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:actionModeBackground">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.PopupOverlay.Light" parent="ThemeOverlay.AppCompat.Light" />
@@ -44,6 +46,8 @@
         <item name="android:color">@android:color/white</item>
         <item name="android:navigationBarColor">@color/navigationBarColor_dark</item>
         <item name="android:actionBarStyle">@color/actionBarStyle_dark</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="selected_app_check">@drawable/ic_check_circle_white_18dp</item>
     </style>
 
     <!-- Dark theme -->
@@ -52,6 +56,7 @@
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark_dark</item>
         <item name="android:colorAccent">@color/colorAccent_dark</item>
         <item name="android:windowBackground">@color/windowBackground_dark</item>
+        <item name="android:actionModeBackground">@color/actionMode_background_dark</item>
     </style>
 
     <style name="AppTheme.Dark.NoActionBar" parent="AppTheme.Dark">
@@ -62,7 +67,6 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
-        <item name="selected_app_check">@drawable/ic_check_circle_white_18dp</item>
     </style>
 
     <style name="AppTheme.PopupOverlay.Dark" parent="ThemeOverlay.AppCompat.Dark" />
@@ -87,6 +91,7 @@
 
     <style name="AppTheme.Black.ActionBar" parent="Theme.AppCompat">
         <item name="android:background">@color/colorPrimary_black</item>
+        <item name="android:actionModeBackground">@color/actionMode_background_black</item>
     </style>
 
     <style name="AppTheme.Black.Dialog" parent="@android:style/Theme.Dialog">
@@ -101,7 +106,6 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
-        <item name="selected_app_check">@drawable/ic_check_circle_white_18dp</item>
     </style>
 
     <style name="AppTheme.PopupOverlay.Black" parent="ThemeOverlay.AppCompat.Dark" >
