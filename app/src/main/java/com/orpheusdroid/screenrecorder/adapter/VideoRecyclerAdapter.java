@@ -155,14 +155,15 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        final Video video = videos.get(position);
         switch (holder.getItemViewType()) {
             case VIEW_ITEM:
                 final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
                 //Set video file name
-                itemViewHolder.tv_fileName.setText(videos.get(position).getFileName());
+                itemViewHolder.tv_fileName.setText(video.getFileName());
                 //If thumbnail has failed for some reason, set empty image resource to imageview
                 if (videos.get(position).getThumbnail() != null) {
-                    itemViewHolder.iv_thumbnail.setImageBitmap(videos.get(position).getThumbnail());
+                    itemViewHolder.iv_thumbnail.setImageBitmap(video.getThumbnail());
                 } else {
                     itemViewHolder.iv_thumbnail.setImageResource(0);
                     Log.d(Const.TAG, "thumbnail error");
@@ -178,7 +179,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 }
 
                 // Set foreground color to identify selected items
-                if (videos.get(position).isSelected()) {
+                if (video.isSelected()) {
                     itemViewHolder.selectableFrame.setForeground(new ColorDrawable(ContextCompat.getColor(context, R.color.multiSelectColor)));
                 } else {
                     itemViewHolder.selectableFrame.setForeground(new ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent)));
@@ -208,13 +209,13 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
                                         Intent editIntent = new Intent(context, EditVideoActivity.class);
                                         editIntent.putExtra(Const.VIDEO_EDIT_URI_KEY,
-                                                Uri.fromFile(videos.get(position).getFile()).toString());
-                                        Log.d(Const.TAG, "Uri: " + Uri.fromFile(videos.get(position).getFile()));
+                                                Uri.fromFile(video.getFile()).toString());
+                                        Log.d(Const.TAG, "Uri: " + Uri.fromFile(video.getFile()));
                                         videosListFragment.startActivityForResult(editIntent, Const.VIDEO_EDIT_REQUEST_CODE);
                                         break;
                                     case R.id.savegif:
                                         Mp4toGIFConverter gif = new Mp4toGIFConverter(context);
-                                        gif.setVideoUri(Uri.fromFile(videos.get(position).getFile()));
+                                        gif.setVideoUri(Uri.fromFile(video.getFile()));
                                         gif.convertToGif();
                                 }
                                 return true;
@@ -227,7 +228,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 itemViewHolder.videoCard.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Video video = videos.get(itemViewHolder.getAdapterPosition());
+                        //Video video = videos.get(itemViewHolder.getAdapterPosition());
 
                         // If multiselect is enabled, select the items pressed by user
                         if (isMultiSelect) {
@@ -250,7 +251,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                             return;
                         }
 
-                        File videoFile = videos.get(itemViewHolder.getAdapterPosition()).getFile();
+                        File videoFile = video.getFile();
                         Log.d("Videos List", "video position clicked: " + itemViewHolder.getAdapterPosition());
 
                         Uri fileUri = FileProvider.getUriForFile(
@@ -275,7 +276,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                     public boolean onLongClick(View view) {
                         if (!isMultiSelect) {
                             setMultiSelect(true);
-                            videos.get(itemViewHolder.getAdapterPosition()).setSelected(true);
+                            video.setSelected(true);
                             count++;
                             mActionMode.setTitle("" + count);
                             notifyDataSetChanged();
@@ -287,7 +288,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 break;
             case VIEW_SECTION:
                 SectionViewHolder sectionViewHolder = (SectionViewHolder) holder;
-                sectionViewHolder.section.setText(generateSectionTitle(videos.get(position).getLastModified()));
+                sectionViewHolder.section.setText(generateSectionTitle(video.getLastModified()));
                 break;
         }
     }
