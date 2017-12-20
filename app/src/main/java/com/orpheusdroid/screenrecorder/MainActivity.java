@@ -69,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private SharedPreferences prefs;
 
+    //Method to create app directory which is default directory for storing recorded videos
+    public static void createDir() {
+        File appDir = new File(Environment.getExternalStorageDirectory() + File.separator + Const.APPDIR);
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && !appDir.isDirectory()) {
+            appDir.mkdirs();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -145,15 +153,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        /* Enable analytics only for release builds */
-        if (!BuildConfig.DEBUG) {
-            Log.d(Const.TAG, "Is a release build. Setting up analytics");
-            requestAnalyticsPermission();
-            setupAnalytics();
-        } else {
-            Log.d(Const.TAG, "Debug build. Analytics is disabled");
-        }
 
     }
 
@@ -251,14 +250,6 @@ public class MainActivity extends AppCompatActivity {
         recorderService.putExtra(Const.RECORDER_INTENT_RESULT, resultCode);
         startService(recorderService);
         this.finish();
-    }
-
-    //Method to create app directory which is default directory for storing recorded videos
-    public static void createDir() {
-        File appDir = new File(Environment.getExternalStorageDirectory() + File.separator + Const.APPDIR);
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && !appDir.isDirectory()) {
-            appDir.mkdirs();
-        }
     }
 
     //Update video list fragment once save directory has been changed
@@ -411,6 +402,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        /* Enable analytics only for release builds */
+        if (!BuildConfig.DEBUG) {
+            Log.d(Const.TAG, "Is a release build. Setting up analytics");
+            requestAnalyticsPermission();
+            setupAnalytics();
+        } else {
+            Log.d(Const.TAG, "Debug build. Analytics is disabled");
+        }
     }
 
     @Override
@@ -442,6 +441,10 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public interface AnalyticsSettingsListerner {
+        void updateAnalyticsSettings(Const.analytics analytics);
     }
 
     //ViewPager class for tab view
@@ -477,9 +480,5 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
-    }
-
-    public interface AnalyticsSettingsListerner {
-        void updateAnalyticsSettings(Const.analytics analytics);
     }
 }
