@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016. Vijai Chandra Prasad R.
+ * Copyright (c) 2016-2017. Vijai Chandra Prasad R.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,12 @@ public class VideosListFragment extends Fragment implements PermissionResultList
 
     public VideosListFragment() {
 
+    }
+
+    //Method to check if the file's meme type is video
+    private static boolean isVideoFile(String path) {
+        String mimeType = URLConnection.guessContentTypeFromName(path);
+        return mimeType != null && mimeType.startsWith("video");
     }
 
     @Override
@@ -164,12 +170,6 @@ public class VideosListFragment extends Fragment implements PermissionResultList
                 newFiles.add(file);
         }
         return newFiles.toArray(new File[newFiles.size()]);
-    }
-
-    //Method to check if the file's meme type is video
-    private static boolean isVideoFile(String path) {
-        String mimeType = URLConnection.guessContentTypeFromName(path);
-        return mimeType != null && mimeType.startsWith("video");
     }
 
     //Init recyclerview once the videos list is ready

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016. Vijai Chandra Prasad R.
+ * Copyright (c) 2016-2017. Vijai Chandra Prasad R.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,12 +109,12 @@ public class FloatingControlService extends Service implements View.OnClickListe
         //Add touch listerner to floating controls view to move/close/expand the controls
         try {
             floatingControls.setOnTouchListener(new View.OnTouchListener() {
+                boolean isMoving = false;
                 private WindowManager.LayoutParams paramsF = params;
                 private int initialX;
                 private int initialY;
                 private float initialTouchX;
                 private float initialTouchY;
-                boolean isMoving = false;
 
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -275,13 +275,6 @@ public class FloatingControlService extends Service implements View.OnClickListe
         }
     }
 
-    //Binder class for binding to recording service
-    public class ServiceBinder extends Binder {
-        FloatingControlService getService() {
-            return FloatingControlService.this;
-        }
-    }
-
     @Override
     public void onDestroy() {
         if (floatingControls != null) windowManager.removeView(floatingControls);
@@ -308,5 +301,12 @@ public class FloatingControlService extends Service implements View.OnClickListe
     private int dpToPx(int dp) {
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    //Binder class for binding to recording service
+    public class ServiceBinder extends Binder {
+        FloatingControlService getService() {
+            return FloatingControlService.this;
+        }
     }
 }

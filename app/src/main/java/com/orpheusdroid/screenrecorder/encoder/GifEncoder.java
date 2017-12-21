@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017. Vijai Chandra Prasad R.
+ * Copyright (c) 2016-2017. Vijai Chandra Prasad R.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -507,27 +507,6 @@ public class GifEncoder {
     }
 }
 
-	/*
-	 * NeuQuant Neural-Net Quantization Algorithm
-	 * ------------------------------------------
-	 *
-	 * Copyright (c) 1994 Anthony Dekker
-	 *
-	 * NEUQUANT Neural-Net quantization algorithm by Anthony Dekker, 1994. See
-	 * "Kohonen neural networks for optimal colour quantization" in "Network:
-	 * Computation in Neural Systems" Vol. 5 (1994) pp 351-367. for a discussion of
-	 * the algorithm.
-	 *
-	 * Any party obtaining a copy of these files from the author, directly or
-	 * indirectly, is granted, free of charge, a full and unrestricted irrevocable,
-	 * world-wide, paid up, royalty-free, nonexclusive right and license to deal in
-	 * this software and documentation files (the "Software"), including without
-	 * limitation the rights to use, copy, modify, merge, publish, distribute,
-	 * sublicense, and/or sell copies of the Software, and to permit persons who
-	 * receive copies from any such party to do so, with the only requirement being
-	 * that this copyright notice remain intact.
-	 */
-
 //	 Ported to Java 12/00 K Weiner
 class NeuQuant {
 
@@ -602,22 +581,16 @@ class NeuQuant {
     protected static final int alphabiasshift = 10; /* alpha starts at 1.0 */
 
     protected static final int initalpha = (1 << alphabiasshift);
-
-    protected int alphadec; /* biased by 10 bits */
-
     /* radbias and alpharadbias used for radpower calculation */
     protected static final int radbiasshift = 8;
-
     protected static final int radbias = (1 << radbiasshift);
-
     protected static final int alpharadbshift = (alphabiasshift + radbiasshift);
-
     protected static final int alpharadbias = (1 << alpharadbshift);
+    protected int alphadec; /* biased by 10 bits */
 
 	  /*
 	   * Types and Global Variables --------------------------
 	   */
-
     protected byte[] thepicture; /* the input image itself */
 
     protected int lengthcount; /* lengthcount = H*W*3 */
@@ -1018,17 +991,12 @@ class NeuQuant {
 
 class LZWEncoder {
 
+    static final int BITS = 12;
+    static final int HSIZE = 5003; // 80% occupancy
     private static final int EOF = -1;
-
-    private int imgW, imgH;
-
-    private byte[] pixAry;
-
-    private int initCodeSize;
-
-    private int remaining;
-
-    private int curPixel;
+    int n_bits; // number of bits/code
+    int maxbits = BITS; // user settable max # bits/code
+    int maxcode; // maximum code, given n_bits
 
     // GIFCOMPR.C - GIF Image compression routines
     //
@@ -1036,10 +1004,8 @@ class LZWEncoder {
     // David Rowley (mgardi@watdcsu.waterloo.edu)
 
     // General DEFINEs
-
-    static final int BITS = 12;
-
-    static final int HSIZE = 5003; // 80% occupancy
+    int maxmaxcode = 1 << BITS; // should NEVER generate this code
+    int[] htab = new int[HSIZE];
 
     // GIF Image compression - modified 'compress'
     //
@@ -1051,26 +1017,17 @@ class LZWEncoder {
     // Ken Turkowski (decvax!decwrl!turtlevax!ken)
     // James A. Woods (decvax!ihnp4!ames!jaw)
     // Joe Orost (decvax!vax135!petsd!joe)
-
-    int n_bits; // number of bits/code
-
-    int maxbits = BITS; // user settable max # bits/code
-
-    int maxcode; // maximum code, given n_bits
-
-    int maxmaxcode = 1 << BITS; // should NEVER generate this code
-
-    int[] htab = new int[HSIZE];
-
     int[] codetab = new int[HSIZE];
-
     int hsize = HSIZE; // for dynamic table sizing
-
     int free_ent = 0; // first unused entry
-
     // block compression parameters -- after all codes are used up,
     // and compression rate changes, start over.
     boolean clear_flg = false;
+    int g_init_bits;
+    int ClearCode;
+    int EOFCode;
+    int cur_accum = 0;
+    int cur_bits = 0;
 
     // Algorithm: use open addressing double hashing (no chaining) on the
     // prefix code / next character combination. We do a variant of Knuth's
@@ -1083,12 +1040,12 @@ class LZWEncoder {
     // for the decompressor. Late addition: construct the table according to
     // file size for noticeable speed improvement on small files. Please direct
     // questions about this implementation to ames!jaw.
-
-    int g_init_bits;
-
-    int ClearCode;
-
-    int EOFCode;
+    int masks[] = {0x0000, 0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF, 0x01FF,
+            0x03FF, 0x07FF, 0x0FFF, 0x1FFF, 0x3FFF, 0x7FFF, 0xFFFF};
+    // Number of characters so far in this 'packet'
+    int a_count;
+    // Define the storage for the packet accumulator
+    byte[] accum = new byte[256];
 
     // output
     //
@@ -1104,19 +1061,11 @@ class LZWEncoder {
     // Maintain a BITS character long buffer (so that 8 codes will
     // fit in it exactly). Use the VAX insv instruction to insert each
     // code in turn. When the buffer fills up empty it and start over.
-
-    int cur_accum = 0;
-
-    int cur_bits = 0;
-
-    int masks[] = { 0x0000, 0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF, 0x01FF,
-            0x03FF, 0x07FF, 0x0FFF, 0x1FFF, 0x3FFF, 0x7FFF, 0xFFFF };
-
-    // Number of characters so far in this 'packet'
-    int a_count;
-
-    // Define the storage for the packet accumulator
-    byte[] accum = new byte[256];
+    private int imgW, imgH;
+    private byte[] pixAry;
+    private int initCodeSize;
+    private int remaining;
+    private int curPixel;
 
     // ----------------------------------------------------------------------------
     LZWEncoder(int width, int height, byte[] pixels, int color_depth) {

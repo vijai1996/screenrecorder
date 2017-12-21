@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016. Vijai Chandra Prasad R.
+ * Copyright (c) 2016-2017. Vijai Chandra Prasad R.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@ import java.util.List;
 
 public class FolderChooser extends DialogPreference implements View.OnClickListener,
         DirectoryRecyclerAdapter.OnDirectoryClickedListerner, AdapterView.OnItemSelectedListener {
+    private static OnDirectorySelectedListerner onDirectorySelectedListerner;
     private RecyclerView rv;
     private TextView tv_currentDir;
     private TextView tv_empty;
@@ -71,7 +72,6 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
     private AlertDialog dialog;
     private DirectoryRecyclerAdapter adapter;
     private Spinner spinner;
-    private static OnDirectorySelectedListerner onDirectorySelectedListerner;
     private List<Storages> storages = new ArrayList<>();
     private boolean isExternalStorageSelected = false;
     private SharedPreferences prefs;
@@ -180,12 +180,12 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
     }
 
     private void initView(View view) {
-        ImageButton up = (ImageButton) view.findViewById(R.id.nav_up);
-        ImageButton createDir = (ImageButton) view.findViewById(R.id.create_dir);
-        tv_currentDir = (TextView) view.findViewById(R.id.tv_selected_dir);
-        rv = (RecyclerView) view.findViewById(R.id.rv);
-        tv_empty = (TextView) view.findViewById(R.id.tv_empty);
-        spinner = (Spinner) view.findViewById(R.id.storageSpinner);
+        ImageButton up = view.findViewById(R.id.nav_up);
+        ImageButton createDir = view.findViewById(R.id.create_dir);
+        tv_currentDir = view.findViewById(R.id.tv_selected_dir);
+        rv = view.findViewById(R.id.rv);
+        tv_empty = view.findViewById(R.id.tv_empty);
+        spinner = view.findViewById(R.id.storageSpinner);
         up.setOnClickListener(this);
         createDir.setOnClickListener(this);
         ArrayList<String> StorageStrings = new ArrayList<>();
@@ -233,7 +233,7 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
     private void newDirDialog(Bundle savedState) {
         LayoutInflater li = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = li.inflate(R.layout.directory_chooser_edit_text, null);
-        final EditText input = (EditText) view.findViewById(R.id.et_new_folder);
+        final EditText input = view.findViewById(R.id.et_new_folder);
         input.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -363,7 +363,7 @@ public class FolderChooser extends DialogPreference implements View.OnClickListe
 
     private void showExtDirAlert() {
         View checkBoxView = View.inflate(getContext(), R.layout.alert_checkbox, null);
-        final CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.donot_warn_cb);
+        final CheckBox checkBox = checkBoxView.findViewById(R.id.donot_warn_cb);
         new AlertDialog.Builder(getContext())
                 .setTitle(R.string.alert_ext_dir_warning_title)
                 .setMessage(R.string.alert_ext_dir_warning_message)

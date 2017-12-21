@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016. Vijai Chandra Prasad R.
+ * Copyright (c) 2016-2017. Vijai Chandra Prasad R.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,16 +78,30 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
     private static int BITRATE;
     private static boolean mustRecAudio;
     private static String SAVEPATH;
+
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
+
     private boolean isRecording;
     private boolean useFloatingControls;
     private boolean showTouches;
     private FloatingControlService floatingControlService;
     private boolean isBound = false;
     private NotificationManager mNotificationManager;
+    Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message message) {
+            Toast.makeText(RecorderService.this, R.string.screen_recording_stopped_toast, Toast.LENGTH_SHORT).show();
+            showShareNotification();
+        }
+    };
     private ShakeEventManager mShakeDetector;
     private Intent data;
     private int result;
-
     //Service connection to manage the connection state between this service and the bounded service
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -104,14 +118,6 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
             isBound = false;
         }
     };
-
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }
-
     private long startTime, elapsedTime = 0;
     private SharedPreferences prefs;
     private WindowManager window;
@@ -597,14 +603,6 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
             }
         });
     }
-
-    Handler mHandler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(Message message) {
-            Toast.makeText(RecorderService.this, R.string.screen_recording_stopped_toast, Toast.LENGTH_SHORT).show();
-            showShareNotification();
-        }
-    };
 
     private void stopScreenSharing() {
         if (mVirtualDisplay == null) {

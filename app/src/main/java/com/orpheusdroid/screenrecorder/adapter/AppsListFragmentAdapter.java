@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017. Vijai Chandra Prasad R.
+ * Copyright (c) 2016-2017. Vijai Chandra Prasad R.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,11 +37,6 @@ public class AppsListFragmentAdapter extends RecyclerView.Adapter<AppsListFragme
     private ArrayList<Apps> apps;
     private OnItemClicked onClick;
 
-    // Interface to handle recycler view item click
-    public interface OnItemClicked {
-        void onItemClick(int position);
-    }
-
     public AppsListFragmentAdapter(ArrayList<Apps> apps) {
         this.apps = apps;
     }
@@ -71,6 +66,20 @@ public class AppsListFragmentAdapter extends RecyclerView.Adapter<AppsListFragme
         });
     }
 
+    @Override
+    public int getItemCount() {
+        return apps.size();
+    }
+
+    public void setOnClick(OnItemClicked onClick) {
+        this.onClick = onClick;
+    }
+
+    // Interface to handle recycler view item click
+    public interface OnItemClicked {
+        void onItemClick(int position);
+    }
+
     // A static view holder class to hold the view items used by the recycler view
     static class SimpleViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
@@ -85,14 +94,5 @@ public class AppsListFragmentAdapter extends RecyclerView.Adapter<AppsListFragme
             selectedApp = itemView.findViewById(R.id.appChecked);
             app = itemView.findViewById(R.id.app);
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return apps.size();
-    }
-
-    public void setOnClick(OnItemClicked onClick) {
-        this.onClick = onClick;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017. Vijai Chandra Prasad R.
+ * Copyright (c) 2016-2017. Vijai Chandra Prasad R.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ public class EditVideoActivity extends AppCompatActivity implements OnTrimVideoL
 
         Uri videoUri = Uri.parse(getIntent().getStringExtra(Const.VIDEO_EDIT_URI_KEY));
 
-        K4LVideoTrimmer videoTrimmer = (K4LVideoTrimmer) findViewById(R.id.videoTimeLine);
+        K4LVideoTrimmer videoTrimmer = findViewById(R.id.videoTimeLine);
 
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         //use one of overloaded setDataSource() functions to set your data source

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017. Vijai Chandra Prasad R.
+ * Copyright (c) 2016-2017. Vijai Chandra Prasad R.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,15 +32,12 @@ import com.orpheusdroid.screenrecorder.Const;
 
 public class ShakeEventManager implements SensorEventListener {
 
-    private SensorManager sManager;
-    private Sensor s;
-
-
     private static final int MOV_COUNTS = 5;
     private static final int MOV_THRESHOLD = 4;
     private static final float ALPHA = 0.8F;
     private static final int SHAKE_WINDOW_TIME_INTERVAL = 1000; // milliseconds
-
+    private SensorManager sManager;
+    private Sensor s;
     // Gravity force on x,y,z axis
     private float gravity[] = new float[3];
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016. Vijai Chandra Prasad R.
+ * Copyright (c) 2016-2017. Vijai Chandra Prasad R.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,13 +37,9 @@ import java.util.ArrayList;
  */
 
 class DirectoryRecyclerAdapter extends RecyclerView.Adapter<DirectoryRecyclerAdapter.ItemViewHolder> {
+    private static OnDirectoryClickedListerner onDirectoryClickedListerner;
     private Context context;
     private ArrayList<File> directories;
-    private static OnDirectoryClickedListerner onDirectoryClickedListerner;
-
-    interface OnDirectoryClickedListerner {
-        void OnDirectoryClicked(File directory);
-    }
 
     DirectoryRecyclerAdapter(Context context, OnDirectoryClickedListerner listerner, ArrayList<File> directories){
         this.context = context;
@@ -74,13 +70,17 @@ class DirectoryRecyclerAdapter extends RecyclerView.Adapter<DirectoryRecyclerAda
         return directories.size();
     }
 
+    interface OnDirectoryClickedListerner {
+        void OnDirectoryClicked(File directory);
+    }
+
     static class ItemViewHolder extends RecyclerView.ViewHolder{
         TextView dir;
         LinearLayout dir_view;
         public ItemViewHolder(View itemView) {
             super(itemView);
-            dir = (TextView) itemView.findViewById(R.id.directory);
-            dir_view = (LinearLayout) itemView.findViewById(R.id.directory_view);
+            dir = itemView.findViewById(R.id.directory);
+            dir_view = itemView.findViewById(R.id.directory_view);
         }
     }
 }

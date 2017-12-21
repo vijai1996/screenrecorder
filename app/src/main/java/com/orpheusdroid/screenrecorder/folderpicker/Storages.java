@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017. Vijai Chandra Prasad R.
+ * Copyright (c) 2016-2017. Vijai Chandra Prasad R.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,6 @@ package com.orpheusdroid.screenrecorder.folderpicker;
 public class Storages {
     private String path;
     private StorageType type;
-    public enum StorageType{Internal, External}
-
     public Storages(String path, StorageType type) {
         this.path = path;
         this.type = type;
@@ -38,4 +36,6 @@ public class Storages {
     public StorageType getType() {
         return type;
     }
+
+    public enum StorageType {Internal, External}
 }
