@@ -18,12 +18,14 @@
 package com.orpheusdroid.screenrecorder.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.PopupMenu;
@@ -96,7 +98,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             switch (item.getItemId()) {
                 case R.id.delete:
                     if (!positions.isEmpty())
-                        deleteVideos(positions);
+                        confirmDelete(positions);
                     mActionMode.finish();
                     break;
                 case R.id.share:
@@ -202,7 +204,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                                         shareVideo(itemViewHolder.getAdapterPosition());
                                         break;
                                     case R.id.delete:
-                                        deleteVideo(itemViewHolder.getAdapterPosition());
+                                        confirmDelete(holder.getAdapterPosition());
                                         break;
                                     case R.id.edit:
                                         Toast.makeText(context, "Edit video for " + itemViewHolder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
@@ -304,6 +306,12 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
+    /**
+     * Share the videos selected
+     *
+     * @param position Integer value representing the position of the video to be shared
+     * @see #shareVideos(ArrayList positions)
+     */
     private void shareVideo(int position) {
         Uri fileUri = FileProvider.getUriForFile(
                 context, context.getPackageName() +
@@ -324,6 +332,8 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
      * Share the videos selected
      *
      * @param positions Integer ArrayList containing the positions of the videos to be shared
+     *
+     * @see #shareVideo(int postion)
      */
     private void shareVideos(ArrayList<Integer> positions) {
         ArrayList<Uri> videoList = new ArrayList<>();
@@ -343,6 +353,13 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 context.getString(R.string.share_intent_notification_title)));
     }
 
+    /**
+     * Delete the videos selected
+     *
+     * @param position integer value representing the position of the video to be deleted
+     *
+     * @see #deleteVideo(int position)
+     */
     private void deleteVideo(int position) {
         Log.d("Videos List", "delete position clicked: " + position);
         File file = new File(videos.get(position).getFile().getPath());
@@ -358,6 +375,8 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
      * Delete the videos selected
      *
      * @param positions ArrayList of integers containing the position of the videos to be deleted
+     *
+     * @see #deleteVideo(int position)
      */
     private void deleteVideos(ArrayList<Integer> positions) {
         File video;
@@ -368,6 +387,58 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
         }
         notifyDataSetChanged();
+    }
+
+    /**
+     * Show confirmation dialog before the video is deleted
+     *
+     * @param position integer representing the postion of the video in the dataset to delete
+     */
+    private void confirmDelete(final int position) {
+        new AlertDialog.Builder(context)
+                .setTitle(context.getResources().getQuantityString(R.plurals.delete_alert_title, 1))
+                .setMessage(context.getResources().getQuantityString(R.plurals.delete_alert_message, 1))
+                .setCancelable(false)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteVideo(position);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * Show confirmation dialog before the video is deleted
+     *
+     * @param positions Array list of integer containing the positions of the videos in the dataset to delete
+     */
+    private void confirmDelete(final ArrayList<Integer> positions) {
+        int count = positions.size();
+        new AlertDialog.Builder(context)
+                .setTitle(context.getResources().getQuantityString(R.plurals.delete_alert_title, count))
+                .setMessage(context.getResources().getQuantityString(R.plurals.delete_alert_message,
+                        count, count))
+                .setCancelable(false)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteVideos(positions);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .show();
     }
 
     //Generate title for the section depending on the recording date
