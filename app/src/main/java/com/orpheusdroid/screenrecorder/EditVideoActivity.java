@@ -41,11 +41,18 @@ public class EditVideoActivity extends AppCompatActivity implements OnTrimVideoL
         setContentView(R.layout.activity_edit_video);
 
         if(!getIntent().hasExtra(Const.VIDEO_EDIT_URI_KEY)) {
-            Toast.makeText(this, "Video not found. Please try again", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.video_not_found), Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
 
         Uri videoUri = Uri.parse(getIntent().getStringExtra(Const.VIDEO_EDIT_URI_KEY));
+
+        if (!new File(videoUri.getPath()).exists()) {
+            Toast.makeText(this, getResources().getString(R.string.video_not_found), Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         K4LVideoTrimmer videoTrimmer = findViewById(R.id.videoTimeLine);
 
