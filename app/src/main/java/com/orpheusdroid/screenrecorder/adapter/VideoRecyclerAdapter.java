@@ -58,20 +58,49 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Created by vijai on 07-11-2016.
+ * <p>
+ *     Custom Recycler view adapter for video list fragment
+ * </p>
+ *
+ * @author Vijai Chandra Prasad .R
+ * @see SectionViewHolder
+ * @see ItemViewHolder
  */
-
-//Custom Recycler view adapter for video list fragment
 public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    /**
+     * Integer value for Section view type
+     */
     private static final int VIEW_SECTION = 0;
+    /**
+     * Integer value for Video item view type
+     */
     private static final int VIEW_ITEM = 1;
+
+    /**
+     * VideoListFragment object
+     */
     private VideosListFragment videosListFragment;
+
+    /**
+     * ArrayList containing the videos
+     */
     private ArrayList<Video> videos;
     private Context context;
+
+    /**
+     * Boolean to set if multi select to be enabled
+     */
     private boolean isMultiSelect = false;
     private int count = 0;
+
+    /**
+     * Actionbar actionmode object
+     */
     private ActionMode mActionMode;
-    // Show a contextual menu in multiselect mode
+
+    /**
+     * Show a contextual menu in multiselect mode
+     */
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
         @Override
@@ -89,19 +118,26 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             // Build an arraylist of selected item positions when an menu item is clicked
-            ArrayList<Integer> positions = new ArrayList<>();
-            for (Video video : videos) {
-                if (video.isSelected()) {
-                    positions.add(videos.indexOf(video));
-                }
-            }
             switch (item.getItemId()) {
                 case R.id.delete:
-                    if (!positions.isEmpty())
-                        confirmDelete(positions);
+                    ArrayList<Video> deleteFiles = new ArrayList<>();
+                    for (Video video : videos) {
+                        if (video.isSelected()) {
+                            //deleFiles.add(new File(videos.get(videos.indexOf(video)).getFile().getPath()));
+                            deleteFiles.add(video);
+                        }
+                    }
+                    if (!deleteFiles.isEmpty())
+                        confirmDelete(deleteFiles);
                     mActionMode.finish();
                     break;
                 case R.id.share:
+                    ArrayList<Integer> positions = new ArrayList<>();
+                    for (Video video : videos) {
+                        if (video.isSelected()) {
+                            positions.add(videos.indexOf(video));
+                        }
+                    }
                     if (!positions.isEmpty())
                         shareVideos(positions);
                     mActionMode.finish();
@@ -128,13 +164,22 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.videosListFragment = videosListFragment;
     }
 
-    //Find if the view is a section type or video type
+    /**
+     * Find if the view is a section type or video type
+     *
+     * @param position position of the arraylist of videos
+     * @return the item type
+     */
     @Override
     public int getItemViewType(int position) {
         return isSection(position) ? VIEW_SECTION : VIEW_ITEM;
     }
 
-    //Method to determine the type
+    /**
+     * Method to determine the type
+     * @param position position of the arraylist of videos
+     * @return true if the item is a section. False otherwise
+     */
     public boolean isSection(int position) {
         return videos.get(position).isSection();
     }
@@ -295,6 +340,10 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
+    /**
+     * method to set if multi select to be enabled
+     * @param isMultiSelect boolean
+     */
     private void setMultiSelect(boolean isMultiSelect) {
         if (isMultiSelect) {
             this.isMultiSelect = true;
@@ -374,16 +423,15 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     /**
      * Delete the videos selected
      *
-     * @param positions ArrayList of integers containing the position of the videos to be deleted
+     * @param deleteVideos ArrayList of integers containing the position of the videos to be deleted
      *
      * @see #deleteVideo(int position)
      */
-    private void deleteVideos(ArrayList<Integer> positions) {
-        File video;
-        for (int position : positions) {
-            video = new File(videos.get(position).getFile().getPath());
-            if (video.delete()) {
-                videos.remove(position);
+    private void deleteVideos(ArrayList<Video> deleteVideos) {
+        for (Video video : deleteVideos) {
+            if (video.getFile().delete()) {
+                notifyItemRemoved(videos.indexOf(video));
+                videos.remove(videos.indexOf(video));
             }
         }
         notifyDataSetChanged();
@@ -417,10 +465,10 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     /**
      * Show confirmation dialog before the video is deleted
      *
-     * @param positions Array list of integer containing the positions of the videos in the dataset to delete
+     * @param deleteVideos Array list of integer containing the positions of the videos in the dataset to delete
      */
-    private void confirmDelete(final ArrayList<Integer> positions) {
-        int count = positions.size();
+    private void confirmDelete(final ArrayList<Video> deleteVideos) {
+        int count = deleteVideos.size();
         new AlertDialog.Builder(context)
                 .setTitle(context.getResources().getQuantityString(R.plurals.delete_alert_title, count))
                 .setMessage(context.getResources().getQuantityString(R.plurals.delete_alert_message,
@@ -429,7 +477,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        deleteVideos(positions);
+                        deleteVideos(deleteVideos);
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -441,7 +489,11 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 .show();
     }
 
-    //Generate title for the section depending on the recording date
+    /**
+     * Generate title for the section depending on the recording date
+     * @param date Date when the videos where recorded
+     * @return Simplified string for the section header
+     */
     private String generateSectionTitle(Date date) {
         Calendar sDate = toCalendar(new Date().getTime());
         Calendar eDate = toCalendar(date.getTime());
@@ -472,7 +524,11 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-    //Generate Calendar object and return it
+    /**
+     * Generate Calendar object and return it
+     * @param timestamp timestamp for which Calendar object to be created
+     * @return Calendar object
+     */
     private Calendar toCalendar(long timestamp) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timestamp);
@@ -488,7 +544,9 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         return videos.size();
     }
 
-    //ViewHolder class for video items
+    /**
+     * ViewHolder class for video items
+     */
     private final class ItemViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_fileName;
         private ImageView iv_thumbnail;
@@ -509,7 +567,9 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-    //ViewHolder class for sections
+    /**
+     * ViewHolder class for sections
+     */
     private final class SectionViewHolder extends RecyclerView.ViewHolder {
         private TextView section;
 
