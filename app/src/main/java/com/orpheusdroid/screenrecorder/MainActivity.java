@@ -23,6 +23,7 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -58,18 +59,72 @@ import java.util.List;
 import ly.count.android.sdk.Countly;
 import ly.count.android.sdk.DeviceId;
 
+/**
+ * <p>
+ * This class is the launcher activity of the app which handles
+ * various permissions of the app. One of the main function of this activity is to manage the
+ * lifecycle of two important fragments:
+ * <br />
+ * <ul>
+ * <li><a href="SettingsPreferenceFragment">SettingsPreferenceFragment</a></li>
+ * <li><a href="VideosListFragment">VideosListFragment</a></li>
+ * </ul></p>
+ * <br />
+ * This class also manages of the most important function of the app: Creating a mediaprojection object
+ * and starting the screen recording service.
+ *
+ * @author Vijai Chandra Prasad .R
+ * @see SettingsPreferenceFragment
+ * @see VideosListFragment
+ * @see RecorderService
+ */
+
 public class MainActivity extends AppCompatActivity {
 
+    /**
+     * Permission listener interface to listen to permission results obtained from
+     * <a href="SettingsPreferenceFragment">SettingsPreferenceFragment</a>
+     * @see PermissionResultListener
+     */
     private PermissionResultListener mPermissionResultListener;
+
+    /**
+     * Interface to listen to settings changes pertaining to analytics.
+     * This is used to enable/disable sdk depending on the user's settings in realtime (without waiting for app restart)
+     * @see MainActivity.AnalyticsSettingsListerner
+     */
     private AnalyticsSettingsListerner analyticsSettingsListerner;
+
+    /**
+     * MediaProjection token to hold screen capture permission grant
+     */
     private MediaProjection mMediaProjection;
+
+    /**
+     * Instance of {@link MediaProjectionManager} system service
+     */
     private MediaProjectionManager mProjectionManager;
+
+    /**
+     * {@link FloatingActionButton} view which handles the record start/stop action
+     */
     private FloatingActionButton fab;
-    private TabLayout tabLayout;
+
+    /**
+     * {@link ViewPager} to handle swiping (left/right) of {@link SettingsPreferenceFragment}
+     * and {@link VideosListFragment} fragments
+     */
     private ViewPager viewPager;
+
+    /**
+     * Object of {@link SharedPreferences} to read the app's settings.
+     * @see SettingsPreferenceFragment
+     */
     private SharedPreferences prefs;
 
-    //Method to create app directory which is default directory for storing recorded videos
+    /**
+     * Static method to create the app's default directory in the external storage
+     */
     public static void createDir() {
         File appDir = new File(Environment.getExternalStorageDirectory() + File.separator + Const.APPDIR);
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && !appDir.isDirectory()) {
@@ -77,6 +132,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method handles themes, populates the UI views and click listeners.
+     *
+     * @param savedInstanceState default savedInstance bundle sent by Android runtime
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -111,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
-        tabLayout = findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setBackgroundColor(toolBarColor);
 
@@ -156,6 +216,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Method to initialize the countly analytics sdk.<br />
+     * The sdk is initialized either to only report app crashes or to report usage analytics based
+     * on the settings chosen by the user which is saved to the shared preference
+     */
     public void setupAnalytics() {
         if (!prefs.getBoolean(getString(R.string.preference_crash_reporting_key), false) &&
                 !prefs.getBoolean(getString(R.string.preference_anonymous_statistics_key), false)) {
@@ -180,6 +245,12 @@ public class MainActivity extends AppCompatActivity {
         Countly.sharedInstance().onStart(this);
     }
 
+    /**
+     * Method to add the fragments: {@link SettingsPreferenceFragment} and {@link VideosListFragment}
+     * to the viewpager and add {@link ViewPager#addOnPageChangeListener(ViewPager.OnPageChangeListener)}
+     * to hide {@link #fab} on {@link VideosListFragment}
+     * @param viewPager viewpager instance from the layout
+     */
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getFragmentManager());
         adapter.addFragment(new SettingsPreferenceFragment(), getString(R.string.tab_settings_title));
@@ -210,7 +281,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //Method to check if the service is running
+    /**
+     * Method to check if the {@link RecorderService} is running
+     * @param serviceClass Collection containing the {@link RecorderService} class
+     * @return boolean value representing if the {@link RecorderService} is running
+     * @exception NullPointerException May throw NullPointerException
+     */
     private boolean isServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -221,7 +297,15 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    //Overriding onActivityResult to capture screen mirroring permission request result
+
+    /**
+     * onActivityResult method to handle the activity results for floating controls
+     * and screen recording permission
+     *
+     * @param requestCode Unique request code for different startActivityForResult calls
+     * @param resultCode result code representing the user's choice
+     * @param data Extra intent data passed from calling intent
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -243,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /*If code reaches this point, congratulations! The user has granted screen mirroring permission
-        * Let us set the recorderservice intent with relevant data and start service*/
+         * Let us set the recorderservice intent with relevant data and start service*/
         Intent recorderService = new Intent(this, RecorderService.class);
         recorderService.setAction(Const.SCREEN_RECORDING_START);
         recorderService.putExtra(Const.RECORDER_INTENT_DATA, data);
@@ -252,15 +336,22 @@ public class MainActivity extends AppCompatActivity {
         this.finish();
     }
 
-    //Update video list fragment once save directory has been changed
+
+    /**
+     * Method to remove and recreate the {@link VideosListFragment} when the save location changes
+     */
     public void onDirectoryChanged() {
         ViewPagerAdapter adapter = (ViewPagerAdapter) viewPager.getAdapter();
         ((VideosListFragment) adapter.getItem(1)).removeVideosList();
         Log.d(Const.TAG, "reached main act");
     }
 
-    /* Marshmallow style permission request.
-     * We also present the user with a dialog to notify why storage permission is required */
+
+    /**
+     * Method to request permission for writing to external storage
+     *
+     * @return boolean
+     */
     public boolean requestPermissionStorage() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -283,7 +374,10 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    //Permission on api below 23 are granted by default
+
+    /**
+     * Method to request system windows permission. The permission is granted implicitly on API's below 23
+     */
     @TargetApi(23)
     public void requestSystemWindowsPermission() {
         if (!Settings.canDrawOverlays(this)) {
@@ -293,7 +387,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //Pass the system windows permission result to settings fragment
+    /**
+     * Sets system overlay permission if permission granted.
+     * The permission is always set to granted if the api is under 23
+     */
     @TargetApi(23)
     private void setSystemWindowsPermissionResult() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -313,7 +410,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Marshmallow style permission request for audio recording
+    /**
+     * Method to request audio permission
+     */
     public void requestPermissionAudio() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -323,7 +422,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Overriding onRequestPermissionsResult method to receive results of marshmallow style permission request
+    /**
+     * Overrided onRequestPermissionsResult from {@link PermissionResultListener}
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     *
+     * @see PermissionResultListener
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -338,7 +445,7 @@ public class MainActivity extends AppCompatActivity {
                     fab.setEnabled(false);
                 } else {
                     /* Since we have write storage permission now, lets create the app directory
-                    * in external storage*/
+                     * in external storage*/
                     Log.d(Const.TAG, "write storage Permission granted");
                     createDir();
                 }
@@ -351,6 +458,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Method to create a dialog to request for analytics permission. Allows users to choose between
+     * <br />1. Crash reporting only
+     * <br />2. All analytics
+     * <br />3. Disable everything
+     */
     private void requestAnalyticsPermission() {
         if (!prefs.getBoolean(Const.PREFS_REQUEST_ANALYTICS_PERMISSION, true))
             return;
@@ -390,11 +503,18 @@ public class MainActivity extends AppCompatActivity {
                 .create().show();
     }
 
-    //Set the callback interface for permission result from SettingsPreferenceFragment
+    /**
+     * Method to set {@link PermissionResultListener}
+     * @param mPermissionResultListener {@link PermissionResultListener} object
+     */
     public void setPermissionResultListener(PermissionResultListener mPermissionResultListener) {
         this.mPermissionResultListener = mPermissionResultListener;
     }
 
+    /**
+     * Method to set {@link AnalyticsSettingsListerner}
+     * @param analyticsSettingsListerner {@link AnalyticsSettingsListerner} object
+     */
     public void setAnalyticsSettingsListerner(AnalyticsSettingsListerner analyticsSettingsListerner) {
         this.analyticsSettingsListerner = analyticsSettingsListerner;
     }
@@ -402,7 +522,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        /* Enable analytics only for release builds */
         if (!BuildConfig.DEBUG) {
             Log.d(Const.TAG, "Is a release build. Setting up analytics");
             requestAnalyticsPermission();
@@ -438,6 +557,16 @@ public class MainActivity extends AppCompatActivity {
             case R.id.privacy_policy:
                 startActivity(new Intent(this, PrivacyPolicy.class));
                 return true;
+            case R.id.donate:
+                startActivity(new Intent(this, DonateActivity.class));
+                return true;
+            case R.id.help:
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/joinchat/C_ZSIUKiqUCI5NsPMAv0eA")));
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(this, "No browser app installed!", Toast.LENGTH_SHORT).show();
+                }
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -447,7 +576,9 @@ public class MainActivity extends AppCompatActivity {
         void updateAnalyticsSettings(Const.analytics analytics);
     }
 
-    //ViewPager class for tab view
+    /**
+     * ViewPagerAdapter class to handle fragment tabs
+     */
     class ViewPagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
@@ -456,26 +587,55 @@ public class MainActivity extends AppCompatActivity {
             super(manager);
         }
 
+        /**
+         * Get the fragment depending on the position
+         *
+         * @param position integer representing the tab position
+         * @return Fragment
+         */
         @Override
         public Fragment getItem(int position) {
             return mFragmentList.get(position);
         }
 
+        /**
+         * Get the position of the fragment
+         *
+         * @param object Fragment object
+         * @return Integer position of the tab
+         */
         @Override
         public int getItemPosition(Object object) {
             return super.getItemPosition(object);
         }
 
+        /**
+         * Get total fragment count
+         *
+         * @return integer count of the tabs
+         */
         @Override
         public int getCount() {
             return mFragmentList.size();
         }
 
+        /**
+         * Add a fragment to the tab bar
+         *
+         * @param fragment Tab fragment
+         * @param title    title of the fragment tab
+         */
         void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
 
+        /**
+         * Gets the title of the fragment
+         *
+         * @param position integer Fragment position
+         * @return Fragment title
+         */
         @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
