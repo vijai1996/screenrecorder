@@ -8,3 +8,4 @@
 .externalNativeBuild
 *.apk
 *.json
+/app_pub_key
