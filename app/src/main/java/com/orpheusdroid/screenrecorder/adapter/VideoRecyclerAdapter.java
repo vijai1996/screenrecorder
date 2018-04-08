@@ -142,6 +142,12 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                         shareVideos(positions);
                     mActionMode.finish();
                     break;
+                case R.id.select_all:
+                    for (Video video : videos)
+                        video.setSelected(true);
+                    mActionMode.setTitle("" + videos.size());
+                    notifyDataSetChanged();
+                    break;
             }
             return true;
         }

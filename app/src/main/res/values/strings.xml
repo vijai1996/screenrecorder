@@ -114,6 +114,9 @@
     <string name="donate_activity_label">Donate</string>
     <string name="menu_donate">Donate</string>
     <string name="menu_help">Get Help</string>
+    <string name="menu_delete">delete</string>
+    <string name="menu_select_all">select all</string>
+    <string name="menu_share">Share</string>
     <plurals name="delete_alert_title">
         <item quantity="zero">Delete video?</item>
         <item quantity="one">Delete video?</item>
