@@ -111,6 +111,9 @@
     <string name="preference_app_chooser_summary">Choose an app to start by default while recording</string>
     <string name="preference_app_chooser_key" translatable="false">app_chosen</string>
     <string name="video_not_found">Video not found!</string>
+    <string name="donate_activity_label">Donate</string>
+    <string name="menu_donate">Donate</string>
+    <string name="menu_help">Get Help</string>
     <plurals name="delete_alert_title">
         <item quantity="zero">Delete video?</item>
         <item quantity="one">Delete video?</item>

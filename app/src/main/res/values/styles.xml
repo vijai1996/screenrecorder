@@ -34,6 +34,7 @@
         <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
         <item name="selected_app_check">@drawable/ic_check_circle_black_18dp</item>
+        <item name="cardStyle">@style/CardView</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="android:actionModeBackground">@color/colorPrimary</item>
     </style>
@@ -48,6 +49,7 @@
         <item name="android:actionBarStyle">@color/actionBarStyle_dark</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="selected_app_check">@drawable/ic_check_circle_white_18dp</item>
+        <item name="cardStyle">@style/AppTheme.Dark.CardView</item>
     </style>
 
     <!-- Dark theme -->
@@ -57,6 +59,10 @@
         <item name="android:colorAccent">@color/colorAccent_dark</item>
         <item name="android:windowBackground">@color/windowBackground_dark</item>
         <item name="android:actionModeBackground">@color/actionMode_background_dark</item>
+    </style>
+
+    <style name="AppTheme.Dark.CardView" parent="CardView.Dark">
+        <item name="cardBackgroundColor">@color/windowBackground_dark</item>
     </style>
 
     <style name="AppTheme.Dark.NoActionBar" parent="AppTheme.Dark">
@@ -79,6 +85,10 @@
         <item name="android:windowBackground">@color/windowBackground_black</item>
         <item name="actionBarTheme">@style/AppTheme.Black.ActionBar</item>
         <item name="android:alertDialogTheme">@style/AppTheme.Black.DialogTheme</item>
+    </style>
+
+    <style name="AppTheme.Black.CardView" parent="CardView.Dark">
+        <item name="cardBackgroundColor">@color/colorPrimaryDark_black</item>
     </style>
 
     <style name="AppTheme.Black.DialogTheme" parent="Theme.AppCompat.Dialog">

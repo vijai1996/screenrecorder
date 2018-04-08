@@ -12,7 +12,7 @@ android:
       - '.+'
 
 script:
-   - ./gradlew clean build assembleDebug
+   - ./gradlew clean assembleFdroidDebug
 
 jdk:
   - oraclejdk8
