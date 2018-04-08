@@ -17,12 +17,38 @@
 
 package com.orpheusdroid.screenrecorder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by vijai on 12-10-2016.
  */
 
 // POJO class for bunch of statics used across the app
 public class Const {
+
+    public enum ASPECT_RATIO {
+        AR16_9(1.7777778f), AR18_9(2f);
+
+        private static Map<Float, ASPECT_RATIO> map = new HashMap<Float, ASPECT_RATIO>();
+
+        static {
+            for (ASPECT_RATIO aspectRatio : ASPECT_RATIO.values()) {
+                map.put(aspectRatio.numVal, aspectRatio);
+            }
+        }
+
+        private float numVal;
+
+        ASPECT_RATIO(float numVal) {
+            this.numVal = numVal;
+        }
+
+        public static ASPECT_RATIO valueOf(float val) {
+            return map.get(val);
+        }
+    }
+
     public static final int VIDEO_EDIT_REQUEST_CODE = 1004;
     public static final int VIDEO_EDIT_RESULT_CODE = 1005;
     public static final String TAG = "SCREENRECORDER_LOG";

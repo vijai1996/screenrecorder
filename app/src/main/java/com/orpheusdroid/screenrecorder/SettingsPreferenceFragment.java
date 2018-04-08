@@ -38,7 +38,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.orpheusdroid.screenrecorder.folderpicker.FolderChooser;
 import com.orpheusdroid.screenrecorder.folderpicker.OnDirectorySelectedListerner;
@@ -48,18 +47,57 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Created by vijai on 11-10-2016.
+ * <p>
+ *     This fragment handles various settings of the recorder.
+ * </p>
+ *
+ * @author Vijai Chandra Prasad .R
+ * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener
+ * @see PermissionResultListener
+ * @see OnDirectorySelectedListerner
+ * @see com.orpheusdroid.screenrecorder.MainActivity.AnalyticsSettingsListerner
  */
-
 public class SettingsPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener
         , PermissionResultListener, OnDirectorySelectedListerner, MainActivity.AnalyticsSettingsListerner {
 
+    /**
+     * SharedPreferences object to read the persisted settings
+     */
     SharedPreferences prefs;
+
+    /**
+     * ListPreference to choose the recording resolution
+     */
+    private ListPreference res;
+
+    /**
+     * CheckBoxPreference to manage audio recording via mic setting
+     */
     private CheckBoxPreference recaudio;
+
+    /**
+     * CheckBoxPreference to manage onscreen floating control setting
+     */
     private CheckBoxPreference floatingControl;
+
+    /**
+     * CheckBoxPreference to manage crash reporting via countly setting
+     */
     private CheckBoxPreference crashReporting;
+
+    /**
+     * CheckBoxPreference to manage full analytics via countly setting
+     */
     private CheckBoxPreference usageStats;
+
+    /**
+     * FolderChooser object to choose the directory where the video has to be saved to.
+     */
     private FolderChooser dirChooser;
+
+    /**
+     * MainActivity object
+     */
     private MainActivity activity;
 
     @Override
@@ -67,6 +105,11 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
 
     }
 
+    /**
+     * Initialize various listeners and settings preferences.
+     *
+     * @param savedInstanceState default savedInstance bundle sent by Android runtime
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +126,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
 
         //Get instances of all preferences
         prefs = getPreferenceScreen().getSharedPreferences();
-        ListPreference res = (ListPreference) findPreference(getString(R.string.res_key));
+        res = (ListPreference) findPreference(getString(R.string.res_key));
         ListPreference fps = (ListPreference) findPreference(getString(R.string.fps_key));
         ListPreference bitrate = (ListPreference) findPreference(getString(R.string.bitrate_key));
         recaudio = (CheckBoxPreference) findPreference(getString(R.string.audiorec_key));
@@ -101,6 +144,7 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         theme.setSummary(theme.getEntry());
 
         //Set the summary of preferences dynamically with user choice or default if no user choice is made
+        updateScreenAspectRatio();
         updateResolution(res);
         fps.setSummary(getValue(getString(R.string.fps_key), "30"));
         float bps = bitsToMb(Integer.parseInt(getValue(getString(R.string.bitrate_key), "7130317")));
@@ -126,35 +170,135 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         dirChooser.setOnDirectoryClickedListerner(this);
     }
 
-    private void updateResolution(ListPreference res) {
-        String resolution = getResolution(getValue(getString(R.string.res_key), "1440x2560"));
-        res.setValue(resolution);
-        res.setSummary(resolution);
+    /**
+     * Updates the summary of resolution settings preference
+     *
+     * @param pref object of the resolution ListPreference
+     */
+    private void updateResolution(ListPreference pref) {
+        pref.setSummary(getValue(getString(R.string.res_key), getNativeRes()));
     }
 
-    //Prevent upscaling of resolution which mediarecorder could not handle
-    private String getResolution(String res) {
+    /**
+     * Method to get the device's native resolution
+     *
+     * @return device resolution
+     */
+    private String getNativeRes() {
+        DisplayMetrics metrics = getRealDisplayMetrics();
+        return getScreenWidth(metrics) + "x" + getScreenHeight(metrics);
+    }
+
+    /**
+     * Updates the available resolution based on aspect ratio
+     */
+    private void updateScreenAspectRatio() {
+        Const.ASPECT_RATIO aspect_ratio = getAspectRatio();
+        Log.d(Const.TAG, "Aspect ratio: " + aspect_ratio);
+        CharSequence[] entriesValues = getResolutionEntriesValues(aspect_ratio);
+        res.setEntries(entriesValues);
+        res.setEntryValues(entriesValues);
+    }
+
+    /**
+     * Get resolutions based on the device's aspect ratio
+     *
+     * @param aspectRatio {@link com.orpheusdroid.screenrecorder.Const.ASPECT_RATIO} of the device
+     * @return entries for the resolution
+     */
+    private CharSequence[] getResolutionEntriesValues(Const.ASPECT_RATIO aspectRatio) {
+
+        ArrayList<String> entries;
+        switch (aspectRatio) {
+            case AR16_9:
+                entries = buildEntries(R.array.resolutionsArray_16_9);
+                break;
+            case AR18_9:
+                entries = buildEntries(R.array.resolutionValues_18_9);
+                break;
+            default:
+                entries = buildEntries(R.array.resolutionsArray_16_9);
+                break;
+        }
+
+        String[] entriesArray = new String[entries.size()];
+        return entries.toArray(entriesArray);
+    }
+
+    /**
+     * Build resolutions from the arrays.
+     *
+     * @param resID resource ID for the resolution array
+     * @return ArrayList of available resolutions
+     */
+    private ArrayList<String> buildEntries(int resID) {
+        DisplayMetrics metrics = getRealDisplayMetrics();
+        int width = getScreenWidth(metrics);
+        int height = getScreenHeight(metrics);
+        String nativeRes = width + "x" + height;
+        ArrayList<String> entries = new ArrayList<>(Arrays.asList(getResources().getStringArray(resID)));
+        for (String entry : entries) {
+            String[] widthHeight = entry.split("x");
+            if (width < Integer.parseInt(widthHeight[0]) || height < Integer.parseInt(widthHeight[1])) {
+                entries.remove(entry);
+            }
+        }
+        if (!entries.contains(nativeRes))
+            entries.add(nativeRes);
+        return entries;
+    }
+
+
+    /**
+     * Returns object of DisplayMetrics
+     *
+     * @return DisplayMetrics
+     */
+    private DisplayMetrics getRealDisplayMetrics(){
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager window = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
-        window.getDefaultDisplay().getMetrics(metrics);
-        String[] widthHeight = res.split("x");
-        int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
-        if (width < Integer.parseInt(widthHeight[0]) && height < Integer.parseInt(widthHeight[1])) {
-            ArrayList<String> resolutions = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.resolutionValues)));
-            for (String resolution : resolutions) {
-                if (resolution.contains(String.valueOf(width))) {
-                    Toast.makeText(getActivity(), getString(R.string.large_resolution_selected_toast, resolution)
-                            , Toast.LENGTH_SHORT).show();
-                    return resolution;
-                }
-            }
-            return resolutions.get(0);
-        } else
-            return res;
+        window.getDefaultDisplay().getRealMetrics(metrics);
+        return metrics;
     }
 
-    //Set permissionListener in MainActivity
+
+    /**
+     * Get width of screen in pixels
+     *
+     * @return screen width
+     */
+    private int getScreenWidth(DisplayMetrics metrics) {
+        return metrics.widthPixels;
+    }
+
+    /**
+     * Get height of screen in pixels
+     *
+     * @return Screen height
+     */
+    private int getScreenHeight(DisplayMetrics metrics) {
+        return metrics.heightPixels;
+    }
+
+
+    /**
+     * Get aspect ratio of the screen
+     */
+    private Const.ASPECT_RATIO getAspectRatio() {
+        float screen_width = getScreenWidth(getRealDisplayMetrics());
+        float screen_height = getScreenHeight(getRealDisplayMetrics());
+        float aspectRatio;
+        if (screen_width > screen_height) {
+            aspectRatio = screen_width / screen_height;
+        } else {
+            aspectRatio = screen_height / screen_width;
+        }
+        return Const.ASPECT_RATIO.valueOf(aspectRatio);
+    }
+
+    /**
+     * Set permission listener in the {@link MainActivity} to handle permission results
+     */
     private void setPermissionListener() {
         if (getActivity() != null && getActivity() instanceof MainActivity) {
             activity = (MainActivity) getActivity();
@@ -162,6 +306,9 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         }
     }
 
+    /**
+     * Set Analytics permission listener in {@link MainActivity} to listen to analytics permission changes
+     */
     private void setAnalyticsPermissionListerner(){
         if (getActivity() != null && getActivity() instanceof MainActivity) {
             activity = (MainActivity) getActivity();
@@ -169,12 +316,23 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         }
     }
 
-    //method to return string from SharedPreferences
+    /**
+     * Get the persisted value for the preference from default sharedPreference
+     *
+     * @param key String represnting the sharedpreference key to fetch
+     * @param defVal String Default value if the preference does not exist
+     * @return String the persisted preference value or default if not found
+     */
     private String getValue(String key, String defVal) {
         return prefs.getString(key, defVal);
     }
 
-    //Method to convert bits to MB
+    /**
+     * Method to convert bits per second to MB/s
+     *
+     * @param bps float bitsPerSecond
+     * @return float
+     */
     private float bitsToMb(float bps) {
         return bps / (1024 * 1024);
     }
@@ -255,6 +413,9 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         }
     }
 
+    /**
+     * show an alert to download the plugin when the plugin is not found
+     */
     private void showDownloadAlert() {
         new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.alert_plugin_not_found_title)
@@ -278,6 +439,11 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
                 .create().show();
     }
 
+    /**
+     * Check if "show touches" plugin is installed.
+     *
+     * @return boolean
+     */
     private boolean hasPluginInstalled(){
         PackageManager pm = getActivity().getPackageManager();
         try {
@@ -289,19 +455,30 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         return true;
     }
 
-    //Method to concat file prefix with dateTime format
+    /**
+     * Method to concat file prefix with dateTime format
+     */
     public String getFileSaveFormat() {
         String filename = prefs.getString(getString(R.string.filename_key), "yyyyMMdd_hhmmss");
         String prefix = prefs.getString(getString(R.string.fileprefix_key), "recording");
         return prefix + "_" + filename;
     }
 
+    /**
+     * Method to request android permission to record audio
+     */
     public void requestAudioPermission() {
         if (activity != null) {
             activity.requestPermissionAudio();
         }
     }
 
+    /**
+     * Method to request android system windows permission to show floating controls
+     * <p>
+     *     Shown only on devices above api 23 (Marshmallow)
+     * </p>
+     */
     private void requestSystemWindowsPermission() {
         if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             activity.requestSystemWindowsPermission();
@@ -310,7 +487,9 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         }
     }
 
-    //Show snackbar with permission Intent when the user rejects write storage permission
+    /**
+     * Show snackbar with permission Intent when the user rejects write storage permission
+     */
     private void showSnackbar() {
         Snackbar.make(getActivity().findViewById(R.id.fab), R.string.snackbar_storage_permission_message,
                 Snackbar.LENGTH_INDEFINITE).setAction(R.string.snackbar_storage_permission_action_enable,
@@ -324,6 +503,9 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
                 }).show();
     }
 
+    /**
+     * Show a dialog when the permission to storage is denied by the user during startup
+     */
     private void showPermissionDeniedDialog(){
         new AlertDialog.Builder(activity)
                 .setTitle(R.string.alert_permission_denied_title)
@@ -402,6 +584,9 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         }
     }
 
+    /**
+     * Start analytics service with user chosen config
+     */
     private void startAnalytics(){
         if (getActivity() != null && getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).setupAnalytics();

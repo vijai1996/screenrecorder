@@ -17,10 +17,11 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/prefs_category_video_settings_title">
+
         <ListPreference
             android:defaultValue="1440x2560"
-            android:entries="@array/resolutionValues"
-            android:entryValues="@array/resolutionValues"
+            android:entries="@array/resolutionsArray_16_9"
+            android:entryValues="@array/resolutionValues_16_9"
             android:key="@string/res_key"
             android:summary="@string/preference_resolution_summary"
             android:title="@string/preference_resolution_title" />
