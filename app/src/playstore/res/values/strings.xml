@@ -17,4 +17,8 @@
 
 <resources>
     <string name="donate_info">Support Development</string>
+    <string name="donate_dollar_1">Support with $1</string>
+    <string name="donate_dollar_2">Support with $2</string>
+    <string name="donate_dollar_5">Support with $5</string>
+    <string name="donate_paypal">Support with whatever you wish using paypal</string>
 </resources>

@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="50dp"
                 android:padding="10dp"
-                android:text="Support with whatever you wish using paypal" />
+                android:text="@string/donate_paypal" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="50dp"
                 android:padding="10dp"
-                android:text="please mail me at contact@orpheusdroid.com to work out a different way to send your donation." />
+                android:text="@string/donate_custom" />
 
             <ImageView
                 android:layout_width="wrap_content"

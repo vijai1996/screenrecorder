@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="50dp"
                 android:padding="10dp"
-                android:text="Support with $1" />
+                android:text="@string/donate_dollar_1" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="50dp"
                 android:padding="10dp"
-                android:text="Support with $2" />
+                android:text="@string/donate_dollar_2" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -111,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="50dp"
                 android:padding="10dp"
-                android:text="Support with $5" />
+                android:text="@string/donate_dollar_5" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -139,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="50dp"
                 android:padding="10dp"
-                android:text="Support with whatever you wish using paypal" />
+                android:text="@string/donate_paypal" />
 
             <ImageView
                 android:layout_width="wrap_content"

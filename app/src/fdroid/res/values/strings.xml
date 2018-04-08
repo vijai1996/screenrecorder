@@ -17,4 +17,6 @@
 
 <resources>
     <string name="donate_info">Support Development</string>
+    <string name="donate_paypal">Support with whatever you wish using paypal</string>
+    <string name="donate_custom">please mail me at contact@orpheusdroid.com to work out a different way to send your donation.</string>
 </resources>
