@@ -64,6 +64,7 @@ public class Const {
     static final String SCREEN_RECORDING_RESUME = "com.orpheusdroid.screenrecorder.services.action.resumerecording";
     static final String SCREEN_RECORDING_STOP = "com.orpheusdroid.screenrecorder.services.action.stoprecording";
     static final String SCREEN_RECORDING_DESTORY_SHAKE_GESTURE = "com.orpheusdroid.screenrecorder.services.action.destoryshakegesture";
+    static final String SCREEN_RECORDER_VIDEOS_LIST_FRAGMENT_INTENT = "com.orpheusdroid.screenrecorder.SHOWVIDEOSLIST";
     static final int SCREEN_RECORDER_NOTIFICATION_ID = 5001;
     static final int SCREEN_RECORDER_SHARE_NOTIFICATION_ID = 5002;
     static final int SCREEN_RECORDER_WAITING_FOR_SHAKE_NOTIFICATION_ID = 5003;
