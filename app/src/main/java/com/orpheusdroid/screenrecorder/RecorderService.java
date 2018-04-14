@@ -69,7 +69,13 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by vijai on 12-10-2016.
+ * Service to manage recording and notifications
+ * <p>
+ *     A service class to manage recording (start/pause/stop), handle notifications, manage floating controls
+ *     and recording permissions
+ * </p>
+ *
+ * @author Vijai Chandra Prasad .R
  */
 //TODO: Update icons for notifcation
 public class RecorderService extends Service implements ShakeEventManager.ShakeListener {
@@ -465,6 +471,8 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
         PendingIntent editPendingIntent = PendingIntent.getActivity(this, 0, editIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent sharePendingIntent = PendingIntent.getActivity(this, 0, Intent.createChooser(
                 Shareintent, getString(R.string.share_intent_title)), PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, MainActivity.class).setAction(Const.SCREEN_RECORDER_VIDEOS_LIST_FRAGMENT_INTENT), PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder shareNotification = new NotificationCompat.Builder(this, Const.SHARE_NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getString(R.string.share_intent_notification_title))
@@ -472,7 +480,7 @@ public class RecorderService extends Service implements ShakeEventManager.ShakeL
                 .setSmallIcon(R.drawable.ic_notification)
                 .setLargeIcon(Bitmap.createScaledBitmap(icon, 128, 128, false))
                 .setAutoCancel(true)
-                .setContentIntent(sharePendingIntent)
+                .setContentIntent(contentIntent)
                 .addAction(android.R.drawable.ic_menu_share, getString(R.string.share_intent_notification_action_text)
                         , sharePendingIntent)
                 .addAction(android.R.drawable.ic_menu_edit, getString(R.string.edit_intent_notification_action_text)

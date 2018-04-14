@@ -56,21 +56,53 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by vijai on 06-11-2016.
+ * <p>
+ *     This fragment lists the videos recorded
+ * </p>
+ *
+ * @author Vijai Chandra Prasad .R
+ * @see VideoRecyclerAdapter
+ * @see PermissionResultListener
+ * @see GetVideosAsync
  */
-
 public class VideosListFragment extends Fragment implements PermissionResultListener, SwipeRefreshLayout.OnRefreshListener {
+    /**
+     * RecyclerView
+     */
     private RecyclerView videoRV;
+
+    /**
+     * TextView to display empty videos or permission denied message
+     */
     private TextView message;
+
+    /**
+     * SharedPreference object
+     */
     private SharedPreferences prefs;
+
+    /**
+     * SwipeRefreshLayout object to refresh list
+     */
     private SwipeRefreshLayout swipeRefreshLayout;
+
+    /**
+     * ArrayList to store all videos from the save location
+     */
     private ArrayList<Video> videosList = new ArrayList<>();
+
+    private boolean loadInOnCreate = false;
 
     public VideosListFragment() {
 
     }
 
-    //Method to check if the file's meme type is video
+    /**
+     * Method to check if the file's meme type is video
+     *
+     * @param path String - path to the file
+     * @return boolean
+     */
     private static boolean isVideoFile(String path) {
         String mimeType = URLConnection.guessContentTypeFromName(path);
         return mimeType != null && mimeType.startsWith("video");
@@ -91,6 +123,9 @@ public class VideosListFragment extends Fragment implements PermissionResultList
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
+        if (loadInOnCreate)
+            checkPermission();
+
         return view;
     }
 
@@ -104,10 +139,11 @@ public class VideosListFragment extends Fragment implements PermissionResultList
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
+        if (isVisibleToUser && getActivity() != null) {
             Log.d(Const.TAG, "Videos fragment is visible load the videos");
             checkPermission();
-        }
+        } else if (isVisibleToUser && getActivity() == null)
+            loadInOnCreate = true;
     }
 
     @Override
@@ -130,7 +166,9 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         });
     }
 
-    //Check if we have permission to read the external storage. The fragment is useless without this
+    /**
+     * Check if we have permission to read the external storage and load the videos into ArrayList<Video>
+     */
     private void checkPermission() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -162,7 +200,12 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         }
     }
 
-    //Method to strip off folders and other file types from the files list
+    /**
+     * Filter all video files from array of files
+     *
+     * @param files File[] containing files from a directory
+     * @return File[] containing only video files
+     */
     private File[] getVideos(File[] files) {
         List<File> newFiles = new ArrayList<>();
         for (File file : files) {
@@ -172,7 +215,11 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         return newFiles.toArray(new File[newFiles.size()]);
     }
 
-    //Init recyclerview once the videos list is ready
+    /**
+     * Init recyclerview once the videos list is ready
+     *
+     * @param videos ArrayList<Video>
+     */
     private void setRecyclerView(ArrayList<Video> videos) {
         videoRV.setHasFixedSize(true);
         final GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
@@ -207,7 +254,9 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         }
     }
 
-    //Clear the videos ArrayList once the save directory is changed which forces reloading of videos from new directory
+    /**
+     * Clear the videos ArrayList once the save directory is changed which forces reloading of videos from new directory
+     */
     public void removeVideosList() {
         videosList.clear();
         Log.d(Const.TAG, "Reached video fragment");
@@ -228,7 +277,11 @@ public class VideosListFragment extends Fragment implements PermissionResultList
         Log.d(Const.TAG, "Refreshing");
     }
 
-    //Class to retrieve video details in async
+    /**
+     * Class to retrieve videos from the directory asynchronously
+     *
+     * @author Vijai Chandra Prasad .R
+     */
     class GetVideosAsync extends AsyncTask<File[], Integer, ArrayList<Video>> {
         //ProgressDialog progress;
         File[] files;
@@ -287,8 +340,16 @@ public class VideosListFragment extends Fragment implements PermissionResultList
             return videosWithSections;
         }
 
-        //Check if a new Section is to be added by comparing the difference of the section date
-        // and the video's last modified date
+        /**
+         * Method to add date sections to videos list
+         * <p>
+         * <p></p>Check if a new Section is to be added by comparing the difference of the section date
+         * and the video's last modified date</p>
+         *
+         * @param current Date of current video
+         * @param next    Date of next video
+         * @return boolean if a new section must be added
+         */
         private boolean addNewSection(Date current, Date next)
         {
             Calendar currentSectionDate = toCalendar(current.getTime());
@@ -304,7 +365,12 @@ public class VideosListFragment extends Fragment implements PermissionResultList
             return dayDiff > 0;
         }
 
-        //Generate and return new Calendar object
+        /**
+         * Method to return a Calander object from the timestamp
+         *
+         * @param timestamp long timestamp
+         * @return Calendar
+         */
         private Calendar toCalendar(long timestamp)
         {
             Calendar calendar = Calendar.getInstance();
@@ -341,7 +407,12 @@ public class VideosListFragment extends Fragment implements PermissionResultList
             return videosList;
         }
 
-        //Method to get thumbnail from mediastore for video file
+        /**
+         * Method to get thumbnail from mediastore for video file
+         *
+         * @param file File object of the video
+         * @return Bitmap
+         */
         Bitmap getBitmap(File file) {
             String[] projection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.BUCKET_ID,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA};

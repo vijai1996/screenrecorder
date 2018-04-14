@@ -180,16 +180,20 @@ public class MainActivity extends AppCompatActivity {
         //Arbitrary "Write to external storage" permission since this permission is most important for the app
         requestPermissionStorage();
 
+        fab = findViewById(R.id.fab);
+
         //Acquiring media projection service to start screen mirroring
         mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
         //Respond to app shortcut
-        if (getIntent().getAction() != null && getIntent().getAction().equals(getString(R.string.app_shortcut_action))) {
-            startActivityForResult(mProjectionManager.createScreenCaptureIntent(), Const.SCREEN_RECORD_REQUEST_CODE);
-            return;
+        if (getIntent().getAction() != null) {
+            if (getIntent().getAction().equals(getString(R.string.app_shortcut_action))) {
+                startActivityForResult(mProjectionManager.createScreenCaptureIntent(), Const.SCREEN_RECORD_REQUEST_CODE);
+                return;
+            } else if (getIntent().getAction().equals(Const.SCREEN_RECORDER_VIDEOS_LIST_FRAGMENT_INTENT)) {
+                viewPager.setCurrentItem(1);
+            }
         }
-
-        fab = findViewById(R.id.fab);
 
         if (isServiceRunning(RecorderService.class)) {
             Log.d(Const.TAG, "service is running");
@@ -213,7 +217,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
     }
 
     /**
