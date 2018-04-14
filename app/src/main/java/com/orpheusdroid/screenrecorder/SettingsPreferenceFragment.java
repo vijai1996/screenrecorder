@@ -45,6 +45,7 @@ import com.orpheusdroid.screenrecorder.folderpicker.OnDirectorySelectedListerner
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * <p>
@@ -237,10 +238,12 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Sh
         int height = getScreenHeight(metrics);
         String nativeRes = width + "x" + height;
         ArrayList<String> entries = new ArrayList<>(Arrays.asList(getResources().getStringArray(resID)));
-        for (String entry : entries) {
+        Iterator<String> entriesIterator = entries.iterator();
+        while (entriesIterator.hasNext()) {
+            String entry = entriesIterator.next();
             String[] widthHeight = entry.split("x");
             if (width < Integer.parseInt(widthHeight[0]) || height < Integer.parseInt(widthHeight[1])) {
-                entries.remove(entry);
+                entriesIterator.remove();
             }
         }
         if (!entries.contains(nativeRes))
