@@ -60,6 +60,16 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".QuickRecordTile"
+            android:icon="@drawable/fab_record"
+            android:label="@string/quick_settings_tile_default_title"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".AboutActivity"
             android:label="@string/about_activity_label" />

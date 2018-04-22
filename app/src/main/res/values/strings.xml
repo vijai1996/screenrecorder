@@ -117,6 +117,9 @@
     <string name="menu_delete">delete</string>
     <string name="menu_select_all">select all</string>
     <string name="menu_share">Share</string>
+    <string name="quick_settings_tile_default_title">Add ScreenCam tile</string>
+    <string name="quick_settings_tile_start_title">Start recording</string>
+    <string name="quick_settings_tile_stop_title">Stop recording</string>
     <plurals name="delete_alert_title">
         <item quantity="zero">Delete video?</item>
         <item quantity="one">Delete video?</item>
