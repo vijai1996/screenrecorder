@@ -36,16 +36,30 @@ Building apk is possible in 3 ways
 * 1.b. [Building release apk using commandline](https://github.com/vijai1996/screenrecorder#1b-building-release-apk-using-commandline)
 * 2.   [Building using AndroidStudio](https://github.com/vijai1996/screenrecorder#2-building-using-androidstudio)
 
-#### 1.a. Building debug apk using commandline
-Switch to project root directory and run 
+### 1.a. Building debug apk using commandline
+Switch to project root directory and run
+
+#### Build Fdroid flavour
 ```
-gradlew.bat assembleDebug
+gradlew.bat assembleFdroidDebug
 ```
 
-#### 1.b. Building release apk using commandline
-Switch to project root directory and make sure to edit `app` module's build.gradle to include signing key information and run
+#### Build Play flavour
 ```
-gradlew.bat assembleRelease
+gradlew.bat assemblePlayDebug
+```
+
+### 1.b. Building release apk using commandline
+Switch to project root directory and make sure to edit `app` module's build.gradle to include signing key information and run
+
+#### Build Fdroid flavour
+```
+gradlew.bat assembleFdroidRelease
+```
+
+#### Build Play flavour
+```
+gradlew.bat assemblePlayRelease
 ```
 
 #### 2. Building using AndroidStudio
@@ -53,6 +67,13 @@ Open Android Studio -> File -> Import Project -> Choose the cloned project folde
 
 ## Contributions
 Any contribution to the app is welcome in the form of pull requests.
+
+## License and copyright infringements
+I will consider any kind of license or copyright infringements seriously and will send copyright claim notice or license infringement notice to anyone who is not adhering to them.
+
+If you notice any content which seem to be infringing, please fill the below google forms to help me indentify and take them down.
+
+[Google Form](https://goo.gl/forms/ntFKRXflFh2NH1dx1)
 
 ## Authors
 
