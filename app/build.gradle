@@ -24,8 +24,8 @@ android {
         applicationId "com.orpheusdroid.screenrecorder"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 23
-        versionName "1.8.6"
+        versionCode 24
+        versionName "1.8.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
