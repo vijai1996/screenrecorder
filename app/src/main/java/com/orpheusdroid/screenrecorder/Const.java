@@ -45,7 +45,7 @@ public class Const {
         }
 
         public static ASPECT_RATIO valueOf(float val) {
-            return map.get(val);
+            return map.get(val) == null ? AR16_9 : map.get(val);
         }
     }
 
