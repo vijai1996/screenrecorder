@@ -1,3 +1,8 @@
+# NOTICE
+## This repository has been moved to Gitlab. The repo is archieved and is read-only now. Please go to [Gitlab](https://gitlab.com/vijai/screenrecorder) to get updates and participate on issues.
+
+Gitlab url: https://gitlab.com/vijai/screenrecorder
+
 # ScreenRecorder   [![Build Status](https://travis-ci.org/vijai1996/screenrecorder.svg?branch=master)](https://travis-ci.org/vijai1996/screenrecorder)
 ![App Icon](ic_launcher-web.png?raw=true "App Icon")
 
